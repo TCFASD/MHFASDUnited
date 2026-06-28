@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain-Based Treatment Adaptation Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: letter; margin: 0.5in; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Open Sans',sans-serif; font-size:14px; line-height:1.55; color:#1f2733; background:#f4f6f9; }
+  .wrap { max-width:920px; margin:0 auto; padding:18px 16px 80px; }
+  .pro-header { position:relative; background:linear-gradient(135deg,#0d1b3e,#1a3a6b 30%,#2c5aa0 55%,#1a6b5a 80%,#0d3b2e); border-radius:8px; overflow:hidden; margin-bottom:12px; }
+  .pro-header-inner { display:flex; align-items:center; gap:16px; padding:18px 24px; }
+  .pro-header-logo { flex-shrink:0; width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; }
+  .pro-header-logo img { width:42px; height:42px; border-radius:50%; object-fit:cover; }
+  .pro-header h1 { font-family:'Lexend',sans-serif; font-size:19px; font-weight:600; color:#fff; }
+  .pro-header .sub { font-size:12px; color:rgba(255,255,255,.78); margin-top:3px; }
+  .pro-header-rule { height:3px; background:linear-gradient(90deg,#a78bfa,#38bdf8,#34d399,#f472b6,#a78bfa); }
+  .privacy { display:flex; gap:9px; background:#eef7f2; border:1px solid #bfe3d2; border-left:4px solid #0e8a6e; border-radius:6px; padding:10px 14px; margin-bottom:12px; font-size:12px; color:#235; }
+  .privacy strong { color:#0d5c4a; }
+  .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .btn { font-family:'Lexend',sans-serif; font-size:13px; font-weight:600; border-radius:7px; padding:9px 16px; cursor:pointer; border:1px solid transparent; }
+  .btn-ghost { background:#fff; border:1px solid #cfd6e0; color:#46505e; }
+  .btn-primary { background:linear-gradient(135deg,#1a3a6b,#2c5aa0); color:#fff; }
+  .btn-green { background:linear-gradient(135deg,#0d5c4a,#0e8a6e); color:#fff; }
+  .btn-red { background:#fff; border:1px solid #e3b7b7; color:#b04a4a; }
+  .save-status { font-size:12px; color:#0e8a6e; align-self:center; }
+  .stepper { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .step-tab { flex:1 1 0; min-width:110px; border:1px solid #d8dee7; background:#fff; border-radius:7px; padding:8px 10px; cursor:pointer; text-align:left; font-family:'Lexend',sans-serif; }
+  .step-tab .num { font-size:10px; font-weight:600; color:#9aa4b2; }
+  .step-tab .lbl { font-size:11.5px; font-weight:500; color:#3a4654; display:block; margin-top:1px; }
+  .step-tab.active { background:linear-gradient(135deg,#1a3a6b,#2c5aa0); border-color:#1a3a6b; }
+  .step-tab.active .num, .step-tab.active .lbl { color:#fff; }
+  .panel { display:none; background:#fff; border:1px solid #e3e8ef; border-radius:9px; padding:20px 22px; }
+  .panel.active { display:block; }
+  .panel h2 { font-family:'Lexend',sans-serif; font-size:18px; color:#16335c; margin-bottom:3px; }
+  .panel .lead { font-size:13px; color:#54616f; margin-bottom:16px; }
+  h3.block { font-family:'Lexend',sans-serif; font-size:14px; color:#16335c; margin:18px 0 7px; }
+  input[type=text], select, textarea { width:100%; border:1px solid #cfd6e0; border-radius:6px; padding:8px 10px; font-family:'Open Sans',sans-serif; font-size:13.5px; }
+  .hint { font-size:12px; color:#6b7480; font-style:italic; margin-bottom:8px; }
+  .item-card { border:1px solid #e0e6ee; border-radius:8px; padding:13px 15px; margin-bottom:10px; background:#fcfdfe; position:relative; }
+  .item-card .row { display:flex; gap:12px; flex-wrap:wrap; } .item-card .row > div { flex:1 1 180px; }
+  .mini-label { font-size:11.5px; font-weight:600; color:#46505e; margin-bottom:3px; display:block; }
+  .remove-btn { position:absolute; top:8px; right:8px; background:none; border:none; color:#b94a4a; font-size:18px; cursor:pointer; }
+  .add-btn { background:#eef3fb; border:1px dashed #9bb4d8; color:#1a3a6b; border-radius:7px; padding:9px 16px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Lexend',sans-serif; }
+  .cat-h { font-family:'Lexend',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#7a8492; margin:14px 0 6px; }
+  .tx-mod { margin-bottom:6px; }
+  .chip { display:inline-block; border:1.5px solid #cdd6e2; background:#f7f9fc; border-radius:16px; padding:5px 13px; font-size:12.5px; color:#3a4654; cursor:pointer; user-select:none; }
+  .chip.on { background:#16335c; border-color:#16335c; color:#fff; }
+  .comp-pick { display:none; margin:6px 0 8px 6px; border-left:2px solid #e0e6ee; padding-left:12px; }
+  .comp-pick.show { display:block; }
+  .comp-pick .cp-hint { font-size:11.5px; color:#7a8492; font-style:italic; margin:4px 0 5px; }
+  .comp-pick label { display:flex; gap:8px; align-items:flex-start; font-size:12.5px; margin:3px 0; cursor:pointer; }
+  .comp-pick input { margin-top:3px; accent-color:#2c5aa0; }
+  .comp-pick .ph { color:#9aa4b2; font-size:11px; }
+  .note { background:#eef3fb; border-left:4px solid #2c5aa0; padding:11px 15px; border-radius:0 6px 6px 0; margin:12px 0; font-size:12.5px; color:#2a3a52; }
+  .ptabs { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 8px; }
+  .ptab { border:1px solid #cdd6e2; background:#fff; border-radius:7px; padding:8px 13px; font-family:'Lexend',sans-serif; font-size:12px; font-weight:600; color:#46505e; cursor:pointer; }
+  .ptab.on { background:#16335c; color:#fff; border-color:#16335c; }
+  .ppane { display:none; } .ppane.on { display:block; }
+  .devbanner { background:#f3f0fb; border:1px solid #ddd3f3; border-radius:8px; padding:11px 14px; margin:4px 0 12px; font-size:12.5px; }
+  .devbanner .k { color:#5b21b6; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:5px; }
+  table.snap { border-collapse:collapse; width:100%; font-size:12.5px; }
+  table.snap th, table.snap td { border:1px solid #e0e6ee; padding:6px 8px; text-align:left; vertical-align:middle; }
+  table.snap th { background:#16335c; color:#fff; font-family:'Lexend',sans-serif; font-weight:500; font-size:11px; }
+  table.snap .dom { font-weight:600; color:#16335c; } table.snap .sub2 { color:#7a8492; font-size:10.5px; }
+  .lvls { display:inline-flex; gap:3px; flex-wrap:wrap; }
+  .lvlbtn { font-size:10.5px; border:1px solid #d3dae4; border-radius:5px; padding:2px 7px; color:#8a93a0; cursor:pointer; background:#fff; }
+  .lvlbtn.str.on{background:#e4f6ec;border-color:#bfe3cf;color:#10663f;font-weight:700}
+  .lvlbtn.wr.on{background:#eef3fb;border-color:#cfe0f5;color:#2c5aa0;font-weight:700}
+  .lvlbtn.mild.on{background:#fdf7ea;border-color:#f0e2bd;color:#9a7b25;font-weight:700}
+  .lvlbtn.mod.on{background:#fdf0e0;border-color:#f0cfa8;color:#a5631a;font-weight:700}
+  .lvlbtn.sig.on{background:#fbe7e7;border-color:#eccaca;color:#9a2b2b;font-weight:700}
+  .tx-block { margin-bottom:18px; }
+  .tx-h { font-family:'Lexend',sans-serif; font-size:15px; color:#16335c; border-bottom:2px solid #ece8df; padding-bottom:5px; margin-bottom:8px; }
+  .phase-h { font-family:'Lexend',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#7a8492; margin:12px 0 6px; }
+  .cmp { border:1px solid #e0e6ee; border-radius:8px; margin-bottom:8px; overflow:hidden; }
+  .cmp .top { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; background:#fbfcfe; cursor:pointer; }
+  .cmp .nm { font-family:'Lexend',sans-serif; font-weight:600; font-size:13px; color:#16335c; }
+  .cmp .fits { display:flex; gap:5px; flex-wrap:wrap; flex-shrink:0; }
+  .cmp .body { display:none; padding:0 14px 12px; font-size:12.5px; color:#48535f; }
+  .cmp.open .body { display:block; }
+  .fit { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; border-radius:12px; padding:2px 8px; }
+  .fit::before { content:''; width:7px; height:7px; border-radius:50%; }
+  .fit-ok{background:#e4f6ec;color:#10663f}.fit-ok::before{background:#1c9a5e}
+  .fit-strain{background:#fdf3e0;color:#8a5a12}.fit-strain::before{background:#e0a93b}
+  .fit-mis{background:#fbe7e7;color:#9a2b2b}.fit-mis::before{background:#cf4040}
+  .reason { margin:8px 0; } .reason b { color:#16335c; }
+  .demand-tag { display:inline-block; background:#e3edfa; color:#1a3a6b; border-radius:5px; padding:1px 7px; font-size:11px; margin:2px 3px 0 0; }
+  .demand-tag.cg { background:#e0f2ea; color:#0d5c4a; }
+  .acc { background:#f3f8f5; border:1px solid #cfe6db; border-radius:7px; padding:10px 12px; margin-top:8px; }
+  .acc .at { font-weight:700; color:#0d5c4a; font-size:11px; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
+  .acc label { display:flex; gap:8px; align-items:flex-start; font-size:12.5px; margin:5px 0; cursor:pointer; }
+  .acc input[type=checkbox] { margin-top:3px; accent-color:#0e8a6e; }
+  .acc .tagref { color:#88929e; font-size:10.5px; }
+  .acc textarea { margin-top:8px; min-height:38px; font-size:12.5px; }
+  .legend { display:flex; gap:12px; flex-wrap:wrap; font-size:11.5px; color:#54616f; margin-bottom:12px; }
+  .nav { display:flex; justify-content:space-between; margin-top:18px; gap:10px; }
+  .view-toggle { display:inline-flex; border:1px solid #cfd6e0; border-radius:7px; overflow:hidden; }
+  .view-toggle button { border:none; background:#fff; padding:8px 14px; font-size:12px; font-family:'Lexend',sans-serif; font-weight:600; cursor:pointer; color:#46505e; }
+  .view-toggle button.on { background:#16335c; color:#fff; }
+  .out-doc { background:#fff; border:1px solid #e3e8ef; border-radius:9px; padding:22px 26px; margin-top:10px; }
+  .out-doc h2 { font-family:'Lexend',sans-serif; font-size:16px; color:#16335c; border-bottom:2px solid #ece8df; padding-bottom:5px; margin:18px 0 8px; }
+  .out-doc h2:first-child { margin-top:0; }
+  .out-doc h3 { font-family:'Lexend',sans-serif; font-size:13.5px; color:#2c5aa0; margin:12px 0 4px; }
+  .out-doc ul { margin:5px 0 5px 20px; } .out-doc li { margin:3px 0; font-size:13px; }
+  .out-doc p { font-size:13px; margin:6px 0; } .out-doc .muted { color:#8a929c; font-style:italic; }
+  .out-doc .lbl { font-weight:600; color:#2a3744; }
+  .ho-why { background:#f0f7f4; border-left:3px solid #1a6b5a; border-radius:0 6px 6px 0; padding:9px 13px; margin:7px 0; font-size:13px; }
+  @media print { body{background:#fff} .no-print{display:none!important} .panel{display:none!important} #panel-out{display:block!important;border:none;padding:0} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pro-header">
+    <div class="pro-header-inner">
+      <div class="pro-header-logo"><img src="../images/Brain.png" alt="Brain-Based"></div>
+      <div><h1>Brain-Based Treatment Adaptation Builder</h1><div class="sub">Which parts of a treatment fit the brain in front of you, for the client and the caregiver</div></div>
+    </div>
+    <div class="pro-header-rule"></div>
+  </div>
+  <div class="privacy no-print"><span>&#128274;</span><div><strong>Nothing you enter is sent anywhere.</strong> Everything stays in your browser on this device. A clinician thinking tool, not clinical advice; it suggests, you decide.</div></div>
+  <div class="toolbar no-print">
+    <button class="btn btn-ghost" id="saveBtn" type="button">Save draft</button>
+    <button class="btn btn-ghost" id="loadBtn" type="button">Load draft</button>
+    <button class="btn btn-red" id="clearBtn" type="button">Clear / start over</button>
+    <button class="btn btn-green" id="printBtn" type="button">Print / Save PDF</button>
+    <span class="save-status" id="saveStatus"></span>
+  </div>
+  <div class="stepper no-print" id="stepper">
+    <button class="step-tab active" data-step="0" type="button"><span class="num">STEP 1</span><span class="lbl">Who is in treatment</span></button>
+    <button class="step-tab" data-step="1" type="button"><span class="num">STEP 2</span><span class="lbl">Interventions in use</span></button>
+    <button class="step-tab" data-step="2" type="button"><span class="num">STEP 3</span><span class="lbl">Neurocognitive profile</span></button>
+    <button class="step-tab" data-step="3" type="button"><span class="num">STEP 4</span><span class="lbl">The fit + accommodations</span></button>
+    <button class="step-tab" data-step="4" type="button"><span class="num">STEP 5</span><span class="lbl">Handout</span></button>
+  </div>
+
+  <div class="panel active" data-panel="0">
+    <h2>Who is in this treatment?</h2>
+    <p class="lead">Define the unit of treatment. With no caregiver you complete only the client; add caregivers or support people as needed, each gets their own profile.</p>
+    <h3 class="block">Client</h3>
+    <input type="text" id="clientName" placeholder="Client (initials or a label, no full names needed)">
+    <h3 class="block">Caregivers / support people</h3>
+    <div id="cgList"></div>
+    <button class="add-btn" id="addCg" type="button">+ Add a caregiver / support person</button>
+    <div class="note">Many interventions load the caregiver's brain as much as the client's (staying regulated, being consistent, recalling skills live). That's why each caregiver gets a profile.</div>
+    <div class="nav"><span></span><button class="btn btn-primary" onclick="go(1)" type="button">Next &rarr;</button></div>
+  </div>
+
+  <div class="panel" data-panel="1">
+    <h2>What are you delivering, and which interventions?</h2>
+    <p class="lead">Pick each approach in play (multi-select), then check the specific interventions you are actually using within it. Only those are carried through the fit and the handout, so the picture matches what you really do.</p>
+    <div id="txChips"></div>
+    <div class="note">A treatment is not all-or-nothing. One intervention can fit the brain while the next does not. This tool checks the fit intervention by intervention.</div>
+    <div class="nav"><button class="btn btn-ghost" onclick="go(0)" type="button">&larr; Back</button><button class="btn btn-primary" onclick="go(2)" type="button">Next &rarr;</button></div>
+  </div>
+
+  <div class="panel" data-panel="2">
+    <h2>Neurocognitive &amp; developmental profile</h2>
+    <p class="lead">One person at a time, client first. Rate each domain. For the client, give one overall developmental stage rather than rating each separately.</p>
+    <div class="ptabs" id="ptabs"></div>
+    <div id="ppanes"></div>
+    <div class="nav"><button class="btn btn-ghost" onclick="go(1)" type="button">&larr; Back</button><button class="btn btn-primary" onclick="go(3)" type="button">See the fit &rarr;</button></div>
+  </div>
+
+  <div class="panel" data-panel="3">
+    <h2>How your treatment fits this brain</h2>
+    <p class="lead">Organized by brain area, across everything you are delivering: what the treatment asks the brain to do, where it strains this person, and the accommodations to apply. Open an area to see which interventions ask for it and <strong>check the accommodations you want</strong>. Your picks flow into the handout.</p>
+    <div class="legend"><span class="fit fit-ok">Fits</span> within capacity <span class="fit fit-strain">Strain</span> taxes a flagged area <span class="fit fit-mis">Mismatch</span> asks for what the brain can't yet do</div>
+    <div id="matchOut"></div>
+    <div class="nav"><button class="btn btn-ghost" onclick="go(2)" type="button">&larr; Back</button><button class="btn btn-primary" onclick="go(4)" type="button">Build the handout &rarr;</button></div>
+  </div>
+
+  <div class="panel" data-panel="4" id="panel-out">
+    <div class="toolbar no-print" style="justify-content:space-between">
+      <div class="view-toggle"><button id="vClin" class="on" type="button">Clinician</button><button id="vFam" type="button">Family</button><button id="vProv" type="button">Other providers</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost" id="copyBtn" type="button">Copy</button><button class="btn btn-green" onclick="window.print()" type="button">Print / PDF</button></div>
+    </div>
+    <div class="out-doc" id="outDoc"></div>
+    <div class="nav no-print"><button class="btn btn-ghost" onclick="go(3)" type="button">&larr; Back to the fit</button><span></span></div>
+  </div>
+</div>
+
+<script>
+/* ===== TAXONOMY ===== */
+const TAGS=[
+ {id:'wm',label:'Working memory',sub:'holding multi-step directions',plain:'holding several steps in mind at once'},
+ {id:'ps',label:'Processing speed',sub:'keeping up in real time',plain:'needing a few extra seconds to take things in'},
+ {id:'lang',label:'Receptive language',sub:'comprehension',plain:'catching everything that is said'},
+ {id:'ef',label:'Executive function',sub:'initiation, set-shifting, consistency',plain:'getting started and switching tasks'},
+ {id:'abr',label:'Abstract reasoning',sub:'cause-effect, time',plain:'"if/then" thinking, time, and cause-and-effect'},
+ {id:'sens',label:'Sensory processing',sub:'sensory load',plain:'when there is too much going on (noise, lights, busyness)'},
+ {id:'intero',label:'Interoception',sub:'reading internal body signals',plain:'noticing body signals like hunger or rising upset'},
+ {id:'areg',label:'Affect regulation',sub:'window of tolerance',plain:'staying calm when feelings get big'},
+ {id:'phys',label:'Physiological regulation',sub:'sleep, hunger, blood sugar',plain:'hunger and sleep affecting the day'},
+ {id:'social',label:'Adaptive & social',sub:'everyday & social functioning',plain:'everyday and social situations'},
+ {id:'cap',label:'Capacity / bandwidth',sub:'stress, load (esp. caregiver)',plain:'what is realistic on a hard week'}
+];
+const TL=Object.fromEntries(TAGS.map(t=>[t.id,t.label]));
+const PL=Object.fromEntries(TAGS.map(t=>[t.id,t.plain]));
+const DEV=['(not specified)','Emerging','Early childhood','Middle childhood','Pre-teen','Adolescent','Adult'];
+const LVLNAME={strength:'strength',within:'within range',mild:'mild',moderate:'moderate',sig:'significant'};
+
+/* ===== ACCOMMODATIONS by tag ===== */
+const ACC={
+ wm:['Write it down; give one instruction at a time','Provide a visual checklist or task card','Confirm by teach-back, not "do you understand?"','Use photos, recordings, and notes as external memory'],
+ ps:['Slow down; allow 10+ seconds of wait time','Extend any timed window (e.g. compliance window)','Pre-teach and rehearse before it is needed','Reduce the volume of what is asked at once'],
+ lang:['Short, concrete, literal language','Pair words with pictures, gestures, or demonstration','Check understanding by having them show or restate it','Pre-teach key vocabulary; offer choices not open questions'],
+ ef:['Break it to the smallest first step','"First/then" and a single clear starting cue','Visual schedule, timers, and reminders (external structure)','Body-doubling: do the first step alongside them'],
+ abr:['Make it concrete and visual; show, do not just tell','Use immediate, concrete cause-and-effect','"If X, I do Y" cards instead of abstract reasoning','Avoid distant or hypothetical consequences'],
+ sens:['Reduce noise, light, and clutter','Offer headphones, sunglasses, or a quiet retreat','Build in movement and sensory breaks','Give advance warning of loud or busy events'],
+ intero:['Offer food, water, and bathroom on a schedule, not on cues','Use visuals/scales to label body states','Protect sleep and a wind-down routine','Watch HALT (hungry, angry, lonely, tired) and intervene early'],
+ areg:['Co-regulate first: stay calm, fewer words','Reduce demands during escalation; talk later','A calm-down space and a break/help card','Teach and practice the skill only when calm','Deep pressure or rhythmic movement to settle'],
+ phys:['Protect sleep; scheduled protein snacks for steady blood sugar','Build movement into the day','Treat hunger and fatigue as hidden triggers'],
+ social:['Concrete social scripts; role-play and rehearse','Small, structured settings with clear rules','Match expectations to developmental, not chronological, level','Pre-arrange a graceful exit/break'],
+ cap:['Keep the ask realistic for a hard week, not a perfect one','Fewer, simpler steps','Add support: coaching, respite, peer support','Share the load across caregivers; in-room coaching + cue cards']
+};
+
+/* ===== TREATMENTS ===== */
+const CATS=[
+ ['Talk-based & cognitive',['talk','cbt','tfcbt','dbt']],
+ ['Trauma & body-based',['emdr','se']],
+ ['Play, relationship & attachment',['play','theraplay','ddp','tbri']],
+ ['Problem-solving & parent-training',['cps','pcit','pmto','triplep','incredibleyears','hnc','fmf','pact']],
+ ['Behavioral',['aba']]
+];
+const TX={
+ talk:{name:'General / integrative talk therapy',comps:[
+  {phase:'Core',nm:'Supportive, relational base',client:[],cg:[],adapt:'Strong fit; the relationship itself is regulating and low-demand.'},
+  {phase:'Core',nm:'Psychoeducation',client:['abr','lang'],cg:[],adapt:'Concrete, visual, repeated; check understanding.'},
+  {phase:'Core',nm:'Insight / reflective processing',client:['abr','intero','lang'],cg:[],adapt:'Lower the abstraction; lead with the affective channel; clinician scaffolds the meaning.'},
+  {phase:'Core',nm:'Carrying skills into daily life',client:['ef','wm'],cg:['cap'],adapt:'Externalize and involve supports; do not assume generalization.'}]},
+ cbt:{name:'CBT',comps:[
+  {phase:'Skills',nm:'Psychoeducation (thought–feeling–behavior model)',client:['abr','lang'],cg:[],adapt:'Pictures/diagrams, real examples, repeat across sessions.'},
+  {phase:'Skills',nm:'Identifying & monitoring automatic thoughts',client:['abr','wm','intero'],cg:[],adapt:'Externalize: thought-bubble cartoons; caregiver helps notice; thought menus.'},
+  {phase:'Skills',nm:'Cognitive restructuring',client:['abr','ef'],cg:[],adapt:'Hardest part. Coping-thought cards and behavioral experiments; consider child-adapted CBT.'},
+  {phase:'Skills',nm:'Behavioral activation',client:['ef'],cg:[],adapt:'Strong fit; visual schedule, small steps, built-in rewards, caregiver prompting.'},
+  {phase:'Skills',nm:'Exposure / facing fears (graded)',client:['areg'],cg:[],adapt:'Visual fear ladder, smaller steps, co-regulation, sensory supports.'},
+  {phase:'Skills',nm:'Relaxation / arousal reduction',client:['intero'],cg:[],adapt:'Concrete, multisensory; practice when calm; keep short.'},
+  {phase:'Generalization',nm:'Homework & between-session practice',client:['wm','ef'],cg:['cap'],adapt:'Move into the environment: caregiver carryover, in-session practice, reminders.'}]},
+ tfcbt:{name:'TF-CBT',comps:[
+  {phase:'Stabilization',nm:'Psychoeducation',client:['abr','lang'],cg:[],adapt:'Visuals, stories, concrete examples; teach caregiver in parallel.'},
+  {phase:'Stabilization',nm:'Parenting skills',client:[],cg:['ef','areg'],adapt:'Strong fit; place the work on caregiver/environment; structure and accommodation.'},
+  {phase:'Stabilization',nm:'Relaxation',client:['intero'],cg:[],adapt:'Brief, multisensory; practice while calm; caregiver co-regulates.'},
+  {phase:'Stabilization',nm:'Affective expression & modulation',client:['intero','lang'],cg:[],adapt:'Feelings charts/scales, body maps; model and over-practice naming.'},
+  {phase:'Stabilization',nm:'Cognitive coping',client:['abr'],cg:[],adapt:'Keep concrete; coping statements/cards; lighten the restructuring load.'},
+  {phase:'Processing',nm:'Trauma narrative & processing',client:['wm','lang','areg'],cg:[],adapt:'Drawing, comics, dolls, timelines; chunk small; extend pacing; stay regulated.'},
+  {phase:'Integration',nm:'Conjoint child–parent sessions',client:['areg'],cg:['areg'],adapt:'Strong as co-regulation; prepare/rehearse both; keep short; caregiver regulated first.'},
+  {phase:'Integration',nm:'Enhancing safety & future development',client:['abr','wm'],cg:[],adapt:'Concrete rehearsal, role-play, visual safety steps, caregiver reinforcement.'}]},
+ dbt:{name:'DBT',comps:[
+  {phase:'Skills modules',nm:'Mindfulness',client:['intero','abr'],cg:[],adapt:'Very short bursts anchored to the senses; drop jargon; movement-based.'},
+  {phase:'Skills modules',nm:'Distress tolerance (TIPP, crisis survival)',client:[],cg:[],adapt:'Best-fit DBT skill; bottom-up and fast. Pre-load tools; rehearse when calm; visual crisis cards.'},
+  {phase:'Skills modules',nm:'Emotion regulation',client:['abr','intero'],cg:[],adapt:'Emphasize the concrete pieces (opposite action, PLEASE); feelings scales/body maps.'},
+  {phase:'Skills modules',nm:'Interpersonal effectiveness (DEAR MAN, etc.)',client:['wm','social','abr'],cg:[],adapt:'Acronym-heavy. Reduce to 1–2 steps, scripts, role-play, visual cue cards.'},
+  {phase:'Structure',nm:'Diary card / self-monitoring',client:['wm','ef'],cg:['cap'],adapt:'Simplify to icons/colors/app; caregiver-assisted; fewer items.'}]},
+ emdr:{name:'EMDR',comps:[
+  {phase:'Phases',nm:'1. History & treatment planning',client:['lang','wm'],cg:[],adapt:'Use caregiver/collateral history, visuals/timelines; no pressure for a verbal account.'},
+  {phase:'Phases',nm:'2. Preparation & resourcing',client:['intero'],cg:[],adapt:'Strong fit; extend this phase; real sensory anchors; caregiver-supported calm place.'},
+  {phase:'Phases',nm:'3. Assessment (cognitions, SUD/VOC)',client:['abr','intero'],cg:[],adapt:'Cognition menus with pictures; faces/thermometer scales; lead with body sensation.'},
+  {phase:'Phases',nm:'4. Desensitization (bilateral stimulation)',client:['areg','wm'],cg:[],adapt:'Shorter sets; tactile/auditory BLS; slow pace; frequent grounding; smaller targets.'},
+  {phase:'Phases',nm:'5–6. Installation & body scan',client:['abr','intero'],cg:[],adapt:'Concrete image-linked positive statements; guide a body map; model.'},
+  {phase:'Phases',nm:'7. Closure',client:['areg'],cg:[],adapt:'Strong fit, never skip; always re-stabilize; allow extra time; caregiver carries calm out.'}]},
+ se:{name:'Somatic Experiencing',comps:[
+  {phase:'Core',nm:'Resourcing',client:[],cg:[],adapt:'Strong fit; real/physical resources, sensory anchors, caregiver presence.'},
+  {phase:'Core',nm:'Tracking body sensations',client:['intero','lang'],cg:[],adapt:'Sensation words/pictures, body maps; point/gesture; model; go slow.'},
+  {phase:'Core',nm:'Titration (small doses)',client:['areg'],cg:[],adapt:'Strong fit; even smaller doses; watch nonverbal cues; frequent pauses.'},
+  {phase:'Core',nm:'Pendulation',client:['intero','areg'],cg:[],adapt:'Use external cues to shift; keep swings small; co-regulate the rhythm.'},
+  {phase:'Core',nm:'Staying in the window of tolerance',client:['intero','areg'],cg:[],adapt:'Therapist/caregiver tracks physiological signs; grounding; stop early.'}]},
+ play:{name:'Play Therapy',comps:[
+  {phase:'Types',nm:'Child-Centered (CCPT)',client:['abr','social'],cg:[],adapt:'Reduce stimuli (curated toy set); add gentle structure; accept parallel/sensory play; extend length.'},
+  {phase:'Types',nm:'Directive play therapy',client:['ef','lang'],cg:[],adapt:'Concrete, multisensory, short, repeated; pre-teach; choice within structure.'},
+  {phase:'Types',nm:'Filial / CPRT (caregiver-led play)',client:[],cg:['areg','ef','cap'],adapt:'Strong fit; puts a regulating relationship at home. Add caregiver co-regulation and stress support.'}]},
+ theraplay:{name:'Theraplay',comps:[
+  {phase:'Dimensions',nm:'Structure',client:[],cg:[],adapt:'Strong fit; predictability borrows the executive load. Visual, consistent sequences.'},
+  {phase:'Dimensions',nm:'Engagement',client:['sens','social'],cg:[],adapt:'Lower intensity; eye contact optional; let the child set proximity; watch for shutdown.'},
+  {phase:'Dimensions',nm:'Nurture',client:['sens'],cg:[],adapt:'Strong/regulating; offer non-touch options; consent-based; respect tactile defensiveness.'},
+  {phase:'Dimensions',nm:'Challenge',client:['areg','ef'],cg:[],adapt:'Keep cooperative not competitive; guarantee success; scaffold; frame as shared fun.'}]},
+ ddp:{name:'DDP (Dyadic Developmental Psychotherapy)',comps:[
+  {phase:'Stance',nm:'PACE stance',client:[],cg:[],adapt:'Strong fit; removes threat. Match playfulness to arousal; be literal for autism.'},
+  {phase:'Process',nm:'Affective–reflective dialogue',client:['lang','wm','abr','intero'],cg:[],adapt:'Lead with the affective half; simple/concrete; adult voices the narrative; visuals, repetition.'},
+  {phase:'Process',nm:'Follow–lead–follow',client:[],cg:['areg'],adapt:'Strong fit; lengthen "follow"; make leads smaller; read regulatory cues.'},
+  {phase:'Process',nm:'Interactive repair',client:[],cg:['areg'],adapt:'Strong for shame; repair quickly and concretely; do not require verbal reciprocation.'}]},
+ tbri:{name:'TBRI',comps:[
+  {phase:'Connecting',nm:'Mindfulness (adult awareness)',client:[],cg:['areg'],adapt:'Strong/foundational; build caregiver/staff regulation and reflection supports.'},
+  {phase:'Connecting',nm:'Engagement strategies',client:['sens','social'],cg:[],adapt:'Eye contact/touch optional and consent-based; honor sensory differences; low-arousal when needed.'},
+  {phase:'Empowering',nm:'Physiological (blood sugar, hydration, sleep, sensory)',client:[],cg:[],adapt:'Best-fit; scheduled snacks/water/movement proactively; externally scaffold interoception.'},
+  {phase:'Empowering',nm:'Ecological (transitions, rituals, environment)',client:[],cg:[],adapt:'Strong fit; visual schedules, transition warnings, consistent routines; environment as intervention.'},
+  {phase:'Correcting',nm:'IDEAL response / proactive strategies',client:['ps','wm'],cg:['areg'],adapt:'Emphasize proactive over reactive; keep redos playful; allow processing time; correct only once regulated.'},
+  {phase:'Correcting',nm:'Levels of response',client:['abr'],cg:[],adapt:'Stay low on the continuum; two concrete choices; connection before any limit.'}]},
+ cps:{name:'CPS (Collaborative & Proactive Solutions)',comps:[
+  {phase:'Assess',nm:'ALSUP (lagging skills & unsolved problems)',client:[],cg:[],adapt:'Strong frame ("can\'t, not won\'t"); word unsolved problems concretely; manage environment too.'},
+  {phase:'Plans',nm:'Plan C (set aside for now)',client:[],cg:[],adapt:'Strong fit; intentional demand-reduction; reframe as accommodation, not giving in.'},
+  {phase:'Plan B',nm:'Step 1: Empathy (gather the concern)',client:['lang','intero'],cg:[],adapt:'Concrete drilling questions; options/visuals; do it calm and in parallel; accept partial input.'},
+  {phase:'Plan B',nm:'Step 2: Define adult concerns',client:['abr','wm'],cg:[],adapt:'One short concrete concern; make it tangible; avoid abstract/future framing.'},
+  {phase:'Plan B',nm:'Step 3: Invitation (collaborate on a solution)',client:['abr','ef'],cg:[],adapt:'Offer a menu of concrete solutions; test small; treat solutions as supports, not skills to self-execute.'}]},
+ pcit:{name:'PCIT',comps:[
+  {phase:'CDI (relationship)',nm:'Child-Directed Interaction (PRIDE)',client:['social'],cg:['areg','ef'],adapt:'Strong fit; slow pace, simplify language, allow preferred play; extend CDI.'},
+  {phase:'PDI (discipline)',nm:'Deliver one direct, single-step command',client:['lang','wm'],cg:['ef'],adapt:'One concrete command paired with a visual; check comprehension.'},
+  {phase:'PDI (discipline)',nm:'Wait 5 seconds for compliance',client:['ps','ef'],cg:['areg'],adapt:'Extend the compliance window to 10–15 seconds.'},
+  {phase:'PDI (discipline)',nm:'Labeled praise, or a warning',client:['abr'],cg:['areg','ef'],adapt:'Immediate, concrete praise; coach a regulation reset before commands.'},
+  {phase:'PDI (discipline)',nm:'Time-out sequence',client:['areg','abr'],cg:['areg','cap'],adapt:'Consider a co-regulated time-in; confirm behavior is within skill; keep caregiver regulated and present.'}]},
+ pmto:{name:'PMTO (Parent Management Training – Oregon)',comps:[
+  {phase:'Five practices',nm:'Skill encouragement & positive involvement',client:[],cg:['areg'],adapt:'Strong fit; weight the plan toward encouragement.'},
+  {phase:'Five practices',nm:'Monitoring / supervision',client:[],cg:['ef','cap'],adapt:'Environmental/adult task; external executive support.'},
+  {phase:'Five practices',nm:'Limit setting (contingencies)',client:['abr'],cg:['ef'],adapt:'Immediate, mild, concrete consequences; cause-effect is often impaired.'},
+  {phase:'Five practices',nm:'Family problem-solving',client:['abr','ef'],cg:[],adapt:'Simplify with visuals; one concrete problem at a time.'}]},
+ triplep:{name:'Triple P (Positive Parenting Program)',comps:[
+  {phase:'Content',nm:'Positive parenting & predictable environment',client:[],cg:['ef'],adapt:'Strong fit; consistent, predictable routines.'},
+  {phase:'Content',nm:'Behavioral techniques (commands, consequences)',client:['abr','ps'],cg:['ef'],adapt:'Adapt: concrete, proactive, regulation-first; do not assume standard delivery suffices.'},
+  {phase:'Tiering',nm:'Matched intensity (start higher for complex profiles)',client:[],cg:['cap'],adapt:'Neurodivergent families typically need L4–L5; lengthen dosage.'}]},
+ incredibleyears:{name:'The Incredible Years',comps:[
+  {phase:'Parent',nm:'Play, praise, incentives (parent group)',client:[],cg:['cap'],adapt:'Parent components fit well; emphasize play/praise.'},
+  {phase:'Child',nm:'Dinosaur School (child group)',client:['social','abr','areg'],cg:[],adapt:'Smaller groups, repetition, concrete/visual emotion teaching, movement breaks.'}]},
+ hnc:{name:'Helping the Noncompliant Child',comps:[
+  {phase:'Phase I',nm:'Differential attention ("Child\'s Game")',client:[],cg:['areg'],adapt:'Strong fit; extend this phase.'},
+  {phase:'Phase II',nm:'Compliance training (commands, time-out)',client:['ps','abr','areg'],cg:['ef'],adapt:'One cued command + visuals; immediate mild consequence; co-regulated time-in; verify skill first.'}]},
+ fmf:{name:'Families Moving Forward (FASD-specific)',comps:[
+  {phase:'Whole model',nm:'Attributional shift + antecedent management + accommodation',client:[],cg:['cap'],adapt:'Purpose-built for FASD; works through caregiver/environment. Ensure dosage/duration and caregiver-stress support.'}]},
+ pact:{name:'PACT (Parents and Children Together, FASD-specific)',comps:[
+  {phase:'Groups',nm:'Self-regulation & executive-function group',client:['areg','ef','social'],cg:[],adapt:'FASD-matched; keep groups small/predictable; concrete/multisensory; caregiver co-treatment.'}]},
+ aba:{name:'ABA (Applied Behavior Analysis)',comps:[
+  {phase:'Assessment',nm:'Functional Behavior Assessment (FBA)',client:[],cg:[],adapt:'Strong when function is framed as unmet need/communication; honor stimming/sensory as legitimate.'},
+  {phase:'Teaching',nm:'Discrete Trial Training (DTT)',client:['ef','wm'],cg:[],adapt:'Massed compliance trials are high-load. Shorten/intersperse with movement; embed in play; assent/breaks; prefer NET/PRT.'},
+  {phase:'Teaching',nm:'Naturalistic teaching (NET) / PRT',client:['ef'],cg:[],adapt:'Strong relative to DTT; follow the child\'s lead and interests; natural reinforcers; play-based.'},
+  {phase:'Teaching',nm:'Functional Communication Training (FCT)',client:['abr','lang'],cg:[],adapt:'Strong/affirming; accept AAC/gestures/scripts; reliably honor "no"/break requests; never extinguish communication.'},
+  {phase:'Methods',nm:'Reinforcement systems',client:['abr'],cg:[],adapt:'Immediate, concrete, child-chosen reinforcers; minimize delay; favor natural reinforcement; never reinforce masking.'},
+  {phase:'Methods',nm:'Prompting & prompt fading',client:['wm'],cg:[],adapt:'Avoid hand-over-hand without assent; least-intrusive prompts; fade slowly; durable visual prompts are fine.'},
+  {phase:'Methods',nm:'Task analysis & chaining',client:['wm','ef'],cg:[],adapt:'Strong fit; visual task strips; small steps; real-life routines.'},
+  {phase:'Methods',nm:'Generalization & maintenance',client:['abr','social'],cg:[],adapt:'Teach in natural settings with multiple people/exemplars from the start; do not assume transfer.'}]}
+};
+
+/* ===== STATE ===== */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let curStep=0, cgSeq=0, activePerson='client';
+const selectedTx=new Set();
+const selComps={};       // txid -> Set of component indices in use
+let people=[];           // {id, role, name, profile:{tag:level}, devStage}
+const picks={};          // `${tx}#${ci}` -> {acc:[...], custom}
+
+/* ---- Step 1 ---- */
+function cgCard(p){
+  const c=document.createElement('div'); c.className='item-card'; c.dataset.id=p.id;
+  c.innerHTML='<button class="remove-btn" type="button">&times;</button><div class="row"><div><label class="mini-label">Who</label><input type="text" class="cg-role" placeholder="e.g. Mother, Foster dad, Support worker"></div><div><label class="mini-label">Label (optional)</label><input type="text" class="cg-name" placeholder="initials"></div></div>';
+  c.querySelector('.remove-btn').onclick=()=>{ people=people.filter(x=>x.id!==p.id); c.remove(); };
+  c.querySelector('.cg-role').value=p.role||''; c.querySelector('.cg-name').value=p.name||'';
+  c.querySelector('.cg-role').oninput=e=>p.role=e.target.value; c.querySelector('.cg-name').oninput=e=>p.name=e.target.value;
+  $('#cgList').appendChild(c);
+}
+function addCg(d){ const p={id:'cg'+(++cgSeq),role:(d&&d.role)||'',name:(d&&d.name)||'',profile:{},devStage:0}; people.push(p); cgCard(p); }
+$('#addCg').onclick=()=>addCg();
+
+/* ---- Step 2: modality + intervention selection ---- */
+CATS.forEach(([cat,ids])=>{
+  const h=document.createElement('div'); h.className='cat-h'; h.textContent=cat; $('#txChips').appendChild(h);
+  ids.forEach(id=>{
+    const mod=document.createElement('div'); mod.className='tx-mod'; mod.dataset.id=id;
+    const chip=document.createElement('span'); chip.className='chip'; chip.textContent=TX[id].name;
+    const pick=document.createElement('div'); pick.className='comp-pick';
+    let inner='<div class="cp-hint">Which interventions are you using? (uncheck any you are not)</div>';
+    TX[id].comps.forEach((c,ci)=>{ inner+='<label><input type="checkbox" data-i="'+ci+'" checked><span>'+esc(c.nm)+' <span class="ph">'+esc(c.phase)+'</span></span></label>'; });
+    pick.innerHTML=inner;
+    chip.onclick=()=>{
+      chip.classList.toggle('on');
+      if(chip.classList.contains('on')){ selectedTx.add(id); selComps[id]=new Set(TX[id].comps.map((_,i)=>i)); pick.classList.add('show'); pick.querySelectorAll('input').forEach(cb=>cb.checked=true); }
+      else { selectedTx.delete(id); delete selComps[id]; pick.classList.remove('show'); }
+    };
+    pick.querySelectorAll('input').forEach(cb=>cb.onchange=()=>{ const i=+cb.dataset.i; if(!selComps[id])selComps[id]=new Set(); cb.checked?selComps[id].add(i):selComps[id].delete(i); });
+    mod.appendChild(chip); mod.appendChild(pick); $('#txChips').appendChild(mod);
+  });
+});
+
+/* ---- Step 3 profiles ---- */
+function clientObj(){ return people.find(p=>p.id==='client'); }
+function buildProfiles(){
+  if(!clientObj()) people.unshift({id:'client',role:'Client',name:$('#clientName').value.trim(),profile:{},devStage:0});
+  else clientObj().name=$('#clientName').value.trim();
+  const tabs=$('#ptabs'), panes=$('#ppanes'); tabs.innerHTML=''; panes.innerHTML='';
+  people.forEach((p,i)=>{
+    const isClient=p.id==='client'; const label=isClient?'Client':(p.role||('Caregiver '+i));
+    const tab=document.createElement('button'); tab.className='ptab'+(p.id===activePerson?' on':''); tab.textContent=label; tab.dataset.p=p.id;
+    tab.onclick=()=>{ activePerson=p.id; $$('.ptab').forEach(t=>t.classList.toggle('on',t.dataset.p===p.id)); $$('.ppane').forEach(x=>x.classList.toggle('on',x.dataset.p===p.id)); };
+    tabs.appendChild(tab);
+    const pane=document.createElement('div'); pane.className='ppane'+(p.id===activePerson?' on':''); pane.dataset.p=p.id;
+    let html='';
+    if(isClient){ let opts=DEV.map((s,idx)=>'<option value="'+idx+'"'+((p.devStage||0)===idx?' selected':'')+'>'+s+'</option>').join('');
+      html+='<div class="devbanner"><span class="k">Overall developmental stage (one read for the whole person)</span><select id="devStageSel" style="max-width:280px">'+opts+'</select> <span class="sub2">describes where functioning sits overall; a fit note, not a label.</span></div>'; }
+    html+='<table class="snap"><thead><tr><th>Domain</th><th>Current level</th></tr></thead><tbody>';
+    TAGS.forEach(t=>{ const cur=p.profile[t.id]||'';
+      const lv=(cls,val,lbl)=>'<button type="button" class="lvlbtn '+cls+(cur===val?' on':'')+'" data-tag="'+t.id+'" data-val="'+val+'">'+lbl+'</button>';
+      html+='<tr><td><span class="dom">'+t.label+'</span> <span class="sub2">'+t.sub+'</span></td><td><span class="lvls">'+lv('str','strength','Strength')+lv('wr','within','Within')+lv('mild','mild','Mild')+lv('mod','moderate','Moderate')+lv('sig','sig','Significant')+'</span></td></tr>';
+    });
+    html+='</tbody></table>';
+    pane.innerHTML=html;
+    if(isClient){ pane.querySelector('#devStageSel').onchange=e=>p.devStage=+e.target.value; }
+    pane.querySelectorAll('.lvlbtn').forEach(b=>b.onclick=()=>{ const tag=b.dataset.tag,val=b.dataset.val; p.profile[tag]=val; pane.querySelectorAll('.lvlbtn[data-tag="'+tag+'"]').forEach(x=>x.classList.toggle('on',x.dataset.val===val)); });
+    panes.appendChild(pane);
+  });
+}
+
+/* ---- Step 4 fit ---- */
+function rank(v){ return v==='sig'?2 : (v==='mild'||v==='moderate')?1 : 0; }
+function fitFor(person,demands){ let worst=0,flagged=[]; (demands||[]).forEach(t=>{ const r=rank(person.profile[t]); if(r>0)flagged.push(t); if(r>worst)worst=r; }); return {level:worst,flagged}; }
+function pill(level,label){ return '<span class="fit '+(level===2?'fit-mis':level===1?'fit-strain':'fit-ok')+'">'+esc(label)+'</span>'; }
+function activeComps(tx){ const set=selComps[tx]||new Set(); return TX[tx].comps.map((c,ci)=>({c,ci})).filter(x=>set.has(x.ci)); }
+function buildDemandMap(){ // tag -> {client:Set('intervention (Modality)'), cg:Set(...)}
+  const use={};
+  selectedTx.forEach(tx=>{ activeComps(tx).forEach(({c})=>{
+    (c.client||[]).forEach(t=>{ (use[t]=use[t]||{client:new Set(),cg:new Set()}).client.add(c.nm+' ('+TX[tx].name+')'); });
+    (c.cg||[]).forEach(t=>{ (use[t]=use[t]||{client:new Set(),cg:new Set()}).cg.add(c.nm+' ('+TX[tx].name+')'); });
+  });});
+  return use;
+}
+function domainStatus(tag,use){
+  const client=clientObj(), cgs=people.filter(p=>p.id!=='client');
+  const clientDem=use[tag].client.size>0, clientRaw=(client&&client.profile[tag])||'', clientLvl=rank(clientRaw);
+  const cgInfo=cgs.map(cg=>({role:cg.role||'Caregiver', dem:use[tag].cg.size>0, raw:cg.profile[tag]||'', lvl:rank(cg.profile[tag])}));
+  const clientChallenge=clientDem&&clientLvl>0, cgChallenge=cgInfo.some(x=>x.dem&&x.lvl>0);
+  return {clientDem,clientRaw,clientLvl,cgInfo,clientChallenge,cgChallenge,friction:clientChallenge||cgChallenge};
+}
+function renderMatch(){
+  buildProfiles();
+  const out=$('#matchOut'); out.innerHTML='';
+  const use=buildDemandMap(); const ids=TAGS.map(t=>t.id).filter(id=>use[id]);
+  if(!ids.length){ out.innerHTML='<p class="hint">Pick approaches and interventions on Step 2.</p>'; return; }
+  out.innerHTML='<div class="note">You are delivering: <b>'+esc([...selectedTx].map(t=>TX[t].name).join(', '))+'</b>. Below is what those interventions ask the brain to do, organized by brain area, with accommodations where there is friction.</div>';
+  ids.sort((a,b)=>(domainStatus(a,use).friction?0:1)-(domainStatus(b,use).friction?0:1));
+  ids.forEach(tag=>{
+    const st=domainStatus(tag,use); const T=TAGS.find(t=>t.id===tag);
+    const card=document.createElement('div'); card.className='cmp'+(st.friction?' open':'');
+    let pills=''; if(st.clientDem) pills+=pill(st.clientLvl,'Client'); st.cgInfo.forEach(x=>{ if(x.dem) pills+=pill(x.lvl,x.role.split(' ')[0]); });
+    let body='';
+    if(use[tag].client.size) body+='<div class="reason"><b>Asked of the client in:</b> '+[...use[tag].client].map(esc).join('; ')+'</div>';
+    if(use[tag].cg.size) body+='<div class="reason"><b>Asked of the caregiver in:</b> '+[...use[tag].cg].map(esc).join('; ')+'</div>';
+    if(st.friction){
+      if(!picks[tag])picks[tag]={acc:[],custom:''};
+      let opts=''; (ACC[tag]||[]).forEach(a=>{ const ck=picks[tag].acc.includes(a)?' checked':''; opts+='<label><input type="checkbox" data-acc="'+esc(a)+'"'+ck+'><span>'+esc(a)+'</span></label>'; });
+      body+='<div class="acc"><div class="at">Accommodations for '+esc(TL[tag])+' &mdash; choose what to apply</div>'+opts+'<textarea data-custom placeholder="Add your own...">'+esc(picks[tag].custom)+'</textarea></div>';
+    } else { body+='<div class="reason" style="color:#10663f">Within capacity for everyone here. No accommodation needed.</div>'; }
+    card.innerHTML='<div class="top"><span class="nm">'+esc(TL[tag])+' <span class="sub2" style="font-weight:400">'+esc(T.sub)+'</span></span><span class="fits">'+pills+'</span></div><div class="body">'+body+'</div>';
+    card.querySelector('.top').onclick=()=>card.classList.toggle('open');
+    card.querySelectorAll('input[data-acc]').forEach(cb=>cb.onclick=e=>{ e.stopPropagation(); const a=cb.getAttribute('data-acc'); if(cb.checked){ if(!picks[tag].acc.includes(a))picks[tag].acc.push(a);} else picks[tag].acc=picks[tag].acc.filter(x=>x!==a); });
+    const ta=card.querySelector('textarea[data-custom]'); if(ta) ta.oninput=()=>picks[tag].custom=ta.value;
+    out.appendChild(card);
+  });
+}
+
+/* ---- Step 5 handout ---- */
+function sc(person,plain){ const strengths=[],challenges=[]; TAGS.forEach(t=>{ const v=person.profile[t.id]; const lab=plain?PL[t.id]:TL[t.id]; if(v==='strength')strengths.push(lab); else if(rank(v)>0)challenges.push(lab+' ('+LVLNAME[v]+')'); }); return {strengths,challenges}; }
+function inUse(){ return [...selectedTx].map(tx=>({name:TX[tx].name, items:activeComps(tx).map(x=>x.c.nm)})).filter(x=>x.items.length); }
+function chosenByDomain(){ // [{tag, use:{client:Set,cg:Set}, st, chosen:[], custom}] for domains with chosen accommodations
+  const use=buildDemandMap(); const res=[];
+  TAGS.map(t=>t.id).filter(id=>use[id]).forEach(tag=>{
+    const p=picks[tag]; const chosen=(p&&p.acc)||[]; const custom=(p&&(p.custom||'').trim())||'';
+    if(chosen.length||custom) res.push({tag, use:use[tag], st:domainStatus(tag,use), chosen, custom});
+  });
+  return res;
+}
+function strengthsChallengesBlock(plain){
+  const client=clientObj(), cgs=people.filter(p=>p.id!=='client'); let h='';
+  const cName = (client&&client.name)?client.name : (plain?'your child':'the client');
+  const cs=sc(client,plain);
+  h+='<h3>'+esc(cName)+(plain?'':' (client)')+'</h3>';
+  h+='<p><span class="lbl">Strengths:</span> '+(cs.strengths.length?cs.strengths.map(esc).join('; '):'<span class="muted">add on the profile</span>')+'</p>';
+  h+='<p><span class="lbl">Challenges:</span> '+(cs.challenges.length?cs.challenges.map(esc).join('; '):'<span class="muted">none rated</span>')+'</p>';
+  cgs.forEach(cg=>{ const s=sc(cg,plain); h+='<h3>'+esc(cg.role||'Caregiver')+(cg.name?(' ('+esc(cg.name)+')'):'')+'</h3>';
+    h+='<p><span class="lbl">Strengths:</span> '+(s.strengths.length?s.strengths.map(esc).join('; '):'<span class="muted">add on the profile</span>')+'</p>';
+    h+='<p><span class="lbl">Challenges:</span> '+(s.challenges.length?s.challenges.map(esc).join('; '):'<span class="muted">none rated</span>')+'</p>'; });
+  return h;
+}
+function asksBrainList(plain){
+  const use=buildDemandMap(); const ids=TAGS.map(t=>t.id).filter(id=>use[id]);
+  if(!ids.length) return '<p class="muted">Select interventions on Step 2.</p>';
+  let h='<ul>';
+  ids.forEach(tag=>{ const st=domainStatus(tag,use); const lab=plain?PL[tag]:TL[tag]; const chall=st.clientChallenge||st.cgChallenge; let note='';
+    if(chall){ if(plain){ note=' (harder right now)'; } else { const who=[]; if(st.clientChallenge)who.push('client '+LVLNAME[st.clientRaw]); st.cgInfo.forEach(x=>{ if(x.dem&&x.lvl>0)who.push(x.role+' '+LVLNAME[x.raw]); }); note=' (challenge: '+who.join(', ')+')'; } }
+    h+='<li><b>'+esc(lab)+'</b>'+(note?' <span class="muted">'+esc(note)+'</span>':'')+'</li>'; });
+  return h+'</ul>';
+}
+function renderClin(){
+  const client=clientObj();
+  let h='<h2>Overview &mdash; the treatment</h2>';
+  h+='<p class="muted">Unit of treatment: '+esc(client&&client.name?client.name:'client')+(people.length>1?' + '+(people.length-1)+' caregiver(s)':'')+'. Overall developmental stage: '+esc(DEV[(client&&client.devStage)||0])+'.</p>';
+  const use=inUse(); if(use.length) h+='<ul>'+use.map(u=>'<li><b>'+esc(u.name)+':</b> '+u.items.map(esc).join('; ')+'</li>').join('')+'</ul>'; else h+='<p class="muted">Select approaches and interventions on Step 2.</p>';
+  h+='<h2>What this treatment is asking the brain to do</h2>'+asksBrainList(false);
+  h+='<h2>Strengths and challenges</h2>'+strengthsChallengesBlock(false);
+  h+='<h2>Accommodations, and why</h2>';
+  const rows=chosenByDomain();
+  if(rows.length){ rows.forEach(r=>{ const ivs=[...new Set([...r.use.client, ...r.use.cg])]; h+='<h3>'+esc(TL[r.tag])+'</h3><p class="muted">The treatment asks for this in: '+ivs.map(esc).join('; ')+'. Accommodate because it is a challenge here.</p><ul>'+r.chosen.map(a=>'<li>'+esc(a)+'</li>').join('')+(r.custom?'<li>'+esc(r.custom)+'</li>':'')+'</ul>'; }); }
+  else h+='<p class="muted">Choose accommodations on Step 4 and they appear here, grouped by brain area with the reason.</p>';
+  return h;
+}
+function renderFam(){
+  const client=clientObj(); const nm=(client&&client.name)?client.name:'your child';
+  let h='<h2 style="color:#0d5c4a;border-bottom-color:#cfe6db">What we are doing, and why</h2>';
+  h+='<p>A plain-language summary to keep and use at home, so support fits how '+esc(nm)+'\'s brain works best.</p>';
+  h+='<h2>What we are working on</h2>'; const use=inUse(); if(use.length) h+='<ul>'+use.map(u=>'<li>'+esc(u.name)+'</li>').join('')+'</ul>'; else h+='<p class="muted">Add approaches on Step 2.</p>';
+  h+='<h2>What this asks of '+esc(nm)+'</h2>'+asksBrainList(true);
+  h+='<h2>Strengths and challenges</h2>'+strengthsChallengesBlock(true);
+  h+='<h2>What we are changing, and why</h2>';
+  const rows=chosenByDomain();
+  if(rows.length){ rows.forEach(r=>{ h+='<div class="ho-why"><b>'+esc(TL[r.tag])+'</b><br><span class="muted">because the treatment leans on '+esc(PL[r.tag])+', which is harder right now</span><ul>'+r.chosen.map(a=>'<li>'+esc(a)+'</li>').join('')+(r.custom?'<li>'+esc(r.custom)+'</li>':'')+'</ul></div>'; }); }
+  else h+='<p class="muted">Choose accommodations on Step 4 and they appear here.</p>';
+  h+='<p style="margin-top:14px">We made this together, and it can change as we learn what works. If something does not fit your family, tell us and we will adjust it.</p>';
+  return h;
+}
+function renderProv(){
+  const client=clientObj(); const nm=(client&&client.name)?client.name:'this person';
+  let h='<h2 style="color:#1a6b5a;border-bottom-color:#cfe6db">For the team around '+esc(nm)+'</h2>';
+  h+='<p>A brief, brain-based summary for the other professionals who support '+esc(nm)+' (teachers, case managers, support workers). Share with consent, so support stays consistent across settings.</p>';
+  h+='<h2>What treatment involves</h2>'; const use=inUse(); if(use.length) h+='<ul>'+use.map(u=>'<li>'+esc(u.name)+'</li>').join('')+'</ul>'; else h+='<p class="muted">Add approaches on Step 2.</p>';
+  h+='<h2>What it asks of '+esc(nm)+'\'s brain</h2>'+asksBrainList(false);
+  h+='<h2>Strengths and challenges</h2>'+strengthsChallengesBlock(false);
+  h+='<h2>What helps, and what to keep consistent</h2>';
+  const rows=chosenByDomain(); let items='';
+  rows.forEach(r=>{ r.chosen.forEach(a=>items+='<li>'+esc(a)+' <span class="muted">('+esc(TL[r.tag])+')</span></li>'); if(r.custom)items+='<li>'+esc(r.custom)+' <span class="muted">('+esc(TL[r.tag])+')</span></li>'; });
+  h+= items?('<ul>'+items+'</ul>'):'<p class="muted">Choose accommodations on Step 4 and they appear here.</p>';
+  h+='<p style="margin-top:12px">The more home, school, and clinic use the same supports, the better they work. Please reach out to coordinate.</p>';
+  return h;
+}
+let outView='clin';
+function showOut(v){ outView=v; $('#vClin').classList.toggle('on',v==='clin'); $('#vFam').classList.toggle('on',v==='fam'); $('#vProv').classList.toggle('on',v==='prov'); $('#outDoc').innerHTML=v==='fam'?renderFam():v==='prov'?renderProv():renderClin(); }
+$('#vClin').onclick=()=>showOut('clin'); $('#vFam').onclick=()=>showOut('fam'); $('#vProv').onclick=()=>showOut('prov');
+$('#copyBtn').onclick=async()=>{ try{ await navigator.clipboard.writeText($('#outDoc').innerText); $('#copyBtn').textContent='Copied!'; setTimeout(()=>$('#copyBtn').textContent='Copy',1500);}catch(e){alert('Copy failed.');} };
+
+/* ---- nav ---- */
+function go(n){ curStep=Math.max(0,Math.min(4,n)); $$('.panel').forEach(p=>p.classList.toggle('active',+p.dataset.panel===curStep)); $$('.step-tab').forEach(t=>t.classList.toggle('active',+t.dataset.step===curStep)); if(curStep===2)buildProfiles(); if(curStep===3)renderMatch(); if(curStep===4)showOut(outView); window.scrollTo({top:0,behavior:'smooth'}); }
+$$('.step-tab').forEach(t=>t.onclick=()=>go(+t.dataset.step));
+
+/* ---- save / load / clear ---- */
+const KEY='bb-adaptation-builder';
+$('#saveBtn').onclick=()=>{ buildProfiles(); const sc2={}; Object.keys(selComps).forEach(k=>sc2[k]=[...selComps[k]]);
+  const snap={clientName:$('#clientName').value,tx:[...selectedTx],selComps:sc2,people:people.map(p=>({id:p.id,role:p.role,name:p.name,profile:p.profile,devStage:p.devStage})),picks};
+  try{localStorage.setItem(KEY,JSON.stringify(snap)); flash('Saved.');}catch(e){flash('Could not save.');} };
+$('#loadBtn').onclick=()=>{ const raw=localStorage.getItem(KEY); if(!raw){flash('No saved draft.');return;} const d=JSON.parse(raw);
+  $('#clientName').value=d.clientName||''; selectedTx.clear(); (d.tx||[]).forEach(id=>selectedTx.add(id));
+  Object.keys(selComps).forEach(k=>delete selComps[k]); Object.keys(d.selComps||{}).forEach(k=>selComps[k]=new Set(d.selComps[k]));
+  // reflect chips + comp pickers
+  $$('#txChips .tx-mod').forEach(mod=>{ const id=mod.dataset.id; const on=selectedTx.has(id); mod.querySelector('.chip').classList.toggle('on',on); mod.querySelector('.comp-pick').classList.toggle('show',on);
+    mod.querySelectorAll('.comp-pick input').forEach(cb=>{ cb.checked = on && (selComps[id]?selComps[id].has(+cb.dataset.i):true); }); });
+  people=(d.people||[]).map(p=>({...p,profile:p.profile||{},devStage:p.devStage||0}));
+  Object.keys(picks).forEach(k=>delete picks[k]); Object.assign(picks,d.picks||{});
+  $('#cgList').innerHTML=''; cgSeq=0; people.filter(p=>p.id!=='client').forEach(p=>{cgSeq++; cgCard(p);});
+  flash('Loaded.'); go(0); };
+$('#clearBtn').onclick=()=>{ if(!confirm('Clear everything and start over? This also removes the saved draft on this device.'))return; localStorage.removeItem(KEY); location.reload(); };
+$('#printBtn').onclick=()=>{ if(curStep!==4)go(4); window.print(); };
+function flash(m){ const s=$('#saveStatus'); s.textContent=m; setTimeout(()=>s.textContent='',2500); }
+
+/* ---- init ---- */
+addCg({role:'Caregiver'});
+go(0);
+</script>
+</body>
+</html>

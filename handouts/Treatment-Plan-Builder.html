@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain-Based Treatment Plan Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: letter; margin: 0.5in 0.55in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Open Sans', sans-serif; font-size: 14px; line-height: 1.55; color: #222; background: #f4f6f9; }
+
+  .wrap { max-width: 900px; margin: 0 auto; padding: 18px 16px 80px; }
+
+  /* === Header === */
+  .pro-header {
+    position: relative;
+    background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6b 30%, #2c5aa0 55%, #1a6b5a 80%, #0d3b2e 100%);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .pro-header-bg {
+    position: absolute; inset: 0; opacity: 0.12; pointer-events: none;
+    background:
+      radial-gradient(ellipse 300px 300px at 15% 50%, #a78bfa, transparent),
+      radial-gradient(ellipse 250px 250px at 80% 30%, #38bdf8, transparent),
+      radial-gradient(ellipse 200px 200px at 50% 80%, #34d399, transparent),
+      radial-gradient(ellipse 180px 180px at 30% 20%, #f472b6, transparent);
+  }
+  .pro-header-inner { position: relative; z-index: 1; display: flex; align-items: center; gap: 18px; padding: 20px 26px; }
+  .pro-header-logo {
+    flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pro-header-logo img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+  .pro-header-text h1 { font-family: 'Lexend', sans-serif; font-size: 20px; font-weight: 600; color: #fff; line-height: 1.3; }
+  .pro-header-text .header-sub { font-size: 12px; color: rgba(255,255,255,0.78); margin-top: 4px; }
+  .pro-header-rule { position: relative; z-index: 1; height: 3px; background: linear-gradient(90deg, #a78bfa, #38bdf8, #34d399, #f472b6, #a78bfa); }
+
+  /* === Privacy banner === */
+  .privacy {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #eef7f2; border: 1px solid #bfe3d2; border-left: 4px solid #0e8a6e;
+    border-radius: 6px; padding: 11px 15px; margin-bottom: 14px; font-size: 12.5px; color: #235;
+  }
+  .privacy strong { color: #0d5c4a; }
+  .privacy .lock { font-size: 16px; line-height: 1.2; }
+
+  /* === Stepper === */
+  .stepper { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .step-tab {
+    flex: 1 1 0; min-width: 110px; border: 1px solid #d8dee7; background: #fff;
+    border-radius: 7px; padding: 8px 9px; cursor: pointer; text-align: left;
+    font-family: 'Lexend', sans-serif; transition: all 0.15s; position: relative;
+  }
+  .step-tab:hover { border-color: #2c5aa0; }
+  .step-tab .num { font-size: 10.5px; font-weight: 600; color: #9aa4b2; letter-spacing: 0.4px; }
+  .step-tab .lbl { font-size: 11.5px; font-weight: 500; color: #3a4654; line-height: 1.3; margin-top: 1px; display: block; }
+  .step-tab.active { background: linear-gradient(135deg, #1a3a6b, #2c5aa0); border-color: #1a3a6b; }
+  .step-tab.active .num, .step-tab.active .lbl { color: #fff; }
+  .step-tab.done .num::before { content: '\2713 '; color: #0e8a6e; }
+  .step-tab.active.done .num::before { color: #9be7cf; }
+
+  /* === Panels === */
+  .panel { display: none; background: #fff; border: 1px solid #e3e8ef; border-radius: 9px; padding: 22px 24px; box-shadow: 0 1px 3px rgba(20,40,80,0.04); }
+  .panel.active { display: block; animation: fade 0.2s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .panel h2 { font-family: 'Lexend', sans-serif; font-size: 19px; color: #1a3a6b; margin-bottom: 4px; }
+  .panel .step-kicker { font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: #2c5aa0; margin-bottom: 3px; }
+  .panel .lead { font-size: 13.5px; color: #4a5563; margin-bottom: 18px; line-height: 1.55; }
+
+  h3.block { font-family: 'Lexend', sans-serif; font-size: 14.5px; color: #1a3a6b; margin: 20px 0 8px; }
+  .field-label { display: block; font-weight: 600; font-size: 13px; color: #2a3744; margin-bottom: 5px; }
+  .hint { font-size: 12px; color: #6b7480; font-style: italic; margin-bottom: 8px; }
+
+  textarea, input[type="text"], select {
+    width: 100%; border: 1px solid #cfd6e0; border-radius: 6px; padding: 9px 11px;
+    font-family: 'Open Sans', sans-serif; font-size: 13.5px; color: #222; background: #fff;
+  }
+  textarea { min-height: 64px; resize: vertical; line-height: 1.5; }
+  textarea:focus, input:focus, select:focus { outline: none; border-color: #2c5aa0; box-shadow: 0 0 0 3px rgba(44,90,160,0.12); }
+
+  /* callouts */
+  .note { background: #eef3fb; border-left: 4px solid #2c5aa0; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 12.5px; color: #2a3a52; }
+  .pull { background: #fff8e9; border-left: 4px solid #e0a93b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 13px; color: #5a4a1f; }
+
+  /* who-for choice */
+  .whofor { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .whofor label {
+    flex: 1 1 230px; border: 2px solid #d8dee7; border-radius: 8px; padding: 13px 15px; cursor: pointer; transition: all 0.15s;
+  }
+  .whofor label:hover { border-color: #2c5aa0; }
+  .whofor input { margin-right: 8px; accent-color: #2c5aa0; }
+  .whofor label.sel { border-color: #2c5aa0; background: #f3f7fc; }
+  .whofor .opt-title { font-weight: 600; font-size: 13.5px; color: #1a3a6b; }
+  .whofor .opt-desc { font-size: 12px; color: #6b7480; margin-top: 3px; margin-left: 22px; }
+
+  /* presenting chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 4px 0 12px; }
+  .chip {
+    border: 1px solid #cfd6e0; background: #f7f9fc; border-radius: 16px; padding: 5px 13px;
+    font-size: 12.5px; color: #3a4654; cursor: pointer; transition: all 0.12s; user-select: none;
+  }
+  .chip:hover { border-color: #2c5aa0; }
+  .chip.on { background: #2c5aa0; border-color: #2c5aa0; color: #fff; }
+
+  /* caregiver-only visibility */
+  .cg-only { display: none; }
+  body.has-caregiver .cg-only { display: block; }
+  body.has-caregiver td.cg-only, body.has-caregiver th.cg-only { display: table-cell; }
+
+  /* checklist table */
+  table.checklist { border-collapse: collapse; width: 100%; margin: 10px 0 4px; font-size: 13px; }
+  table.checklist th, table.checklist td { border: 1px solid #dfe4ec; padding: 9px 10px; text-align: left; vertical-align: top; }
+  table.checklist th { background: #1a3a6b; color: #fff; font-family: 'Lexend', sans-serif; font-weight: 500; font-size: 12px; }
+  table.checklist th.col, table.checklist td.col { text-align: center; width: 78px; }
+  table.checklist tr.suggested td { background: #fff8e9; }
+  table.checklist td .area { font-weight: 600; color: #1a3a6b; display: block; margin-bottom: 2px; }
+  table.checklist td .desc { color: #4a5563; font-size: 12.5px; }
+  table.checklist .sug-flag { display: none; font-size: 10px; font-weight: 700; color: #b9831f; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+  table.checklist tr.suggested .sug-flag { display: inline-block; }
+  table.checklist input[type="checkbox"] { width: 18px; height: 18px; accent-color: #2c5aa0; cursor: pointer; }
+  table.checklist input[type="checkbox"].cg { accent-color: #0e8a6e; }
+  .strengths-row td { background: #eef7f2 !important; }
+  .strengths-row .area { color: #0e8a6e; }
+
+  /* dynamic item cards */
+  .item-card { border: 1px solid #e0e6ee; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; background: #fcfdfe; position: relative; }
+  .item-card .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .item-card .row > div { flex: 1 1 200px; }
+  .item-card .mini-label { font-size: 11.5px; font-weight: 600; color: #46505e; margin-bottom: 3px; display: block; }
+  .remove-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #b94a4a; font-size: 18px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; }
+  .remove-btn:hover { background: #fbecec; }
+  .add-btn {
+    background: #eef3fb; border: 1px dashed #9bb4d8; color: #1a3a6b; border-radius: 7px;
+    padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Lexend', sans-serif;
+  }
+  .add-btn:hover { background: #e2ebf8; }
+
+  .holder-tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .holder-client { background: #e3edfa; color: #1a3a6b; }
+  .holder-caregiver { background: #e0f2ea; color: #0d5c4a; }
+  .holder-family { background: #efe7fb; color: #5b21b6; }
+  .holder-teacher { background: #fdf0e3; color: #9a5b13; }
+  .holder-env { background: #eceff3; color: #46505e; }
+
+  /* yes/no/unsure pills */
+  .ynu { display: inline-flex; gap: 6px; }
+  .ynu label { font-size: 12px; border: 1px solid #cfd6e0; border-radius: 14px; padding: 3px 11px; cursor: pointer; color: #46505e; }
+  .ynu input { display: none; }
+  .ynu input:checked + span { font-weight: 600; }
+  .ynu label:has(input:checked) { background: #2c5aa0; border-color: #2c5aa0; color: #fff; }
+
+  /* modality helper */
+  .modality-out { background: #f7f9fc; border: 1px solid #e0e6ee; border-radius: 7px; padding: 13px 16px; margin-top: 10px; font-size: 13px; display: none; }
+  .modality-out.show { display: block; }
+  .modality-out .mo-line { margin-bottom: 7px; }
+  .modality-out .mo-line strong { color: #1a3a6b; }
+
+  /* nav buttons */
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; gap: 10px; }
+  .btn { font-family: 'Lexend', sans-serif; font-size: 13.5px; font-weight: 600; border-radius: 7px; padding: 10px 20px; cursor: pointer; border: 1px solid transparent; }
+  .btn-primary { background: linear-gradient(135deg, #1a3a6b, #2c5aa0); color: #fff; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { background: #fff; border-color: #cfd6e0; color: #46505e; }
+  .btn-ghost:hover { border-color: #2c5aa0; color: #1a3a6b; }
+  .btn-green { background: linear-gradient(135deg, #0d5c4a, #0e8a6e); color: #fff; }
+  .btn-green:hover { filter: brightness(1.08); }
+
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .toolbar .btn { padding: 8px 15px; font-size: 12.5px; }
+  .save-status { font-size: 12px; color: #0e8a6e; align-self: center; }
+
+  /* fit-check rendered goals */
+  .fit-goal { border: 1px solid #e0e6ee; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+  .fit-goal .fit-q { margin-top: 10px; }
+  .fit-goal .fit-q .field-label { font-weight: 600; font-size: 12.5px; }
+  .fit-empty { color: #8a929c; font-style: italic; font-size: 13px; }
+
+  /* === OUTPUT === */
+  #output { display: none; }
+  #output.show { display: block; }
+  .out-doc { background: #fff; border: 1px solid #e3e8ef; border-radius: 9px; padding: 26px 30px; }
+  .out-doc h2 { font-family: 'Lexend', sans-serif; font-size: 17px; color: #1a3a6b; border-bottom: 2px solid #ece8df; padding-bottom: 6px; margin: 22px 0 10px; }
+  .out-doc h2:first-child { margin-top: 0; }
+  .out-doc h3 { font-family: 'Lexend', sans-serif; font-size: 14px; color: #2c5aa0; margin: 14px 0 5px; }
+  .out-doc p { margin: 6px 0; font-size: 13.5px; }
+  .out-doc ul { margin: 6px 0 6px 20px; font-size: 13.5px; }
+  .out-doc li { margin: 4px 0; }
+  .out-doc .muted { color: #8a929c; font-style: italic; }
+  .out-doc .lbl { font-weight: 600; color: #2a3744; }
+  .view-toggle { display: inline-flex; border: 1px solid #cfd6e0; border-radius: 7px; overflow: hidden; }
+  .view-toggle button { border: none; background: #fff; padding: 8px 16px; font-size: 12.5px; font-family: 'Lexend', sans-serif; font-weight: 600; cursor: pointer; color: #46505e; }
+  .view-toggle button.on { background: #1a3a6b; color: #fff; }
+  pre.paste { white-space: pre-wrap; font-family: 'Open Sans', sans-serif; font-size: 13px; line-height: 1.55; color: #222; }
+
+  /* caregiver handout view */
+  .out-doc .cg-lead { font-size: 13.5px; color: #36414e; }
+  .out-doc .why { background: #f0f7f4; border-left: 3px solid #1a6b5a; border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 10px 0; font-size: 13px; color: #2a3a34; }
+  .out-doc .why b { color: #0d5c4a; }
+  .out-doc .cg-strength { background: #eef7f2; border: 1px solid #cfe6db; border-radius: 6px; padding: 10px 14px; font-size: 13.5px; }
+
+  /* footer */
+  .builder-footer { border-top: 2px solid #e0e6ed; padding-top: 12px; margin-top: 26px; display: flex; justify-content: space-between; align-items: center; }
+  .builder-footer img { height: 34px; width: auto; }
+  .builder-footer .credits { font-size: 11px; color: #888; text-align: right; line-height: 1.4; }
+  .builder-footer a { color: #2c5aa0; text-decoration: none; }
+
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .wrap { padding: 0; max-width: 100%; }
+    body.printing-output .panel, body.printing-output .stepper, body.printing-output .privacy,
+    body.printing-output .toolbar, body.printing-output #builder { display: none !important; }
+    body.printing-output #output { display: block !important; }
+    .out-doc { border: none; padding: 0; box-shadow: none; }
+    .out-doc h2, .pro-header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="pro-header">
+    <div class="pro-header-bg"></div>
+    <div class="pro-header-inner">
+      <div class="pro-header-logo"><img src="../images/Brain.png" alt="Brain-Based Mental Health"></div>
+      <div class="pro-header-text">
+        <h1>Brain-Based Treatment Plan Builder</h1>
+        <div class="header-sub">A thinking partner for a plan that fits the brain in front of you, and the caregiver's too</div>
+      </div>
+    </div>
+    <div class="pro-header-rule"></div>
+  </div>
+
+  <!-- PRIVACY -->
+  <div class="privacy no-print">
+    <span class="lock">&#128274;</span>
+    <div><strong>Nothing you type is sent anywhere.</strong> Everything stays in your browser on this device. There is no server and no account. Use <em>Save draft</em> to keep it on this computer, or print and clear it when you are done. Avoid full names or other identifying details if you would rather not store them.</div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar no-print">
+    <button class="btn btn-ghost" id="saveBtn" type="button">Save draft to this browser</button>
+    <button class="btn btn-ghost" id="loadBtn" type="button">Load saved draft</button>
+    <button class="btn btn-ghost" id="clearBtn" type="button">Clear everything</button>
+    <span class="save-status" id="saveStatus"></span>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="stepper no-print" id="stepper">
+    <button class="step-tab active" data-step="0" type="button"><span class="num">STEP 1</span><span class="lbl">What's bringing them in</span></button>
+    <button class="step-tab" data-step="1" type="button"><span class="num">STEP 2</span><span class="lbl">Who's at the table</span></button>
+    <button class="step-tab" data-step="2" type="button"><span class="num">STEP 3</span><span class="lbl">Take stock of the brain</span></button>
+    <button class="step-tab" data-step="3" type="button"><span class="num">STEP 4</span><span class="lbl">Is the behavior a signal?</span></button>
+    <button class="step-tab" data-step="4" type="button"><span class="num">STEP 5</span><span class="lbl">Referral &amp; driver goals</span></button>
+    <button class="step-tab" data-step="5" type="button"><span class="num">STEP 6</span><span class="lbl">Does it fit both brains?</span></button>
+  </div>
+
+  <div id="builder">
+
+  <!-- ============ STEP 1 ============ -->
+  <div class="panel active" data-panel="0">
+    <div class="step-kicker">Step 1</div>
+    <h2>Start here: what's bringing them in</h2>
+    <p class="lead">The first question is simple: what's the problem? But a person's struggles are rarely theirs alone, so we ask it for everyone who is in it. These answers point to what to look at next.</p>
+
+    <h3 class="block">Who is this plan for?</h3>
+    <p class="hint">This decides whether caregiver questions and the caregiver column show up. You can change it later.</p>
+    <div class="whofor" id="whofor">
+      <label class="sel"><input type="radio" name="whofor" value="solo" checked><span class="opt-title">An individual on their own</span><div class="opt-desc">An adult with no caregiver or support person in the plan. Family questions drop away.</div></label>
+      <label><input type="radio" name="whofor" value="caregiver"><span class="opt-title">An individual plus a caregiver or support person</span><div class="opt-desc">A child, or anyone who leans on a parent, partner, or support worker. Adds the caregiver column.</div></label>
+    </div>
+
+    <h3 class="block">What's going on for the client?</h3>
+    <p class="hint">Tap any that fit to use them as a starting point, then add your own. These surface the brain rows that often sit underneath, on Step 3.</p>
+    <div class="chips" id="clientChips"></div>
+    <textarea id="clientProblems" placeholder="The outbursts, the shutting down, the not listening, the worry, the sleep. In your own words."></textarea>
+
+    <div class="cg-only">
+      <h3 class="block">What's going on for the caregiver and family?</h3>
+      <p class="hint">The strain rarely stays with one person. Worn out, walking on eggshells, constant conflict, feeling like they are failing, the toll on siblings or the relationship.</p>
+      <textarea id="familyProblems" placeholder="What the caregiver and family are carrying."></textarea>
+    </div>
+
+    <div class="note"><strong>What the tool does with this.</strong> Instead of putting the whole brain checklist in front of you, Step 3 highlights the rows that tend to sit underneath what you just described. The presenting problem points to where to look. You still make the call.</div>
+  </div>
+
+  <!-- ============ STEP 2 ============ -->
+  <div class="panel" data-panel="1">
+    <div class="step-kicker">Step 2</div>
+    <h2>Who's at the table</h2>
+    <p class="lead">Before any goals, decide who the plan is really for. Often, especially with kids and with anyone who leans on a support system, a caregiver or another adult has to be in it. Not as a bystander, but with their own part to play. Roles can shift over time, so note when.</p>
+
+    <div id="peopleList"></div>
+    <button class="add-btn" id="addPerson" type="button">+ Add a person</button>
+
+    <div class="note">A caregiver might be very hands-on early while things get set up, then step back as the person grows. Or the other way around. The "when" is part of the plan.</div>
+  </div>
+
+  <!-- ============ STEP 3 ============ -->
+  <div class="panel" data-panel="2">
+    <div class="step-kicker">Step 3</div>
+    <h2>Take stock of the brain</h2>
+    <p class="lead">No lingo needed. These are plain descriptions of what you actually see. Check what sounds like your client. Highlighted rows are the ones your Step 1 answers suggested looking at first, but check anything that fits.<span class="cg-only" style="display:inline"> Fill the caregiver column too, honestly. We need a real read on what's workable, not a diagnosis.</span></p>
+
+    <div class="note cg-only"><strong>Why there's a caregiver column.</strong> We routinely ask caregivers to do things their own brain, or their bandwidth on a hard week, can't reliably pull off. Stay calm while your child is melting down. Keep the routine identical seven days a week. Remember the new strategy in the moment. If the plan leans on something the caregiver can't actually do, the plan isn't realistic. Better to know up front than to set them up to fail.</div>
+
+    <table class="checklist">
+      <thead>
+        <tr>
+          <th>What it can look like, day to day</th>
+          <th class="col">Client</th>
+          <th class="col cg-only">Caregiver / adult</th>
+        </tr>
+      </thead>
+      <tbody id="checklistBody"></tbody>
+    </table>
+    <p class="hint">For the caregiver, a few of these read even plainer: "Hard to stay calm when my child is melting down." "Hard to keep things the same every day." "I get overloaded too."</p>
+  </div>
+
+  <!-- ============ STEP 4 ============ -->
+  <div class="panel" data-panel="3">
+    <div class="step-kicker">Step 4</div>
+    <h2>Is the behavior a signal?</h2>
+    <p class="lead">This is where it's tempting to jump straight to "reduce the behavior." Slow it down. For each behavior that brought them in, ask the same plain questions. Is this just how the brain works right now, or is it a stress reaction to an ask that doesn't fit?</p>
+
+    <div id="behaviorList"></div>
+    <button class="add-btn" id="addBehavior" type="button">+ Add a behavior to look at</button>
+
+    <div class="pull">The whole idea, taught through the questions instead of the vocabulary: before we write a goal to make a behavior go away, we look at why it's there. Could it be telling us the expectations don't fit?</div>
+  </div>
+
+  <!-- ============ STEP 5 ============ -->
+  <div class="panel" data-panel="4">
+    <div class="step-kicker">Step 5</div>
+    <h2>The referral goal, and the goals that do the work</h2>
+    <p class="lead">Schools and insurers need a measurable goal, usually about the behavior that got the person referred. Keep it. We just don't stop there. Underneath it we build the goals that actually change the fit.</p>
+
+    <h3 class="block">The referral goal (keep it measurable)</h3>
+    <p class="hint">Example: "Reduce outbursts at school by 50% this semester." Fine. Keep it.</p>
+    <textarea id="referralGoal" placeholder="The measurable goal a school or insurer will accept."></textarea>
+
+    <h3 class="block">Working from a treatment you already know?</h3>
+    <p class="hint">Many approaches come with a standard goal baked in. Check that goal against this brain before you use it. The tool shows the common goal; you decide if it fits, resizes, or gets paired with driver goals.</p>
+    <select id="modalitySelect">
+      <option value="">Select an approach (optional)</option>
+      <option value="cbt">CBT (Cognitive Behavioral Therapy)</option>
+      <option value="pcit">PCIT (Parent-Child Interaction Therapy)</option>
+      <option value="pmt">Parent Management Training / Behavioral Parent Training</option>
+      <option value="dbt">DBT (Dialectical Behavior Therapy)</option>
+      <option value="tfcbt">TF-CBT (Trauma-Focused CBT)</option>
+      <option value="aba">ABA (Applied Behavior Analysis)</option>
+      <option value="play">Play Therapy</option>
+    </select>
+    <div class="modality-out" id="modalityOut"></div>
+
+    <h3 class="block">Driver goals: the ones that change the fit</h3>
+    <p class="hint">What happens right before the behavior? A transition, a five-step worksheet, the cafeteria, being told to "use your words" when words are the hard part? Build goals for the environment, the adult's response, and something small for the client. Each names who holds it.</p>
+    <div id="goalList"></div>
+    <button class="add-btn" id="addGoal" type="button">+ Add a driver goal</button>
+
+    <div class="note">Say it plainly in the plan: we expect the behavior to drop because the fit got better, not because we drilled the person harder. The measurable goal stays. The work underneath it is what changes.</div>
+  </div>
+
+  <!-- ============ STEP 6 ============ -->
+  <div class="panel" data-panel="5">
+    <div class="step-kicker">Step 6</div>
+    <h2>Does this fit both brains?</h2>
+    <p class="lead">Last pass before it's done. For every goal, two questions. Does it ask the client's brain to do something it can't yet do? And does it lean on the caregiver doing something beyond what they can realistically pull off? A plan only counts as realistic when it fits both. And we keep the client's voice in it, even when a caregiver is central.</p>
+
+    <div id="fitList"></div>
+
+    <div class="note">If "be consistent seven days a week" isn't real for this caregiver, the plan needs a different kind of support, not a caregiver set up to fail.</div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" type="button" onclick="goStep(4)">&larr; Back</button>
+      <button class="btn btn-green" id="generateBtn" type="button">Build the plan &rarr;</button>
+    </div>
+  </div>
+
+  <!-- nav for steps 1-5 -->
+  <div class="nav no-print" id="mainNav">
+    <button class="btn btn-ghost" id="backBtn" type="button">&larr; Back</button>
+    <button class="btn btn-primary" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  </div><!-- /builder -->
+
+  <!-- ============ OUTPUT ============ -->
+  <div id="output">
+    <div class="toolbar no-print" style="justify-content: space-between;">
+      <div class="view-toggle">
+        <button id="viewFull" class="on" type="button">Full thinking version</button>
+        <button id="viewPaste" type="button">Paste-ready (EHR)</button>
+        <button id="viewCaregiver" type="button">Caregiver handout</button>
+        <button id="viewProvider" type="button">For other providers</button>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-ghost" id="copyBtn" type="button">Copy</button>
+        <button class="btn btn-green" id="printBtn" type="button">Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="editBtn" type="button">&larr; Back to editing</button>
+      </div>
+    </div>
+    <div class="out-doc" id="outDoc"></div>
+
+    <div class="builder-footer">
+      <img src="../images/fasd-united-logo.png" alt="FASD United">
+      <div class="credits">
+        Brain-Based Treatment Plan Builder &middot; FASD United Mental Health Work Group<br>
+        <a href="../professionals.html">Brain-Based Mental Health for Clinicians</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer for builder view -->
+  <div class="builder-footer no-print" id="builderFooter">
+    <img src="../images/fasd-united-logo.png" alt="FASD United">
+    <div class="credits">
+      Brain-Based Treatment Plan Builder &middot; FASD United Mental Health Work Group<br>
+      <a href="../professionals.html">Brain-Based Mental Health for Clinicians</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+// Brain checklist rows (plain language, no jargon)
+const ROWS = [
+  { id:'directions', area:'Holding onto directions', desc:'You explain something and a minute later it’s gone. Can follow one instruction but not three in a row. Had it down yesterday, gone today. Can do it at home but not at school.' },
+  { id:'beat', area:'Needing a beat to catch up', desc:'There’s a lag. You ask and have to wait. They say "wait, what?" or "I don’t know" because it went by too fast.' },
+  { id:'following', area:'Following what’s being said', desc:'Sounds like they get more than they do. Loses the thread. Can’t name what they feel. Takes things at face value. Answers with something that sounds right but isn’t quite.' },
+  { id:'starting', area:'Starting things and changing gears', desc:'Getting going is hard, and so is stopping. Moving from one thing to the next is rough. A change in plan throws them off. Jumps in before thinking.' },
+  { id:'abstract', area:'Things you can’t see or touch', desc:'Time, money, and "if you do this, then that happens" don’t click. Planning ahead, saving, waiting, and consequences down the road don’t land.' },
+  { id:'toomuch', area:'When it’s too much coming in', desc:'Noise, lights, crowds, or being touched can tip them over. Wears out fast and then gets wound up. Settling down or falling asleep is hard.' },
+  { id:'interoception', area:'Noticing what their body is telling them', desc:'Doesn’t catch hunger, thirst, or needing the bathroom until it’s urgent. Can’t feel themselves getting upset until they’ve already blown.' },
+  { id:'steady', area:'Staying steady enough to think', desc:'Goes from calm to a hundred in seconds, and coming back down is hard. Or flips the other way and goes quiet, blank, or checked out.' },
+  { id:'basics', area:'Hunger, sleep, the basics', desc:'Doesn’t notice hungry or full. Needs to eat often. A skipped meal or a bad night wrecks the whole day.' },
+  { id:'everyday', area:'Everyday life and getting along', desc:'Daily tasks and staying safe take more help than you’d expect for their age. Reading the room is hard. Clicks better with kids older or younger.' },
+  { id:'strengths', area:'What they’re good at, what they love', desc:'The things that come easy, the things they light up about, and how they learn best: seeing it, doing it, hands-on, or one on one.', strength:true }
+];
+
+// Presenting-problem chips and the rows each one suggests
+const CHIPS = [
+  { id:'outbursts', label:'Outbursts / blows up', rows:['steady','toomuch','interoception','starting'] },
+  { id:'transitions', label:'Transitions are hard', rows:['starting','toomuch','steady'] },
+  { id:'shutdown', label:'Shuts down / withdraws', rows:['steady','toomuch','following'] },
+  { id:'notlistening', label:'Not listening / won’t follow directions', rows:['directions','beat','following','starting'] },
+  { id:'lying', label:'Lying / stories that don’t add up', rows:['following','directions','abstract'] },
+  { id:'school', label:'Trouble at school / focus', rows:['directions','beat','starting','abstract'] },
+  { id:'anxiety', label:'Anxiety / worry', rows:['steady','toomuch','interoception'] },
+  { id:'sleep', label:'Sleep problems', rows:['basics','toomuch'] },
+  { id:'social', label:'Trouble with friends / social', rows:['everyday','following','abstract'] },
+  { id:'impulsive', label:'Impulsive / acts before thinking', rows:['starting','abstract','steady'] },
+  { id:'consequences', label:'Consequences don’t seem to work', rows:['abstract','beat'] }
+];
+
+// Modality standard goals and what they ask of the brain
+const MODALITIES = {
+  cbt: { name:'CBT', goal:'Identify and restructure unhelpful or distorted thoughts; use cognitive coping skills to reduce symptoms.', asks:'Hold abstract thoughts, notice and label internal states, reflect on one’s own thinking, remember and apply skills between sessions, and generalize from the room to real life.' },
+  pcit: { name:'PCIT', goal:'Child follows roughly 75% of parent commands (compliance), with the caregiver leading discipline.', asks:'Hear it, hold it, stop the current activity, and switch, all within a few seconds. For some brains that is a can’t, not a won’t.' },
+  pmt: { name:'Parent Management Training', goal:'Caregiver applies consistent reinforcement and consequences; child’s behavior scores come down.', asks:'Of the caregiver: stay regulated in the heat of the moment, apply the strategy the same way across days, and recall it under stress. Of the child: connect a later consequence to an earlier action.' },
+  dbt: { name:'DBT', goal:'Use distress-tolerance and emotion-regulation skills to reduce target behaviors.', asks:'Notice rising emotion early, recall a specific skill while flooded, and choose and apply it in the moment.' },
+  tfcbt: { name:'TF-CBT', goal:'Build and process a trauma narrative and reduce trauma symptoms.', asks:'Tolerate distress while recalling, sequence a coherent narrative, and use top-down cognitive coping. May need bottom-up regulation first.' },
+  aba: { name:'ABA', goal:'Increase target adaptive behaviors and decrease target behaviors to a set criterion.', asks:'Tolerate repetition and demand, generalize across settings, and stay regulated during demands. Fit depends heavily on a relationship- and regulation-informed delivery.' },
+  play: { name:'Play Therapy', goal:'Use play to express and process experience and reduce symptoms.', asks:'Lower verbal and abstract demand, which often fits limited abstract or language capacity well. Watch that it still maps to measurable change for medical necessity.' }
+};
+
+const HOLDERS = [
+  { v:'client', label:'Client', cls:'holder-client' },
+  { v:'caregiver', label:'Caregiver', cls:'holder-caregiver' },
+  { v:'family', label:'Family', cls:'holder-family' },
+  { v:'teacher', label:'Teacher / classroom', cls:'holder-teacher' },
+  { v:'env', label:'Environment / other adult', cls:'holder-env' }
+];
+
+/* ============================================================
+   STATE + HELPERS
+   ============================================================ */
+let curStep = 0;
+const selectedChips = new Set();
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function hasCaregiver(){ return $('input[name="whofor"]:checked').value === 'caregiver'; }
+
+/* ---------- Build chips ---------- */
+const clientChipsEl = $('#clientChips');
+CHIPS.forEach(c => {
+  const b = document.createElement('span');
+  b.className = 'chip'; b.textContent = c.label; b.dataset.id = c.id;
+  b.onclick = () => {
+    b.classList.toggle('on');
+    if (b.classList.contains('on')) selectedChips.add(c.id); else selectedChips.delete(c.id);
+    refreshSuggested();
+  };
+  clientChipsEl.appendChild(b);
+});
+
+/* ---------- Build checklist ---------- */
+const checklistBody = $('#checklistBody');
+ROWS.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.dataset.row = r.id;
+  if (r.strength) tr.classList.add('strengths-row');
+  tr.innerHTML =
+    '<td><span class="area">'+esc(r.area)+'</span><span class="desc">'+esc(r.desc)+'</span>'+
+      '<span class="sug-flag">&#9733; suggested by Step 1</span>'+
+      '<div style="margin-top:6px"><input type="text" class="rownote" placeholder="Optional note (what you see, strengths, examples)" style="font-size:12px;padding:5px 8px"></div></td>'+
+    '<td class="col"><input type="checkbox" class="cl"></td>'+
+    '<td class="col cg-only"><input type="checkbox" class="cg"></td>';
+  checklistBody.appendChild(tr);
+});
+function refreshSuggested(){
+  const sug = new Set();
+  selectedChips.forEach(id => { const c = CHIPS.find(x=>x.id===id); if(c) c.rows.forEach(r=>sug.add(r)); });
+  $$('#checklistBody tr').forEach(tr => tr.classList.toggle('suggested', sug.has(tr.dataset.row)));
+}
+
+/* ---------- People (Step 2) ---------- */
+const peopleList = $('#peopleList');
+function addPerson(data={}){
+  const card = document.createElement('div');
+  card.className = 'item-card';
+  card.innerHTML =
+    '<button class="remove-btn" type="button" title="Remove">&times;</button>'+
+    '<div class="row">'+
+      '<div><label class="mini-label">Who</label><input type="text" class="p-who" placeholder="e.g. Client, Mom, Teacher, Support worker"></div>'+
+      '<div><label class="mini-label">Their role in the plan</label><input type="text" class="p-role" placeholder="e.g. carries the strategy home, sets up the classroom, knows the history"></div>'+
+      '<div style="flex:0 1 160px"><label class="mini-label">When</label>'+
+        '<select class="p-when"><option value="Throughout">Throughout</option><option value="Early / getting set up">Early / getting set up</option><option value="Later / as they grow">Later / as they grow</option></select></div>'+
+    '</div>';
+  card.querySelector('.remove-btn').onclick = () => card.remove();
+  if (data.who) card.querySelector('.p-who').value = data.who;
+  if (data.role) card.querySelector('.p-role').value = data.role;
+  if (data.when) card.querySelector('.p-when').value = data.when;
+  peopleList.appendChild(card);
+}
+$('#addPerson').onclick = () => addPerson();
+
+/* ---------- Behaviors (Step 4) ---------- */
+const behaviorList = $('#behaviorList');
+function ynu(name, val){
+  const opt = (v,l) => '<label><input type="radio" name="'+name+'" value="'+v+'"'+(val===v?' checked':'')+'><span>'+l+'</span></label>';
+  return '<span class="ynu">'+opt('yes','Yes')+opt('no','No')+opt('unsure','Not sure')+'</span>';
+}
+let behaviorSeq = 0;
+function addBehavior(data={}){
+  const n = ++behaviorSeq;
+  const card = document.createElement('div');
+  card.className = 'item-card';
+  card.innerHTML =
+    '<button class="remove-btn" type="button" title="Remove">&times;</button>'+
+    '<label class="mini-label">The behavior</label>'+
+    '<input type="text" class="b-name" placeholder="e.g. blows up at the start of math" style="margin-bottom:10px">'+
+    '<label class="mini-label">What is the person being asked to do right when it shows up?</label>'+
+    '<textarea class="b-ask" style="min-height:48px;margin-bottom:10px" placeholder="e.g. switch tasks, do a five-step worksheet, sit in the loud cafeteria"></textarea>'+
+    '<div style="margin-bottom:8px"><label class="mini-label">Can their brain reliably do that, right now, on its own?</label>'+ynu('bcan'+n,data.can)+'</div>'+
+    '<div><label class="mini-label">Could the behavior be telling us the ask is bigger than the brain can handle today?</label>'+ynu('bsig'+n,data.signal)+'</div>';
+  card.querySelector('.remove-btn').onclick = () => card.remove();
+  if (data.name) card.querySelector('.b-name').value = data.name;
+  if (data.ask) card.querySelector('.b-ask').value = data.ask;
+  behaviorList.appendChild(card);
+  card.dataset.seq = n;
+}
+$('#addBehavior').onclick = () => addBehavior();
+
+/* ---------- Modality helper (Step 5) ---------- */
+$('#modalitySelect').onchange = function(){
+  const m = MODALITIES[this.value];
+  const out = $('#modalityOut');
+  if (!m){ out.classList.remove('show'); out.innerHTML=''; return; }
+  out.innerHTML =
+    '<div class="mo-line"><strong>What '+esc(m.name)+' usually works toward:</strong> '+esc(m.goal)+'</div>'+
+    '<div class="mo-line"><strong>What that goal asks this brain to do:</strong> '+esc(m.asks)+'</div>'+
+    '<div class="mo-line" style="margin-top:9px;color:#5a4a1f;background:#fff8e9;border-radius:5px;padding:8px 11px">'+
+      '<strong>Now the call is yours.</strong> Looking at your Step 3 checklist, can this brain do that right now? Keep the goal as is, resize it, or pair it with driver goals below.</div>';
+  out.classList.add('show');
+};
+
+/* ---------- Driver goals (Step 5) ---------- */
+const goalList = $('#goalList');
+let goalSeq = 0;
+function holderSelect(sel){
+  return '<select class="g-holder">'+HOLDERS.map(h=>'<option value="'+h.v+'"'+(sel===h.v?' selected':'')+'>'+h.label+'</option>').join('')+'</select>';
+}
+function addGoal(data={}){
+  const n = ++goalSeq;
+  const card = document.createElement('div');
+  card.className = 'item-card';
+  card.dataset.seq = n;
+  card.innerHTML =
+    '<button class="remove-btn" type="button" title="Remove">&times;</button>'+
+    '<div class="row">'+
+      '<div style="flex:0 1 180px"><label class="mini-label">Who holds this goal</label>'+holderSelect(data.holder)+'</div>'+
+      '<div style="flex:3 1 300px"><label class="mini-label">The goal (what changes)</label>'+
+        '<input type="text" class="g-text" placeholder="e.g. give a two-step version of longer tasks before expecting an answer"></div>'+
+    '</div>'+
+    '<div class="row" style="margin-top:10px">'+
+      '<div><label class="mini-label">Where it starts (baseline)</label><input type="text" class="g-base" placeholder="e.g. currently needs full task broken down every time"></div>'+
+      '<div><label class="mini-label">Target (the number)</label><input type="text" class="g-target" placeholder="e.g. uses a break card once a day with a reminder"></div>'+
+      '<div style="flex:0 1 150px"><label class="mini-label">By when</label><input type="text" class="g-by" placeholder="e.g. end of semester"></div>'+
+    '</div>';
+  card.querySelector('.remove-btn').onclick = () => { card.remove(); };
+  if (data.text) card.querySelector('.g-text').value = data.text;
+  if (data.base) card.querySelector('.g-base').value = data.base;
+  if (data.target) card.querySelector('.g-target').value = data.target;
+  if (data.by) card.querySelector('.g-by').value = data.by;
+  goalList.appendChild(card);
+}
+$('#addGoal').onclick = () => addGoal();
+
+/* ---------- Fit check (Step 6) renders from goals ---------- */
+function buildFitList(){
+  const fit = $('#fitList');
+  fit.innerHTML = '';
+  const goals = $$('#goalList .item-card');
+  const ref = $('#referralGoal').value.trim();
+  const all = [];
+  if (ref) all.push({ holder:'client', text:ref, isRef:true });
+  goals.forEach(g => {
+    const t = g.querySelector('.g-text').value.trim();
+    if (t) all.push({ holder:g.querySelector('.g-holder').value, text:t, el:g });
+  });
+  if (!all.length){ fit.innerHTML = '<p class="fit-empty">Add a referral goal or driver goals on Step 5, then come back here to check the fit.</p>'; return; }
+  all.forEach((g,i) => {
+    const h = HOLDERS.find(x=>x.v===g.holder) || HOLDERS[0];
+    const box = document.createElement('div');
+    box.className = 'fit-goal';
+    box.dataset.fitText = g.text;
+    box.innerHTML =
+      '<div><span class="holder-tag '+h.cls+'">'+h.label+'</span>'+(g.isRef?' <span style="font-size:11px;color:#888">(referral goal)</span>':'')+'</div>'+
+      '<div style="font-weight:600;margin-top:5px">'+esc(g.text)+'</div>'+
+      '<div class="fit-q"><label class="field-label">Does it ask the client’s brain to do something it can’t yet do?</label>'+ynu('fitclient'+i,'')+'</div>'+
+      (hasCaregiver()?'<div class="fit-q"><label class="field-label">Does it lean on the caregiver doing something beyond what they can realistically pull off?</label>'+ynu('fitcg'+i,'')+'</div>':'')+
+      '<div class="fit-q"><label class="field-label">If it doesn’t fit, what has to change?</label><input type="text" class="fit-fix" placeholder="resize the goal, add a support, change who holds it..."></div>'+
+      '<div class="fit-q"><label class="field-label">Does the client agree with this goal? If there was disagreement, how was it resolved?</label><input type="text" class="fit-voice" placeholder="protect the client’s voice (supported decision-making)"></div>';
+    fit.appendChild(box);
+  });
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function goStep(n){
+  curStep = Math.max(0, Math.min(5, n));
+  $$('.panel').forEach(p => p.classList.toggle('active', +p.dataset.panel === curStep));
+  $$('.step-tab').forEach(t => {
+    const s = +t.dataset.step;
+    t.classList.toggle('active', s === curStep);
+    t.classList.toggle('done', s < curStep);
+  });
+  $('#backBtn').style.visibility = curStep === 0 ? 'hidden' : 'visible';
+  $('#mainNav').style.display = curStep === 5 ? 'none' : 'flex';
+  if (curStep === 5) buildFitList();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('#nextBtn').onclick = () => goStep(curStep + 1);
+$('#backBtn').onclick = () => goStep(curStep - 1);
+$$('.step-tab').forEach(t => t.onclick = () => goStep(+t.dataset.step));
+
+/* whofor toggle */
+$$('#whofor input').forEach(r => r.onchange = () => {
+  document.body.classList.toggle('has-caregiver', hasCaregiver());
+  $$('#whofor label').forEach(l => l.classList.toggle('sel', l.querySelector('input').checked));
+});
+
+/* ============================================================
+   COLLECT + GENERATE OUTPUT
+   ============================================================ */
+function collect(){
+  const data = {
+    whofor: $('input[name="whofor"]:checked').value,
+    clientProblems: $('#clientProblems').value.trim(),
+    familyProblems: $('#familyProblems').value.trim(),
+    chips: [...selectedChips].map(id => (CHIPS.find(c=>c.id===id)||{}).label).filter(Boolean),
+    people: $$('#peopleList .item-card').map(c => ({
+      who: c.querySelector('.p-who').value.trim(),
+      role: c.querySelector('.p-role').value.trim(),
+      when: c.querySelector('.p-when').value
+    })).filter(p => p.who || p.role),
+    checklist: $$('#checklistBody tr').map(tr => ({
+      id: tr.dataset.row,
+      area: ROWS.find(r=>r.id===tr.dataset.row).area,
+      strength: !!ROWS.find(r=>r.id===tr.dataset.row).strength,
+      client: tr.querySelector('.cl').checked,
+      caregiver: tr.querySelector('.cg').checked,
+      note: tr.querySelector('.rownote').value.trim()
+    })).filter(r => r.client || r.caregiver || r.note),
+    behaviors: $$('#behaviorList .item-card').map(c => {
+      const n = c.dataset.seq;
+      return {
+        name: c.querySelector('.b-name').value.trim(),
+        ask: c.querySelector('.b-ask').value.trim(),
+        can: (c.querySelector('input[name="bcan'+n+'"]:checked')||{}).value || '',
+        signal: (c.querySelector('input[name="bsig'+n+'"]:checked')||{}).value || ''
+      };
+    }).filter(b => b.name || b.ask),
+    referralGoal: $('#referralGoal').value.trim(),
+    modality: $('#modalitySelect').value,
+    goals: $$('#goalList .item-card').map(c => ({
+      holder: c.querySelector('.g-holder').value,
+      text: c.querySelector('.g-text').value.trim(),
+      base: c.querySelector('.g-base').value.trim(),
+      target: c.querySelector('.g-target').value.trim(),
+      by: c.querySelector('.g-by').value.trim()
+    })).filter(g => g.text),
+    fit: $$('#fitList .fit-goal').map((b,i) => ({
+      text: b.dataset.fitText,
+      client: (b.querySelector('input[name="fitclient'+i+'"]:checked')||{}).value || '',
+      caregiver: (b.querySelector('input[name="fitcg'+i+'"]:checked')||{}).value || '',
+      fix: (b.querySelector('.fit-fix')||{}).value || '',
+      voice: (b.querySelector('.fit-voice')||{}).value || ''
+    }))
+  };
+  return data;
+}
+
+function holderLabel(v){ return (HOLDERS.find(h=>h.v===v)||HOLDERS[0]).label; }
+
+function renderFull(d){
+  let h = '';
+  h += '<h2>Brain-Based Treatment Plan</h2>';
+  h += '<p class="muted">Plan for: '+(d.whofor==='caregiver'?'an individual plus a caregiver / support person':'an individual on their own')+'.</p>';
+
+  h += '<h2>1. What’s bringing them in</h2>';
+  h += '<p><span class="lbl">Client:</span> '+(d.clientProblems?esc(d.clientProblems):'<span class="muted">not entered</span>')+'</p>';
+  if (d.chips.length) h += '<p class="muted">Starting points tapped: '+d.chips.map(esc).join(', ')+'</p>';
+  if (d.whofor==='caregiver') h += '<p><span class="lbl">Caregiver &amp; family:</span> '+(d.familyProblems?esc(d.familyProblems):'<span class="muted">not entered</span>')+'</p>';
+
+  h += '<h2>2. Who’s at the table</h2>';
+  if (d.people.length){
+    h += '<ul>'+d.people.map(p=>'<li><span class="lbl">'+esc(p.who||'(role)')+':</span> '+esc(p.role)+(p.when?' <span class="muted">('+esc(p.when)+')</span>':'')+'</li>').join('')+'</ul>';
+  } else h += '<p class="muted">No one added yet.</p>';
+
+  h += '<h2>3. Brain snapshot</h2>';
+  const strengths = d.checklist.filter(r=>r.strength);
+  const hard = d.checklist.filter(r=>!r.strength);
+  if (hard.length){
+    h += '<h3>Where the fit is hard</h3><ul>';
+    hard.forEach(r=>{
+      const who = [r.client?'client':null, r.caregiver?'caregiver':null].filter(Boolean).join(' + ');
+      h += '<li><span class="lbl">'+esc(r.area)+'</span>'+(who?' <span class="muted">('+who+')</span>':'')+(r.note?': '+esc(r.note):'')+'</li>';
+    });
+    h += '</ul>';
+  }
+  if (strengths.length){
+    h += '<h3>Strengths to build on</h3><ul>';
+    strengths.forEach(r=> h += '<li>'+(r.note?esc(r.note):esc(r.area))+'</li>');
+    h += '</ul>';
+  }
+  if (!d.checklist.length) h += '<p class="muted">No rows checked.</p>';
+
+  h += '<h2>4. Is the behavior a signal?</h2>';
+  if (d.behaviors.length){
+    d.behaviors.forEach(b=>{
+      h += '<h3>'+esc(b.name||'(behavior)')+'</h3>';
+      if (b.ask) h += '<p><span class="lbl">Asked to do:</span> '+esc(b.ask)+'</p>';
+      h += '<p><span class="lbl">Can the brain reliably do that now?</span> '+esc(b.can||'—')+
+           ' &nbsp; <span class="lbl">A signal the ask is too big?</span> '+esc(b.signal||'—')+'</p>';
+      if (b.can==='no' || b.signal==='yes') h += '<p class="muted">Reads as can’t, not won’t. Target the fit, not just the behavior.</p>';
+    });
+  } else h += '<p class="muted">No behaviors examined.</p>';
+
+  h += '<h2>5. Goals</h2>';
+  h += '<h3>Referral goal (measurable)</h3>';
+  h += '<p>'+(d.referralGoal?esc(d.referralGoal):'<span class="muted">not entered</span>')+'</p>';
+  if (d.modality && MODALITIES[d.modality]){
+    const m = MODALITIES[d.modality];
+    h += '<h3>Working from '+esc(m.name)+'</h3>';
+    h += '<p class="muted">Standard goal: '+esc(m.goal)+'<br>Asks this brain to: '+esc(m.asks)+'</p>';
+  }
+  h += '<h3>Driver goals (the ones that change the fit)</h3>';
+  if (d.goals.length){
+    h += '<ul>';
+    d.goals.forEach(g=>{
+      let line = '<span class="lbl">'+holderLabel(g.holder)+' will:</span> '+esc(g.text);
+      const smart = [g.base?'from '+esc(g.base):'', g.target?'to '+esc(g.target):'', g.by?'by '+esc(g.by):''].filter(Boolean).join(', ');
+      if (smart) line += ' <span class="muted">('+smart+')</span>';
+      h += '<li>'+line+'</li>';
+    });
+    h += '</ul>';
+    h += '<p class="muted">We expect the referral behavior to drop because the fit got better, not because we drilled harder.</p>';
+  } else h += '<p class="muted">No driver goals yet.</p>';
+
+  h += '<h2>6. Does it fit both brains?</h2>';
+  const fitReal = d.fit.filter(f=>f.client||f.caregiver||f.fix||f.voice);
+  if (fitReal.length){
+    h += '<ul>';
+    d.fit.forEach(f=>{
+      if (!(f.client||f.caregiver||f.fix||f.voice)) return;
+      let parts = [];
+      if (f.client) parts.push('asks something the client can’t yet do: '+esc(f.client));
+      if (f.caregiver) parts.push('beyond caregiver capacity: '+esc(f.caregiver));
+      if (f.fix) parts.push('change: '+esc(f.fix));
+      if (f.voice) parts.push('client’s voice: '+esc(f.voice));
+      h += '<li><span class="lbl">'+esc(f.text)+'</span><br><span class="muted">'+parts.join(' &middot; ')+'</span></li>';
+    });
+    h += '</ul>';
+  } else h += '<p class="muted">Fit check not completed.</p>';
+
+  return h;
+}
+
+function renderPaste(d){
+  const L = [];
+  L.push('BRAIN-BASED TREATMENT PLAN');
+  L.push('Plan type: '+(d.whofor==='caregiver'?'Individual + caregiver/family inclusive':'Individual'));
+  L.push('');
+  L.push('PRESENTING PROBLEM');
+  L.push('  Client: '+(d.clientProblems||'[enter]'));
+  if (d.whofor==='caregiver') L.push('  Caregiver/family: '+(d.familyProblems||'[enter]'));
+  L.push('');
+  const hard = d.checklist.filter(r=>!r.strength);
+  const strengths = d.checklist.filter(r=>r.strength);
+  L.push('FUNCTIONAL IMPAIRMENT / BRAIN-BASED FACTORS');
+  if (hard.length) hard.forEach(r=>{
+    const who = [r.client?'client':null, r.caregiver?'caregiver':null].filter(Boolean).join('+');
+    L.push('  - '+r.area+(who?' ('+who+')':'')+(r.note?': '+r.note:''));
+  }); else L.push('  [from checklist]');
+  L.push('');
+  L.push('STRENGTHS / SUPPORTS');
+  if (strengths.length) strengths.forEach(r=>L.push('  - '+(r.note||r.area)));
+  else L.push('  [enter]');
+  if (d.people.length){ d.people.forEach(p=>L.push('  - '+p.who+': '+p.role+(p.when?' ['+p.when+']':''))); }
+  L.push('');
+  L.push('GOAL (measurable / referral)');
+  L.push('  '+(d.referralGoal||'[enter measurable goal]'));
+  L.push('');
+  L.push('OBJECTIVES (driver goals — the change that improves fit)');
+  if (d.goals.length){
+    d.goals.forEach((g,i)=>{
+      const smart = [g.base?'baseline: '+g.base:'', g.target?'target: '+g.target:'', g.by?'by '+g.by:''].filter(Boolean).join('; ');
+      L.push('  '+(i+1)+'. '+holderLabel(g.holder)+' will '+g.text+(smart?' ('+smart+')':''));
+    });
+  } else L.push('  [add driver goals]');
+  L.push('');
+  L.push('INTERVENTIONS / ACCOMMODATIONS (clinician + environment actions)');
+  const envGoals = d.goals.filter(g=>g.holder!=='client');
+  if (envGoals.length) envGoals.forEach(g=>L.push('  - '+holderLabel(g.holder)+': '+g.text));
+  else L.push('  [environment and adult-response supports]');
+  L.push('');
+  L.push('BEHAVIOR-AS-SIGNAL NOTES');
+  if (d.behaviors.length) d.behaviors.forEach(b=>{
+    L.push('  - '+(b.name||'(behavior)')+': asked to '+(b.ask||'?')+' | brain can do now: '+(b.can||'?')+' | signal of poor fit: '+(b.signal||'?'));
+  }); else L.push('  [optional]');
+  L.push('');
+  L.push('FIT CHECK (both brains + client voice)');
+  let any=false;
+  d.fit.forEach(f=>{
+    if (!(f.client||f.caregiver||f.fix||f.voice)) return; any=true;
+    L.push('  - '+f.text);
+    if (f.client) L.push('      client can’t-yet: '+f.client);
+    if (f.caregiver) L.push('      caregiver capacity: '+f.caregiver);
+    if (f.fix) L.push('      change: '+f.fix);
+    if (f.voice) L.push('      client voice: '+f.voice);
+  });
+  if (!any) L.push('  [complete Step 6]');
+  L.push('');
+  L.push('Generated with the Brain-Based Treatment Plan Builder. Review for medical necessity and golden-thread consistency before use.');
+  return L.join('\n');
+}
+
+function renderCaregiver(d){
+  const isCg = d.whofor === 'caregiver';
+  // plain, warm labels for the brain rows
+  const AREA = {
+    directions:'Holding onto more than one direction at a time',
+    beat:'Needing a few extra seconds to take something in',
+    following:'Catching everything that is said',
+    starting:'Getting started, and switching from one thing to the next',
+    abstract:'Things you cannot see or touch, like time, money, and "if you do this, then that"',
+    toomuch:'When there is too much coming in, like noise, lights, or busyness',
+    interoception:'Noticing body signals like hunger, tiredness, or getting upset',
+    steady:'Staying calm enough to think when feelings get big',
+    basics:'Hunger and sleep, and how much they shape the day',
+    everyday:'Everyday tasks and getting along with others'
+  };
+  let h = '';
+  h += '<h2 style="color:#0d5c4a;border-bottom-color:#cfe6db">Working together: our plan</h2>';
+  h += '<p class="cg-lead">A plain-language version of the plan to keep and use at home. It explains what we are working on and why. There are no labels or ages here, just how the brain works best and what helps.</p>';
+
+  if (!isCg){
+    h += '<div class="why">This view is written for plans that include a caregiver or support person. On Step 1 you can choose "an individual plus a caregiver" if that fits.</div>';
+  }
+
+  // 1. strengths first
+  h += '<h2>What is going well</h2>';
+  const strengths = d.checklist.filter(r => r.strength && r.note);
+  if (strengths.length){
+    h += '<div class="cg-strength">' + strengths.map(s => esc(s.note)).join('<br>') + '</div>';
+  } else {
+    h += '<p class="muted">Start from strengths. Add them on the Step 3 strengths row and they will appear here.</p>';
+  }
+
+  // 2. what we're working on
+  h += '<h2>What we are working on together</h2>';
+  if (d.clientProblems) h += '<p>' + esc(d.clientProblems) + '</p>';
+  if (d.referralGoal) h += '<p><span class="lbl">What we are working toward:</span> ' + esc(d.referralGoal) + '</p>';
+  if (!d.clientProblems && !d.referralGoal) h += '<p class="muted">Add the concerns and the goal on Steps 1 and 5.</p>';
+
+  // 3. how their brain works best
+  const hard = d.checklist.filter(r => !r.strength && r.client);
+  h += '<h2>How their brain works best right now</h2>';
+  h += '<p>These are things that are harder right now. They are about how the brain works, not about trying or attitude. Knowing them helps us set things up to fit.</p>';
+  if (hard.length){
+    h += '<ul>' + hard.map(r => '<li>' + esc(AREA[r.id] || r.area) + (r.note ? ': ' + esc(r.note) : '') + '</li>').join('') + '</ul>';
+  } else {
+    h += '<p class="muted">Check the rows that fit on Step 3 and they will appear here in plain language.</p>';
+  }
+
+  // behavior as signal
+  const signals = d.behaviors.filter(b => b.can === 'no' || b.signal === 'yes');
+  if (signals.length){
+    h += '<div class="why"><b>When you see a hard moment, read it as a signal.</b> For ' +
+         signals.map(b => esc(b.name || 'these moments')).join(', ') +
+         ', the behavior is usually a sign that the moment is asking more than the brain can do right then. It is a signal, not misbehavior. We respond by making the moment fit better, not by pushing harder.</div>';
+  }
+
+  // 4. what we're changing and why
+  const changeGoals = d.goals.filter(g => g.holder === 'teacher' || g.holder === 'env' || g.holder === 'family');
+  h += '<h2>What we are changing, and why</h2>';
+  h += '<p>We change things around them so the fit is better. We expect the hard moments to ease because the fit improved, not because anyone pushed harder.</p>';
+  if (changeGoals.length){
+    h += '<ul>' + changeGoals.map(g => '<li>' + esc(g.text) + (g.target ? ' <span class="muted">(aiming for: ' + esc(g.target) + ')</span>' : '') + '</li>').join('') + '</ul>';
+  } else {
+    h += '<p class="muted">Add driver goals on Step 5 (held by a teacher, the environment, or the family) and they will appear here.</p>';
+  }
+
+  // 5. your part (caregiver)
+  if (isCg){
+    const yourGoals = d.goals.filter(g => g.holder === 'caregiver');
+    h += '<h2>Your part in the plan</h2>';
+    if (yourGoals.length){
+      h += '<ul>' + yourGoals.map(g => '<li>' + esc(g.text) + (g.target ? ' <span class="muted">(aiming for: ' + esc(g.target) + ')</span>' : '') + '</li>').join('') + '</ul>';
+    } else {
+      h += '<p class="muted">Add caregiver goals on Step 5 and they will appear here. Your part should be realistic for a hard week, not a perfect one.</p>';
+    }
+    const cgHard = d.checklist.filter(r => !r.strength && r.caregiver);
+    if (cgHard.length){
+      h += '<div class="why"><b>We are keeping your load realistic.</b> We know some of this is hard for you too (' +
+           cgHard.map(r => esc((AREA[r.id] || r.area).toLowerCase())).join(', ') +
+           '). A plan only works if it fits you as well, so tell us if any part is too much.</div>';
+    }
+  }
+
+  // 6. small steps for them
+  const theirGoals = d.goals.filter(g => g.holder === 'client');
+  if (theirGoals.length){
+    h += '<h2>Small steps for them</h2>';
+    h += '<ul>' + theirGoals.map(g => '<li>' + esc(g.text) + (g.target ? ' <span class="muted">(aiming for: ' + esc(g.target) + ')</span>' : '') + '</li>').join('') + '</ul>';
+  }
+
+  // 7. their voice
+  const voices = d.fit.filter(f => f.voice);
+  if (voices.length){
+    h += '<h2>Their voice in the plan</h2>';
+    h += '<ul>' + voices.map(f => '<li>' + esc(f.voice) + '</li>').join('') + '</ul>';
+  }
+
+  h += '<p class="cg-lead" style="margin-top:16px">We made this together, and it can change as we learn what works. If something here does not fit your family, tell us, and we will adjust it.</p>';
+  return h;
+}
+
+function renderProvider(d){
+  const AREA = {
+    directions:'Holding onto more than one direction at a time',
+    beat:'Needing a few extra seconds to take something in (slower processing)',
+    following:'Catching everything that is said (language and comprehension)',
+    starting:'Getting started, and switching from one thing to the next (executive function)',
+    abstract:'Abstract ideas like time, money, and "if you do this, then that" (cause and effect)',
+    toomuch:'Sensory overload when there is too much coming in',
+    interoception:'Noticing body signals like hunger, tiredness, or rising upset (interoception)',
+    steady:'Staying regulated enough to think when stressed',
+    basics:'Hunger and sleep, and how strongly they affect the day',
+    everyday:'Everyday tasks and social situations'
+  };
+  let h = '';
+  h += '<h2 style="color:#1a6b5a;border-bottom-color:#cfe6db">For the team around this person</h2>';
+  h += '<p class="cg-lead">A brief, brain-based summary for the other professionals who support this person (teachers, case managers, support workers, and other providers). It explains what we are working on and what helps, so support stays consistent across settings. Share only as appropriate and with consent.</p>';
+
+  h += '<h2>What we are working toward</h2>';
+  if (d.referralGoal) h += '<p>'+esc(d.referralGoal)+'</p>';
+  else h += '<p class="muted">Goal to be added.</p>';
+
+  const hard = d.checklist.filter(r => !r.strength && r.client);
+  h += '<h2>How this person’s brain works right now</h2>';
+  h += '<p>These are genuine brain-based differences, not motivation or attitude. Understanding them helps the whole team set things up to fit.</p>';
+  if (hard.length){
+    h += '<ul>' + hard.map(r => '<li>' + esc(AREA[r.id] || r.area) + (r.note ? ': ' + esc(r.note) : '') + '</li>').join('') + '</ul>';
+  } else { h += '<p class="muted">From the brain snapshot.</p>'; }
+  const strengths = d.checklist.filter(r => r.strength && r.note);
+  if (strengths.length){ h += '<p><span class="lbl">Strengths to build on:</span> ' + strengths.map(s => esc(s.note)).join('; ') + '</p>'; }
+
+  const signals = d.behaviors.filter(b => b.can === 'no' || b.signal === 'yes');
+  if (signals.length){
+    h += '<div class="why"><b>Reading behavior:</b> when you see ' + signals.map(b => esc(b.name || 'these moments')).join(', ') +
+         ', it usually signals the demand is bigger than the brain can meet in that moment, not defiance. Adjusting the demand or the support works better than increasing pressure.</div>';
+  }
+
+  const teamGoals = d.goals.filter(g => g.holder === 'teacher' || g.holder === 'env' || g.holder === 'family' || g.holder === 'caregiver');
+  h += '<h2>What helps, and what to keep consistent</h2>';
+  if (teamGoals.length){
+    h += '<ul>' + teamGoals.map(g => '<li>' + esc(g.text) + (g.target ? ' <span class="muted">(aiming for: ' + esc(g.target) + ')</span>' : '') + '</li>').join('') + '</ul>';
+  } else { h += '<p class="muted">Supports and accommodations to be added on Step 5.</p>'; }
+  h += '<p class="cg-lead">Consistency across settings matters: the more home, school, and clinic use the same supports and language, the better they work. Please reach out to coordinate.</p>';
+
+  return h;
+}
+
+let lastData = null;
+$('#generateBtn').onclick = () => {
+  lastData = collect();
+  showView('full');
+  $('#builder').style.display = 'none';
+  $('#stepper').style.display = 'none';
+  $('#builderFooter').style.display = 'none';
+  $('.toolbar').style.display = 'none';
+  $('#output').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+function showView(which){
+  if (!lastData) return;
+  $('#viewFull').classList.toggle('on', which==='full');
+  $('#viewPaste').classList.toggle('on', which==='paste');
+  $('#viewCaregiver').classList.toggle('on', which==='caregiver');
+  $('#viewProvider').classList.toggle('on', which==='provider');
+  if (which==='full') $('#outDoc').innerHTML = renderFull(lastData);
+  else if (which==='caregiver') $('#outDoc').innerHTML = renderCaregiver(lastData);
+  else if (which==='provider') $('#outDoc').innerHTML = renderProvider(lastData);
+  else $('#outDoc').innerHTML = '<pre class="paste">'+esc(renderPaste(lastData))+'</pre>';
+  $('#outDoc').dataset.view = which;
+}
+$('#viewFull').onclick = () => showView('full');
+$('#viewPaste').onclick = () => showView('paste');
+$('#viewCaregiver').onclick = () => showView('caregiver');
+$('#viewProvider').onclick = () => showView('provider');
+$('#editBtn').onclick = () => {
+  $('#output').classList.remove('show');
+  $('#builder').style.display = '';
+  $('#stepper').style.display = '';
+  $('#builderFooter').style.display = '';
+  $$('.toolbar').forEach(t=>t.style.display='');
+};
+$('#copyBtn').onclick = async () => {
+  const txt = ($('#outDoc').dataset.view==='paste') ? renderPaste(lastData) : $('#outDoc').innerText;
+  try { await navigator.clipboard.writeText(txt); $('#copyBtn').textContent='Copied!'; setTimeout(()=>$('#copyBtn').textContent='Copy',1500); }
+  catch(e){ alert('Copy failed. Select the text manually.'); }
+};
+$('#printBtn').onclick = () => {
+  document.body.classList.add('printing-output');
+  window.print();
+};
+window.addEventListener('afterprint', () => document.body.classList.remove('printing-output'));
+
+/* ============================================================
+   SAVE / LOAD (localStorage, this device only)
+   ============================================================ */
+const KEY = 'bb-treatment-plan-draft';
+$('#saveBtn').onclick = () => {
+  const snap = {
+    whofor: $('input[name="whofor"]:checked').value,
+    clientProblems: $('#clientProblems').value,
+    familyProblems: $('#familyProblems').value,
+    chips: [...selectedChips],
+    people: $$('#peopleList .item-card').map(c=>({who:c.querySelector('.p-who').value, role:c.querySelector('.p-role').value, when:c.querySelector('.p-when').value})),
+    checklist: $$('#checklistBody tr').map(tr=>({id:tr.dataset.row, client:tr.querySelector('.cl').checked, caregiver:tr.querySelector('.cg').checked, note:tr.querySelector('.rownote').value})),
+    behaviors: $$('#behaviorList .item-card').map(c=>{const n=c.dataset.seq;return{name:c.querySelector('.b-name').value, ask:c.querySelector('.b-ask').value, can:(c.querySelector('input[name="bcan'+n+'"]:checked')||{}).value||'', signal:(c.querySelector('input[name="bsig'+n+'"]:checked')||{}).value||''};}),
+    referralGoal: $('#referralGoal').value,
+    modality: $('#modalitySelect').value,
+    goals: $$('#goalList .item-card').map(c=>({holder:c.querySelector('.g-holder').value, text:c.querySelector('.g-text').value, base:c.querySelector('.g-base').value, target:c.querySelector('.g-target').value, by:c.querySelector('.g-by').value}))
+  };
+  try { localStorage.setItem(KEY, JSON.stringify(snap)); flash('Saved to this browser.'); }
+  catch(e){ flash('Could not save (storage blocked).'); }
+};
+$('#loadBtn').onclick = () => {
+  const raw = localStorage.getItem(KEY);
+  if (!raw){ flash('No saved draft found.'); return; }
+  const d = JSON.parse(raw);
+  // who-for
+  $$('#whofor input').forEach(r=>{ r.checked = (r.value===d.whofor); });
+  document.body.classList.toggle('has-caregiver', d.whofor==='caregiver');
+  $$('#whofor label').forEach(l=>l.classList.toggle('sel', l.querySelector('input').checked));
+  $('#clientProblems').value = d.clientProblems||'';
+  $('#familyProblems').value = d.familyProblems||'';
+  selectedChips.clear(); (d.chips||[]).forEach(id=>selectedChips.add(id));
+  $$('#clientChips .chip').forEach(b=>b.classList.toggle('on', selectedChips.has(b.dataset.id)));
+  refreshSuggested();
+  peopleList.innerHTML=''; (d.people||[]).forEach(p=>addPerson(p));
+  $$('#checklistBody tr').forEach(tr=>{
+    const row = (d.checklist||[]).find(x=>x.id===tr.dataset.row);
+    if (row){ tr.querySelector('.cl').checked=row.client; tr.querySelector('.cg').checked=row.caregiver; tr.querySelector('.rownote').value=row.note||''; }
+  });
+  behaviorList.innerHTML=''; behaviorSeq=0; (d.behaviors||[]).forEach(b=>addBehavior(b));
+  $('#referralGoal').value = d.referralGoal||'';
+  $('#modalitySelect').value = d.modality||''; $('#modalitySelect').onchange();
+  goalList.innerHTML=''; goalSeq=0; (d.goals||[]).forEach(g=>addGoal(g));
+  flash('Draft loaded.');
+};
+$('#clearBtn').onclick = () => {
+  if (!confirm('Clear everything in this builder? This also removes the saved draft on this device.')) return;
+  localStorage.removeItem(KEY);
+  location.reload();
+};
+function flash(msg){ const s=$('#saveStatus'); s.textContent=msg; setTimeout(()=>{s.textContent='';},2500); }
+
+/* ============================================================
+   INIT
+   ============================================================ */
+addPerson({ who:'Client', role:'' });
+addBehavior();
+addGoal({ holder:'teacher' });
+addGoal({ holder:'client' });
+goStep(0);
+</script>
+</body>
+</html>
