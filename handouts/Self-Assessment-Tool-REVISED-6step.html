@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain-Based Practice Self-Assessment (Revised, 6-step)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: letter; margin: 0.4in 0.45in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family:'Open Sans',sans-serif; font-size:13px; line-height:1.5; color:#222; background:#eef1f5; }
+  .handout { max-width:850px; margin:0 auto; padding:18px 16px 60px; }
+
+  .protobar { background:#fef6e7; border:1px solid #f0d9a8; border-left:4px solid #e0a93b; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#6a531c; }
+  .protobar strong { color:#8a6516; }
+
+  .pro-header { position:relative; background:linear-gradient(135deg,#0d1b3e,#1a3a6b 30%,#2c5aa0 55%,#1a6b5a 80%,#0d3b2e); border-radius:8px; overflow:hidden; margin-bottom:12px; }
+  .pro-header-inner { position:relative; z-index:1; display:flex; align-items:center; gap:18px; padding:18px 26px; }
+  .pro-header-logo { flex-shrink:0; width:54px; height:54px; border-radius:50%; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; }
+  .pro-header-logo img { width:44px; height:44px; border-radius:50%; object-fit:cover; }
+  .pro-header-text h1 { font-family:'Lexend',sans-serif; font-size:18px; font-weight:600; color:#fff; }
+  .pro-header-text .sub { font-size:11px; color:rgba(255,255,255,.78); margin-top:3px; }
+  .pro-header-rule { position:relative; z-index:1; height:3px; background:linear-gradient(90deg,#a78bfa,#38bdf8,#34d399,#f472b6,#a78bfa); }
+
+  .intro-box { background:#fff; border:1px solid #e0e6ed; border-radius:8px; padding:14px 18px; margin-bottom:12px; }
+  .intro-box p { font-size:12.5px; color:#333; line-height:1.55; }
+  .intro-box .instructions { font-size:11.5px; color:#555; font-style:italic; margin-top:7px; }
+
+  .last-snapshot { display:none; background:#f3f0fb; border:1px solid #ddd3f3; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:12px; color:#46414e; }
+  .last-snapshot.show { display:block; }
+  .last-snapshot b { color:#5b21b6; }
+
+  .scale-legend { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:14px; padding:8px 12px; background:#fff; border-radius:6px; border:1px solid #e0e6ed; }
+  .scale-legend span { font-size:12px; font-weight:600; color:#444; }
+  .scale-legend span em { font-weight:400; font-style:normal; color:#666; }
+
+  .assessment-section { display:grid; grid-template-columns:4px 1fr; border-radius:6px; overflow:hidden; border:1px solid #e8ecf1; margin-bottom:10px; background:#fff; }
+  .section-accent { background:#2c5aa0; }
+  .assessment-section:nth-child(even) .section-accent { background:#0e8a6e; }
+  .section-body { padding:12px 16px; }
+  .section-body .step-tag { font-family:'Lexend',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#9aa4b2; }
+  .section-body h2 { font-family:'Lexend',sans-serif; font-size:14px; font-weight:600; color:#1a3a6b; margin:1px 0 2px; }
+  .assessment-section:nth-child(even) .section-body h2 { color:#0e8a6e; }
+  .section-body .section-desc { font-size:11px; color:#555; font-style:italic; margin-bottom:10px; }
+
+  .assessment-item { display:flex; align-items:flex-start; gap:10px; padding:7px 0; border-bottom:1px solid #f0f0f0; }
+  .assessment-item:last-child { border-bottom:none; }
+  .item-text { flex:1; font-size:12px; color:#333; line-height:1.45; padding-top:1px; }
+  .rating-options { display:flex; gap:6px; flex-shrink:0; }
+  .rating-options label { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; font-size:10px; color:#888; min-width:26px; }
+  .rating-options input { width:16px; height:16px; accent-color:#2c5aa0; cursor:pointer; margin:0; }
+  .assessment-section:nth-child(even) .rating-options input { accent-color:#0e8a6e; }
+  .advanced-badge { display:inline-block; background:linear-gradient(135deg,#7c3aed,#6d28d9); color:#fff; font-size:9px; font-weight:600; padding:1px 6px; border-radius:3px; text-transform:uppercase; letter-spacing:.3px; margin-right:4px; }
+
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin:16px 0; }
+  .btn { font-family:'Lexend',sans-serif; font-weight:600; font-size:13px; border-radius:7px; padding:10px 18px; cursor:pointer; border:1px solid transparent; }
+  .btn-primary { background:linear-gradient(135deg,#1a3a6b,#2c5aa0); color:#fff; }
+  .btn-ghost { background:#fff; border-color:#cfd6e0; color:#46505e; }
+
+  .results { display:none; background:#fff; border:1px solid #e0e6ed; border-radius:10px; padding:18px 22px; margin-top:6px; }
+  .results.show { display:block; }
+  .results h2 { font-family:'Lexend',sans-serif; font-size:16px; color:#1a3a6b; margin-bottom:8px; }
+  .results .lean { font-size:14px; color:#36414e; margin-bottom:10px; }
+  .results .lean b { color:#5b21b6; }
+  .focus { background:#fff8e9; border-left:4px solid #e0a93b; border-radius:0 6px 6px 0; padding:10px 14px; font-size:12.5px; color:#5a4a1f; margin:10px 0; }
+  .bars { margin:10px 0; }
+  .bar { display:flex; align-items:center; gap:10px; margin:5px 0; font-size:12px; }
+  .bar .bl { width:230px; color:#36414e; }
+  .bar .track { flex:1; height:10px; background:#eef1f5; border-radius:6px; overflow:hidden; }
+  .bar .fill { height:100%; background:linear-gradient(90deg,#2c5aa0,#0e8a6e); border-radius:6px; }
+  .bar .bv { width:34px; text-align:right; color:#7a8492; }
+
+  .pathways { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  @media (max-width:600px){ .pathways{ grid-template-columns:1fr; } }
+  .pcard { border:1px solid #e8ecf1; border-radius:6px; overflow:hidden; }
+  .pcard .ph { padding:9px 14px; font-family:'Lexend',sans-serif; font-size:12.5px; font-weight:600; color:#fff; }
+  .pcard:first-child .ph { background:linear-gradient(135deg,#1a3a6b,#2c5aa0); }
+  .pcard:last-child .ph { background:linear-gradient(135deg,#0d5c4a,#0e8a6e); }
+  .pcard ul { list-style:none; padding:10px 14px; } .pcard li { font-size:11.5px; color:#333; line-height:1.5; padding-left:14px; position:relative; }
+  .pcard li::before { content:''; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background:#2c5aa0; }
+  .pcard:last-child li::before { background:#0e8a6e; }
+
+  .reflect { background:#faf7ef; border:1px solid #e6dcc6; border-radius:8px; padding:14px 18px; margin-top:14px; }
+  .reflect h2 { font-family:'Lexend',sans-serif; font-size:14px; color:#8a5a12; margin-bottom:8px; }
+  .reflect label { display:block; font-size:12px; color:#4a4330; margin:8px 0 4px; }
+  .reflect textarea { width:100%; min-height:46px; border:1px solid #e0c98a; border-radius:5px; padding:7px 9px; font-family:'Open Sans',sans-serif; font-size:12px; resize:vertical; }
+
+  .handout-footer { border-top:2px solid #e0e6ed; padding-top:10px; margin-top:18px; display:flex; justify-content:space-between; align-items:center; }
+  .handout-footer img { height:34px; }
+  .handout-footer .credits { font-size:10px; color:#888; text-align:right; }
+  .no-print { }
+  @media print { body{background:#fff} .no-print{display:none} .protobar{display:none} }
+</style>
+</head>
+<body>
+<div class="handout">
+
+  <div class="protobar no-print"><strong>Revised draft for compare &amp; contrast.</strong> Aligned to the 6-step Clinicians journey, ~17 items instead of 50, snapshot-first. The original 10-section / 50-item version stays at docs/handouts/Self-Assessment-Tool.html.</div>
+
+  <div class="pro-header">
+    <div class="pro-header-inner">
+      <div class="pro-header-logo"><img src="../images/Brain.png" alt="Brain-Based Mental Health"></div>
+      <div class="pro-header-text"><h1>Brain-Based Practice Self-Assessment</h1><div class="sub">A snapshot of where you are on the journey</div></div>
+    </div>
+    <div class="pro-header-rule"></div>
+  </div>
+
+  <div class="intro-box">
+    <p>This is a <strong>snapshot</strong> to orient you, not a test. It mirrors the six steps of the brain-based journey, so your answers point you to where to focus next. There are no right or wrong answers. Rate yourself on what you actually do, not what you know or intend.</p>
+    <p class="instructions">Nothing is sent anywhere. If you save your snapshot, it stays in this browser on this device, so when you come back you can see how things have shifted.</p>
+  </div>
+
+  <div class="last-snapshot no-print" id="lastSnap"></div>
+
+  <div class="scale-legend">
+    <span>1 = <em>Not yet</em></span>
+    <span>2 = <em>Emerging</em></span>
+    <span>3 = <em>Developing</em></span>
+    <span>4 = <em>Integrated</em></span>
+  </div>
+
+  <form id="saform">
+
+  <!-- STEP 1 -->
+  <div class="assessment-section" data-step="1" data-label="Step 1 · Understanding FASD &amp; where you are">
+    <div class="section-accent"></div>
+    <div class="section-body">
+      <div class="step-tag">Step 1</div>
+      <h2>Understanding FASD &amp; where you are</h2>
+      <div class="section-desc">Why brain-based practice matters, and your own starting point.</div>
+      <div class="assessment-item"><div class="item-text">I can explain how prenatal alcohol or drug exposure, trauma, and brain development affect the clients and families I serve.</div><div class="rating-options"><label><input type="radio" name="s1q1" value="1">1</label><label><input type="radio" name="s1q1" value="2">2</label><label><input type="radio" name="s1q1" value="3">3</label><label><input type="radio" name="s1q1" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I can tell the difference, in my own practice, between being brain-based <em>informed</em> and brain-based <em>responsive</em>.</div><div class="rating-options"><label><input type="radio" name="s1q2" value="1">1</label><label><input type="radio" name="s1q2" value="2">2</label><label><input type="radio" name="s1q2" value="3">3</label><label><input type="radio" name="s1q2" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I assume FASD may be present and undiagnosed in my caseload, and I stay alert to it.</div><div class="rating-options"><label><input type="radio" name="s1q3" value="1">1</label><label><input type="radio" name="s1q3" value="2">2</label><label><input type="radio" name="s1q3" value="3">3</label><label><input type="radio" name="s1q3" value="4">4</label></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="assessment-section" data-step="2" data-label="Step 2 · Preparing for therapy">
+    <div class="section-accent"></div>
+    <div class="section-body">
+      <div class="step-tag">Step 2</div>
+      <h2>Preparing for therapy</h2>
+      <div class="section-desc">Setting up the relationship before the work begins.</div>
+      <div class="assessment-item"><div class="item-text">My consent process is accessible to someone who processes language differently: plain language, checked for understanding.</div><div class="rating-options"><label><input type="radio" name="s2q1" value="1">1</label><label><input type="radio" name="s2q1" value="2">2</label><label><input type="radio" name="s2q1" value="3">3</label><label><input type="radio" name="s2q1" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I prepare the person for therapy, not just the paperwork, before the work formally begins.</div><div class="rating-options"><label><input type="radio" name="s2q2" value="1">1</label><label><input type="radio" name="s2q2" value="2">2</label><label><input type="radio" name="s2q2" value="3">3</label><label><input type="radio" name="s2q2" value="4">4</label></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="assessment-section" data-step="3" data-label="Step 3 · Assessment">
+    <div class="section-accent"></div>
+    <div class="section-body">
+      <div class="step-tag">Step 3</div>
+      <h2>Assessment</h2>
+      <div class="section-desc">An ongoing, brain-based process that includes the whole system.</div>
+      <div class="assessment-item"><div class="item-text">I screen for prenatal alcohol exposure and other brain-based factors, and I revisit assessment as the work continues.</div><div class="rating-options"><label><input type="radio" name="s3q1" value="1">1</label><label><input type="radio" name="s3q1" value="2">2</label><label><input type="radio" name="s3q1" value="3">3</label><label><input type="radio" name="s3q1" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">When I work with a child or a dependent adult, I treat the family and support system as part of the assessment.</div><div class="rating-options"><label><input type="radio" name="s3q2" value="1">1</label><label><input type="radio" name="s3q2" value="2">2</label><label><input type="radio" name="s3q2" value="3">3</label><label><input type="radio" name="s3q2" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I recognize when executive functioning, sensory processing, or regulation differences may be driving behavior.</div><div class="rating-options"><label><input type="radio" name="s3q3" value="1">1</label><label><input type="radio" name="s3q3" value="2">2</label><label><input type="radio" name="s3q3" value="3">3</label><label><input type="radio" name="s3q3" value="4">4</label></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="assessment-section" data-step="4" data-label="Step 4 · Treatment planning">
+    <div class="section-accent"></div>
+    <div class="section-body">
+      <div class="step-tag">Step 4</div>
+      <h2>Treatment planning</h2>
+      <div class="section-desc">Plans matched to capacity that flex as you learn.</div>
+      <div class="assessment-item"><div class="item-text">I set goals to the client's current developmental capacity, not their chronological age or assumed potential.</div><div class="rating-options"><label><input type="radio" name="s4q1" value="1">1</label><label><input type="radio" name="s4q1" value="2">2</label><label><input type="radio" name="s4q1" value="3">3</label><label><input type="radio" name="s4q1" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I revisit and adjust the treatment plan as I learn what this brain can actually do.</div><div class="rating-options"><label><input type="radio" name="s4q2" value="1">1</label><label><input type="radio" name="s4q2" value="2">2</label><label><input type="radio" name="s4q2" value="3">3</label><label><input type="radio" name="s4q2" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I write caregiver and environmental goals, and I keep them realistic for a hard week, not a perfect one.</div><div class="rating-options"><label><input type="radio" name="s4q3" value="1">1</label><label><input type="radio" name="s4q3" value="2">2</label><label><input type="radio" name="s4q3" value="3">3</label><label><input type="radio" name="s4q3" value="4">4</label></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="assessment-section" data-step="5" data-label="Step 5 · Treatment">
+    <div class="section-accent"></div>
+    <div class="section-body">
+      <div class="step-tag">Step 5</div>
+      <h2>Treatment</h2>
+      <div class="section-desc">Adapting the work to the brain, and supporting the client's voice.</div>
+      <div class="assessment-item"><div class="item-text">I adapt evidence-based modalities (CBT, DBT, PCIT, and others) to the brain in front of me rather than expecting the client to adapt to the method.</div><div class="rating-options"><label><input type="radio" name="s5q1" value="1">1</label><label><input type="radio" name="s5q1" value="2">2</label><label><input type="radio" name="s5q1" value="3">3</label><label><input type="radio" name="s5q1" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">When a session stalls, I adjust my approach or objective instead of asking the client to try harder.</div><div class="rating-options"><label><input type="radio" name="s5q2" value="1">1</label><label><input type="radio" name="s5q2" value="2">2</label><label><input type="radio" name="s5q2" value="3">3</label><label><input type="radio" name="s5q2" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I actively support the client's own voice and self-advocacy.</div><div class="rating-options"><label><input type="radio" name="s5q3" value="1">1</label><label><input type="radio" name="s5q3" value="2">2</label><label><input type="radio" name="s5q3" value="3">3</label><label><input type="radio" name="s5q3" value="4">4</label></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="assessment-section" data-step="6" data-label="Step 6 · Creating a reflective practice">
+    <div class="section-accent"></div>
+    <div class="section-body">
+      <div class="step-tag">Step 6</div>
+      <h2>Creating a reflective practice</h2>
+      <div class="section-desc">Practice, community, and sustaining growth.</div>
+      <div class="assessment-item"><div class="item-text">I regularly check whether my expectations are realistic given brain-based differences ("can't" vs "won't").</div><div class="rating-options"><label><input type="radio" name="s6q1" value="1">1</label><label><input type="radio" name="s6q1" value="2">2</label><label><input type="radio" name="s6q1" value="3">3</label><label><input type="radio" name="s6q1" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I seek consultation or community when I feel stuck, frustrated, or judgmental.</div><div class="rating-options"><label><input type="radio" name="s6q2" value="1">1</label><label><input type="radio" name="s6q2" value="2">2</label><label><input type="radio" name="s6q2" value="3">3</label><label><input type="radio" name="s6q2" value="4">4</label></div></div>
+      <div class="assessment-item"><div class="item-text">I use reflection to actually change my practice over time, not just to process feelings.</div><div class="rating-options"><label><input type="radio" name="s6q3" value="1">1</label><label><input type="radio" name="s6q3" value="2">2</label><label><input type="radio" name="s6q3" value="3">3</label><label><input type="radio" name="s6q3" value="4">4</label></div></div>
+    </div>
+  </div>
+
+  </form>
+
+  <div class="actions no-print">
+    <button class="btn btn-primary" id="seeBtn" type="button">See my snapshot</button>
+    <button class="btn btn-ghost" id="saveBtn" type="button">Save snapshot to this browser</button>
+    <button class="btn btn-ghost" id="printBtn" type="button">Print / Save as PDF</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <h2>Your snapshot</h2>
+    <div class="lean" id="lean"></div>
+    <div class="bars" id="bars"></div>
+    <div class="focus" id="focus"></div>
+
+    <div class="pathways">
+      <div class="pcard"><div class="ph">Brain-Based Informed</div><ul><li>Build the foundation: FASD, trauma, and brain development</li><li>Screening and recognizing brain-based factors</li><li>Shame-reducing, plain-language client education</li></ul></div>
+      <div class="pcard"><div class="ph">Brain-Based Responsive</div><ul><li>Adapt modalities and plans to the brain in real time</li><li>Capacity-matched, iterative planning with caregivers</li><li>Reflective practice and community of practice</li></ul></div>
+    </div>
+
+    <div class="reflect">
+      <h2>Sit with this</h2>
+      <label>Where do you feel most confident right now?</label>
+      <textarea placeholder="For your own reflection..."></textarea>
+      <label>Where do you feel most stretched, and which step does it point to?</label>
+      <textarea placeholder="For your own reflection..."></textarea>
+    </div>
+  </div>
+
+  <div class="handout-footer">
+    <img src="../images/fasd-united-logo.png" alt="FASD United">
+    <div class="credits">Sponsored by the FASD United Mental Health Work Group<br>Brain-Based Practice: From Understanding to Action</div>
+  </div>
+
+</div>
+
+<script>
+  const KEY = 'bb-self-assessment-history';
+  const form = document.getElementById('saform');
+  const sections = Array.from(document.querySelectorAll('.assessment-section'));
+
+  function sectionScores(){
+    return sections.map(sec => {
+      const inputs = Array.from(sec.querySelectorAll('input[type=radio]:checked')).map(i => +i.value);
+      const total = sec.querySelectorAll('.assessment-item').length;
+      const avg = inputs.length ? inputs.reduce((a,b)=>a+b,0)/inputs.length : 0;
+      return { step: sec.dataset.step, label: sec.dataset.label, avg, answered: inputs.length, total };
+    });
+  }
+  function overall(scores){
+    const ans = scores.filter(s=>s.answered>0);
+    if(!ans.length) return 0;
+    return ans.reduce((a,s)=>a+s.avg,0)/ans.length;
+  }
+  function leanText(o){
+    if(o < 2) return ['Earlier in the journey.', 'Brain-Based <b>Informed</b> is your home base right now. Start with the foundation.'];
+    if(o < 2.75) return ['Building real experience.', 'Solidify the Brain-Based <b>Informed</b> foundation; you are on your way.'];
+    if(o < 3.5) return ['Strong awareness, integrating.', 'You are stepping into Brain-Based <b>Responsive</b>.'];
+    return ['Deeply integrated.', 'Brain-Based <b>Responsive</b>. Consider reflective supervision and the community of practice.'];
+  }
+
+  function render(){
+    const scores = sectionScores();
+    if(scores.every(s=>s.answered===0)){ alert('Rate a few items first, then see your snapshot.'); return null; }
+    const o = overall(scores);
+    const [headline, lean] = leanText(o);
+    document.getElementById('lean').innerHTML = '<strong>'+headline+'</strong> '+lean;
+    document.getElementById('bars').innerHTML = scores.map(s=>{
+      const pct = s.answered ? (s.avg/4*100) : 0;
+      const val = s.answered ? s.avg.toFixed(1) : '–';
+      return '<div class="bar"><div class="bl">'+s.label+'</div><div class="track"><div class="fill" style="width:'+pct+'%"></div></div><div class="bv">'+val+'</div></div>';
+    }).join('');
+    const answered = scores.filter(s=>s.answered>0);
+    const low = answered.slice().sort((a,b)=>a.avg-b.avg)[0];
+    if(low) document.getElementById('focus').innerHTML = '<b>Where to focus next:</b> your lowest area is <b>'+low.label+'</b>. That is a good place to put your next bit of learning. Remember, development is uneven across the steps, and that is normal.';
+    document.getElementById('results').classList.add('show');
+    document.getElementById('results').scrollIntoView({behavior:'smooth'});
+    return { overall:o, scores: scores.map(s=>({step:s.step, avg:+s.avg.toFixed(2), answered:s.answered})) };
+  }
+
+  function showLast(){
+    let hist = [];
+    try { hist = JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){}
+    if(!hist.length) return;
+    const prev = hist[hist.length-1];
+    const el = document.getElementById('lastSnap');
+    el.innerHTML = '&#128338; <b>Last snapshot on this device:</b> '+prev.date+' &middot; overall '+prev.overall.toFixed(1)+'/4. Take it again below to see how it has shifted.';
+    el.classList.add('show');
+  }
+
+  document.getElementById('seeBtn').onclick = render;
+  document.getElementById('saveBtn').onclick = function(){
+    const snap = render();
+    if(!snap) return;
+    let hist = [];
+    try { hist = JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){}
+    // date without Date(): use a simple prompt-free stamp via Intl on a fixed now is unavailable; use locale string
+    const now = new Date();
+    snap.date = now.toLocaleDateString();
+    hist.push(snap);
+    try { localStorage.setItem(KEY, JSON.stringify(hist)); alert('Snapshot saved to this browser ('+snap.date+'). It will be here when you come back.'); }
+    catch(e){ alert('Could not save (storage blocked in this browser).'); }
+  };
+  document.getElementById('printBtn').onclick = function(){ render(); window.print(); };
+  showLast();
+</script>
+</body>
+</html>
