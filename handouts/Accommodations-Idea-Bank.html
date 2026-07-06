@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accommodations Idea Bank (Concept Demo)</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef1f5; --surface: #ffffff; --border: #dde3ec; --ink: #1f2733; --ink-dim: #54616f; --ink-faint: #8890a0;
+    --navy: #16335c; --navy-2: #1a3a6b; --blue: #2c5aa0; --blue-bg: #eef3fb; --blue-border: #cfe0f5;
+    --green: #0e8a6e; --green-2: #1a6b5a; --green-bg: #eaf6f0; --green-border: #bfe3d2;
+    --amber-ink: #8a6516; --amber-bg: #fef6e7; --amber-border: #f0d9a8;
+    --purple: #5b21b6; --purple-bg: #f3f0fb; --purple-border: #ddd3f3;
+    --font-display: 'Lexend', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); font-size: 14px; line-height: 1.6; color: var(--ink); background: var(--bg); margin: 0; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 22px 18px 90px; }
+  .hdr { position: relative; background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6b 30%, #2c5aa0 55%, #1a6b5a 80%, #0d3b2e 100%); border-radius: 12px; padding: 24px 30px; color: #fff; }
+  .hdr h1 { font-family: var(--font-display); font-size: 21px; font-weight: 600; }
+  .hdr p { color: rgba(255,255,255,.85); font-size: 13px; margin-top: 6px; max-width: 760px; }
+  .banner { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber-ink); border-radius: 8px; padding: 11px 15px; margin: 14px 0; font-size: 12.5px; }
+  .section-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--blue); margin: 26px 0 4px; }
+  .step { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin: 10px 0 20px; }
+  .step h2 { font-family: var(--font-display); font-size: 18px; color: var(--navy); margin-bottom: 4px; }
+  .step .lead { font-size: 13px; color: var(--ink-dim); margin-bottom: 14px; max-width: 68ch; }
+
+  .search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .search-row input { flex: 1; border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; font-size: 13.5px; background: var(--bg); color: var(--ink); font-family: var(--font-body); }
+  .clear-btn { border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 7px; padding: 8px 14px; font-size: 12.5px; cursor: pointer; font-family: var(--font-display); font-weight: 600; }
+  .chip-group-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); margin: 10px 0 5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { border: 1.5px solid var(--purple-border); background: var(--surface); color: var(--ink-dim); border-radius: 14px; padding: 6px 13px; font-size: 12.5px; cursor: pointer; font-family: var(--font-display); font-weight: 600; }
+  .chip.on { border-color: var(--purple); background: var(--purple-bg); color: var(--purple); }
+  .chip.who { border-color: var(--green-border); }
+  .chip.who.on { border-color: var(--green-2); background: var(--green-bg); color: var(--green-2); }
+  .result-count { font-size: 12px; color: var(--ink-faint); margin: 12px 0 8px; }
+  .domain-group { margin-bottom: 16px; }
+  .domain-group-h { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--purple); background: var(--purple-bg); border-radius: 6px; padding: 6px 11px; margin-bottom: 7px; display: inline-block; }
+  .acc-card { border: 1px solid var(--border); border-radius: 8px; padding: 11px 15px; margin-bottom: 8px; background: var(--bg); }
+  .acc-card .tags { display: flex; gap: 6px; align-items: center; margin-bottom: 5px; }
+  .who-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; border-radius: 10px; padding: 2px 8px; }
+  .who-tag.Client { background: var(--blue-bg); color: var(--navy); }
+  .who-tag.Caregiver { background: var(--green-bg); color: var(--green-2); }
+  .who-tag.Both { background: var(--bg); color: var(--ink-dim); border: 1px solid var(--border); }
+  .src-note { font-size: 11px; color: var(--ink-faint); font-style: italic; }
+  .acc-text { font-size: 12.5px; color: var(--ink); }
+  .no-results { font-size: 13px; color: var(--ink-faint); padding: 14px 0; }
+  .domain-count { font-size: 10.5px; color: var(--ink-faint); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  .onepager { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; }
+  .onepager h3 { font-family: var(--font-display); font-size: 14px; color: var(--navy); margin: 16px 0 6px; }
+  .onepager h3:first-child { margin-top: 0; }
+  .onepager p, .onepager li { font-size: 12.5px; color: var(--ink); line-height: 1.55; }
+  .onepager ul { margin: 4px 0 0 18px; }
+  .brain-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+  .brain-pill { font-size: 11px; border-radius: 12px; padding: 3px 10px; }
+  .brain-pill.strain { background: var(--amber-bg); color: var(--amber-ink); }
+  .brain-pill.fit { background: var(--green-bg); color: var(--green-2); }
+  .qbox { background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: 8px; padding: 12px 15px; margin-top: 6px; }
+  .qbox ol { margin: 4px 0 0 18px; }
+  .qbox li { color: var(--purple); font-size: 12.5px; margin: 5px 0; }
+  .goalbox { background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 9px 13px; margin: 6px 0; font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="hdr">
+    <h1>Accommodations Idea Bank: Concept Demo</h1>
+    <p>A searchable, brain-function-organized bank of accommodation ideas, plus a sample of a personalized one-page summary. This page is a work in progress, not a finished tool.</p>
+  </div>
+
+  <div class="banner"><strong>Concept demo, not final content.</strong> Pick a brain function, optionally narrow by who it's for, optionally search. Results are grouped by domain so nothing gets lost below the fold when you pick more than one.</div>
+
+  <div class="section-label">Piece 2, reorganized by brain function</div>
+  <div class="step">
+    <h2>Searchable accommodations idea bank</h2>
+    <p class="lead">Every domain now includes ideas for the client, the caregiver, or both, so you can think through what each person needs, not just the client.</p>
+
+    <div class="search-row">
+      <input type="text" id="searchBox" placeholder="Search within your selection, or search everything...">
+      <button class="clear-btn" id="clearBtn" type="button">Clear all</button>
+    </div>
+
+    <div class="chip-group-label">Brain function</div>
+    <div class="chips" id="domainChips"></div>
+
+    <div class="chip-group-label">Who it's for</div>
+    <div class="chips" id="whoChips">
+      <button class="chip who" data-w="Client" type="button">Client</button>
+      <button class="chip who" data-w="Caregiver" type="button">Caregiver</button>
+      <button class="chip who" data-w="Both" type="button">Both</button>
+    </div>
+
+    <div class="result-count" id="resultCount"></div>
+    <div id="resultsList"></div>
+  </div>
+
+  <div class="section-label">Piece 1</div>
+  <div class="step">
+    <h2>Personalized one-page summary (sample case)</h2>
+    <p class="lead">Generated from a case, not written from scratch. Meant to print or drop into notes, and does not require coming back to the website.</p>
+
+    <div class="onepager">
+      <h3>Who this is for</h3>
+      <p><strong>Client:</strong> 9-year-old, FASD-informed brain-based profile. <strong>Caregiver:</strong> adoptive mother, involved in treatment.</p>
+
+      <h3>Brain-based profile at a glance</h3>
+      <p><em>Client</em></p>
+      <div class="brain-row">
+        <span class="brain-pill strain">Executive function: Moderate</span>
+        <span class="brain-pill strain">Processing speed: Moderate</span>
+        <span class="brain-pill fit">Social &amp; relational: Mild</span>
+      </div>
+      <p><em>Caregiver</em></p>
+      <div class="brain-row">
+        <span class="brain-pill fit">Affect regulation: Mild</span>
+        <span class="brain-pill fit">Executive function: Non-existent</span>
+      </div>
+
+      <h3>Treatment modality and what it asks of the brain</h3>
+      <p><strong>PCIT.</strong> Asks the client's executive function and processing speed (following commands, complying within a timed window) and the caregiver's affect regulation and consistency (staying calm and delivering skills the same way every time).</p>
+
+      <div class="goalbox"><strong>Treatment goal:</strong> Caregiver will use PRIDE skills during CDI sessions, breaking any request into one simple step at a time so the child can follow it.</div>
+
+      <h3>The different parts of treatment</h3>
+      <ul>
+        <li><strong>CDI (Child-Directed Interaction):</strong> caregiver follows the child's lead and narrates play using PRIDE skills.</li>
+        <li><strong>PDI (Parent-Directed Interaction):</strong> caregiver gives commands and the child is expected to comply within a set window.</li>
+        <li><strong>Time-out sequence:</strong> the consequence used when a command is not followed.</li>
+      </ul>
+
+      <h3>Guiding questions for accommodations (work through these, don't just read an answer)</h3>
+      <div class="qbox">
+        <ol>
+          <li>What is this part of treatment actually asking the brain to do?</li>
+          <li>Does the client or caregiver have that capacity right now, based on what we know about them?</li>
+          <li>If not, what could change: the pace, the format, the environment, who's responsible, or the goal itself?</li>
+          <li>What's one idea you haven't tried yet?</li>
+          <li>What will look different in the very next session because of this?</li>
+        </ol>
+      </div>
+      <p style="margin-top:10px;"><em>Need inspiration? See the searchable bank above, filtered to Executive function and Processing speed, Who: Caregiver.</em></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var ACCOMMODATIONS = [
+    // Processing speed
+    { dom: 'Processing speed', who: 'Both', src: '', text: 'Allow 10+ seconds of wait time after any question or instruction.' },
+    { dom: 'Processing speed', who: 'Client', src: '', text: 'Give one step at a time; do not stack instructions.' },
+    { dom: 'Processing speed', who: 'Both', src: '', text: 'Extended time on tasks, tests, and transitions; build buffers into schedules.' },
+    { dom: 'Processing speed', who: 'Client', src: '', text: 'Repeat the same wording and wait, rather than rapidly rephrasing.' },
+    { dom: 'Processing speed', who: 'Client', src: '', text: 'Reduce the volume of work while keeping the same learning target.' },
+    { dom: 'Processing speed', who: 'Both', src: '', text: 'Pre-teach content before it is needed so processing happens ahead of time.' },
+    { dom: 'Processing speed', who: 'Both', src: '', text: 'Offer shorter or flexible-length sessions to match attention and stamina.' },
+    { dom: 'Processing speed', who: 'Client', src: '', text: 'Use frequent low-stakes checks instead of one high-stakes moment.' },
+    { dom: 'Processing speed', who: 'Caregiver', src: '', text: 'If the caregiver also needs more time to take in new coaching, slow the teaching pace and check in before adding the next skill.' },
+    { dom: 'Processing speed', who: 'Both', src: '', text: 'Provide processing time before expecting a decision.' },
+    { dom: 'Processing speed', who: 'Client', src: 'PCIT', text: 'Extend the standard 5-second compliance window to 10 to 15 seconds.' },
+
+    // Working memory
+    { dom: 'Working memory', who: 'Both', src: '', text: 'Write everything down; never rely on "remembering." Provide checklists and job aids.' },
+    { dom: 'Working memory', who: 'Client', src: '', text: 'One instruction at a time; confirm one step is done before the next.' },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'Externalize onto a visible board, app, calendar, or sticky notes at point of use.' },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'Provide guided notes, recordings, photos of boards, and written recaps.' },
+    { dom: 'Working memory', who: 'Client', src: '', text: 'Assign consistent "homes" for objects; use labeled bins.' },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'Keep one master list or calendar instead of scattered notes.' },
+    { dom: 'Working memory', who: 'Client', src: '', text: 'Use recorders, photos, and notes to capture information instead of relying on recall.' },
+    { dom: 'Working memory', who: 'Client', src: 'TF-CBT', text: 'Use a storyboard or physical pieces the client can rearrange, instead of holding a sequence verbally.' },
+    { dom: 'Working memory', who: 'Client', src: 'DBT', text: 'Reduce a multi-step script to one or two steps with a visual cue card.' },
+    { dom: 'Working memory', who: 'Caregiver', src: 'PCIT', text: "Provide a visual cue card so the caregiver doesn't have to hold every skill in memory." },
+    { dom: 'Working memory', who: 'Both', src: '', text: "Ask how the person learns before deciding the format of a take-home recap: written, verbal, or visual, rather than defaulting to one for everyone." },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'If written works best, keep it at their developmental language level, short and plain, not clinical wording.' },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'If verbal works best, have them record the key session content themselves, doing less rather than more, so it is in their own words and their own language.' },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'Have the person create the recap rather than the therapist, so it comes out in language they actually understand.' },
+    { dom: 'Working memory', who: 'Both', src: '', text: 'If a visual works best, create one together (drawing, diagram, or photo) instead of a written or verbal recap.' },
+
+    // Executive function
+    { dom: 'Executive function', who: 'Client', src: '', text: 'Break tasks into the smallest concrete first step; provide a model of the finished product.' },
+    { dom: 'Executive function', who: 'Client', src: '', text: 'Visual checklists and task cards; "first/then" framing; limited choices to beat decision paralysis.' },
+    { dom: 'Executive function', who: 'Client', src: '', text: 'Body doubling: work alongside someone rather than expecting independent starts.' },
+    { dom: 'Executive function', who: 'Both', src: '', text: 'Color-coding, labeled folders/bins, one master calendar.' },
+    { dom: 'Executive function', who: 'Both', src: '', text: 'Visual timers, countdowns, and alarms; assume transitions take longer.' },
+    { dom: 'Executive function', who: 'Client', src: '', text: "Help rank tasks; limit the visible to-do list to the top 1 to 3 items." },
+    { dom: 'Executive function', who: 'Caregiver', src: 'CBT', text: 'Move a skill into the environment with caregiver prompting and reminders, rather than relying on the client\'s independent recall.' },
+    { dom: 'Executive function', who: 'Both', src: 'Talk Therapy', text: 'Pair a new activity with a routine that already happens daily.' },
+    { dom: 'Executive function', who: 'Client', src: 'CPS', text: 'Use Plan C: intentionally set a problem aside as an accommodation, not as giving in.' },
+    { dom: 'Executive function', who: 'Client', src: 'ABA', text: 'Shorten high-demand trials and intersperse them with movement.' },
+    { dom: 'Executive function', who: 'Both', src: '', text: 'Give advance warning and countdowns before switching tasks.' },
+    { dom: 'Executive function', who: 'Caregiver', src: '', text: "If the caregiver's own bandwidth is limited, simplify what's asked of them: fewer steps, written reminders, check-in calls, rather than a full home program." },
+    { dom: 'Executive function', who: 'Caregiver', src: 'PMTO', text: 'Shift monitoring and supervision onto the environment (schedules, labels, reminders), not onto the caregiver having to track everything themselves.' },
+    { dom: 'Executive function', who: 'Both', src: '', text: 'Build a consistent ritual or routine for how each session opens and closes, so both client and caregiver know what to expect.' },
+
+    // Attention
+    { dom: 'Attention', who: 'Client', src: '', text: 'Preferential, low-distraction seating; reduce visual clutter; offer a quiet workspace.' },
+    { dom: 'Attention', who: 'Both', src: '', text: "Gain attention and use the person's name before speaking." },
+    { dom: 'Attention', who: 'Client', src: '', text: 'Chunk work; build in scheduled movement and sensory breaks; offer fidget tools.' },
+    { dom: 'Attention', who: 'Both', src: '', text: 'Limit topics or goals per session; complete one before starting another.' },
+    { dom: 'Attention', who: 'Client', src: '', text: 'Noise-canceling headphones, white noise, or a focus-blocking app.' },
+    { dom: 'Attention', who: 'Caregiver', src: '', text: 'If a caregiver is also easily overwhelmed by multiple instructions during coaching, give them one coaching point at a time too.' },
+
+    // Language and comprehension (receptive language)
+    { dom: 'Language & comprehension', who: 'Client', src: '', text: 'Short, concrete, literal sentences; say exactly what you mean; state the positive.' },
+    { dom: 'Language & comprehension', who: 'Both', src: '', text: 'Pair every verbal message with pictures, gestures, demonstration, or written notes.' },
+    { dom: 'Language & comprehension', who: 'Both', src: '', text: 'Check understanding by having them show or restate it, not "do you understand?"' },
+    { dom: 'Language & comprehension', who: 'Both', src: '', text: "Don't assume repeating your words back means they understood. Have them explain it in their own words instead." },
+    { dom: 'Language & comprehension', who: 'Client', src: '', text: 'Pre-teach vocabulary; use plain-language forms and materials.' },
+    { dom: 'Language & comprehension', who: 'Client', src: 'Talk Therapy', text: 'Use a visual feelings chart to point to, instead of generating words from scratch.' },
+    { dom: 'Language & comprehension', who: 'Client', src: 'EMDR', text: 'Gather history through caregiver or collateral report and visuals, instead of requiring a full verbal account.' },
+    { dom: 'Language & comprehension', who: 'Client', src: '', text: 'Consider AAC, picture cards, or text-to-speech.' },
+    { dom: 'Language & comprehension', who: 'Both', src: '', text: 'Remember that fluent talkers may still have weak comprehension ("can talk the talk").' },
+
+    // Abstract reasoning
+    { dom: 'Abstract reasoning', who: 'Client', src: '', text: "Make it concrete and visual; show, don't just tell; use real, tangible examples." },
+    { dom: 'Abstract reasoning', who: 'Client', src: '', text: 'Immediate, concrete cause-and-effect; avoid distant or hypothetical consequences.' },
+    { dom: 'Abstract reasoning', who: 'Both', src: '', text: 'Few, concrete, consistently enforced rules; specific instructions.' },
+    { dom: 'Abstract reasoning', who: 'Client', src: '', text: 'Social stories and models for situations that require reading between the lines.' },
+    { dom: 'Abstract reasoning', who: 'Client', src: '', text: 'Concrete "if X, I do Y" cards instead of abstract problem-solving.' },
+    { dom: 'Abstract reasoning', who: 'Client', src: 'CBT', text: 'Use coping-thought cards and behavioral experiments instead of verbal reframing alone.' },
+    { dom: 'Abstract reasoning', who: 'Caregiver', src: 'CBT', text: "Therapist models the reframe out loud using the client's real, recent example, rather than asking the caregiver to generate it." },
+    { dom: 'Abstract reasoning', who: 'Client', src: 'CPS', text: 'Keep a concern to one short, concrete statement, avoiding abstract or future-oriented framing.' },
+
+    // Sensory processing
+    { dom: 'Sensory processing', who: 'Client', src: '', text: 'Over-responsive: headphones, sunglasses, reduced lighting, soft clothing, advance warning of loud sounds.' },
+    { dom: 'Sensory processing', who: 'Client', src: '', text: 'Under-responsive: movement or "heavy work," fidgets, weighted items, flexible seating.' },
+    { dom: 'Sensory processing', who: 'Client', src: '', text: 'A proactive, scheduled sensory diet; consult OT to individualize.' },
+    { dom: 'Sensory processing', who: 'Client', src: 'Play Therapy', text: 'Curate a smaller, predictable toy set rather than a full open set.' },
+    { dom: 'Sensory processing', who: 'Both', src: 'Theraplay/TBRI', text: 'Make physical closeness or eye contact optional and consent-based.' },
+    { dom: 'Sensory processing', who: 'Both', src: '', text: 'Offer a range of seating options in the room (firm chair, floor, swivel).' },
+    { dom: 'Sensory processing', who: 'Both', src: '', text: 'Keep water and snacks available during session.' },
+    { dom: 'Sensory processing', who: 'Client', src: '', text: 'Teach the person to notice and ask for the sensory input they need.' },
+    { dom: 'Sensory processing', who: 'Caregiver', src: '', text: 'If the session environment overwhelms the caregiver too, offer them the same accommodations (seating, lighting, breaks).' },
+    { dom: 'Sensory processing', who: 'Both', src: '', text: "Take out only a small number of toys or materials at a time, rather than leaving everything out and available." },
+    { dom: 'Sensory processing', who: 'Both', src: '', text: 'Keep a weighted or heavy pillow available for the lap, for either the caregiver or the client, as a calming input.' },
+    { dom: 'Sensory processing', who: 'Both', src: '', text: 'Turn the lights down or off to reduce visual input.' },
+    { dom: 'Sensory processing', who: 'Both', src: '', text: 'Build a blanket fort and hold the session inside it for an enclosed, low-stimulation space.' },
+
+    // Affect regulation
+    { dom: 'Affect regulation', who: 'Both', src: '', text: 'Co-regulate first: stay calm, lower your voice, slow your pace, reduce words and demands during escalation.' },
+    { dom: 'Affect regulation', who: 'Client', src: '', text: 'Validate before problem-solving; connection over lectures; repair after ruptures when calm.' },
+    { dom: 'Affect regulation', who: 'Client', src: '', text: 'Learn early warning signs; intervene before full escalation.' },
+    { dom: 'Affect regulation', who: 'Both', src: '', text: 'A calm-down space used proactively; deep pressure; rhythmic movement.' },
+    { dom: 'Affect regulation', who: 'Client', src: '', text: 'A personalized calming menu and a break/help card.' },
+    { dom: 'Affect regulation', who: 'Client', src: 'PCIT', text: 'Use a co-regulated time-in instead of an exclusionary time-out.' },
+    { dom: 'Affect regulation', who: 'Client', src: 'Theraplay', text: 'Keep activities cooperative, not competitive, and guarantee success by scaffolding.' },
+    { dom: 'Affect regulation', who: 'Caregiver', src: 'TF-CBT', text: 'Prepare and rehearse caregiver and client separately before a joint dysregulating task.' },
+    { dom: 'Affect regulation', who: 'Client', src: 'DDP', text: 'Repair quickly and concretely after a rupture, without requiring verbal reciprocation.' },
+    { dom: 'Affect regulation', who: 'Client', src: 'TBRI', text: 'Emphasize the proactive response over reactive correction; correct only once regulated.' },
+    { dom: 'Affect regulation', who: 'Client', src: 'Somatic Experiencing', text: 'Use even smaller doses (titration) and watch nonverbal cues closely.' },
+    { dom: 'Affect regulation', who: 'Caregiver', src: 'TF-CBT', text: "Coach the caregiver's own regulation strategy before adding a new skill for them to deliver." },
+    { dom: 'Affect regulation', who: 'Caregiver', src: 'PMTO', text: 'Weight the plan toward encouragement rather than correction, especially when caregiver stress is already high.' },
+    { dom: 'Affect regulation', who: 'Caregiver', src: 'Families Moving Forward', text: 'Build caregiver-stress support and self-care directly into the treatment dosage, rather than treating it as separate.' },
+    { dom: 'Affect regulation', who: 'Caregiver', src: '', text: 'Normalize that caregivers get dysregulated too. Name it without shame, and build in a reset moment before continuing.' },
+
+    // Interoception and body basics (incl. physiological regulation)
+    { dom: 'Interoception & body basics', who: 'Client', src: '', text: 'Offer food or water on a schedule rather than waiting for reported need.' },
+    { dom: 'Interoception & body basics', who: 'Client', src: '', text: 'Scheduled bathroom breaks; protect consistent sleep.' },
+    { dom: 'Interoception & body basics', who: 'Client', src: '', text: 'Watch for HALT (hungry, angry, lonely, tired) and intervene early.' },
+    { dom: 'Interoception & body basics', who: 'Client', src: '', text: 'Body-check-in routines; scales or visuals to label body states.' },
+    { dom: 'Interoception & body basics', who: 'Client', src: 'Somatic Experiencing', text: 'Use sensation words paired with pictures or body maps, and let the client point or gesture.' },
+    { dom: 'Interoception & body basics', who: 'Client', src: '', text: "Don't assume pain, illness, or fatigue register typically; check proactively." },
+    { dom: 'Interoception & body basics', who: 'Client', src: '', text: 'Adjust clothing for temperature the person may not sense.' },
+    { dom: 'Interoception & body basics', who: 'Caregiver', src: '', text: "Ask the caregiver about their own sleep, meals, and stress load. A depleted caregiver has less capacity to co-regulate." },
+
+    // Memory & learning (split from generalization)
+    { dom: 'Memory & learning', who: 'Client', src: '', text: 'Repeat and re-teach; use spaced repetition and retrieval practice.' },
+    { dom: 'Memory & learning', who: 'Client', src: '', text: 'Chunk into small units; use mnemonics, written and visual summaries.' },
+    { dom: 'Memory & learning', who: 'Client', src: '', text: 'Demonstrate and model; use errorless learning with immediate feedback.' },
+    { dom: 'Memory & learning', who: 'Client', src: 'TF-CBT', text: 'Chunk a long or emotionally loaded task into small pieces across many sessions.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: "Ask how the person learns before deciding the format of a take-home recap: written, verbal, or visual, rather than defaulting to one for everyone." },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'If written works best, keep it at their developmental language level, short and plain, not clinical wording.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'If verbal works best, have them record the key content themselves, doing less rather than more, so it stays in their own words.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'Have the person build the recap rather than the therapist, so it comes out in language they actually understand.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'If a visual works best, create one together (drawing, diagram, or photo) instead of a written or verbal recap.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'Put the next appointment directly into their phone at the end of each session, rather than relying on them to remember or write it down later.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'Make checking the date on their phone a routine at the start of each session, so remembering it becomes a habit, not a one-time ask.' },
+    { dom: 'Memory & learning', who: 'Both', src: '', text: 'Send a text reminder the day before the appointment.' },
+
+    // Generalization (its own category now)
+    { dom: 'Generalization', who: 'Both', src: '', text: 'Practice in the real setting it will be used; keep supports consistent across people.' },
+    { dom: 'Generalization', who: 'Both', src: '', text: 'Teach in the natural setting with real people and materials, not just the clinic.' },
+    { dom: 'Generalization', who: 'Both', src: '', text: 'Assume transfer will not happen automatically; plan to re-teach in every new setting.' },
+    { dom: 'Generalization', who: 'Caregiver', src: '', text: "Coach the skill directly in the caregiver's own environment (home), not just describe it in the office, so it actually transfers." },
+    { dom: 'Generalization', who: 'Both', src: '', text: 'Practice the skill weekly, even after the treatment modality itself calls it finished, since transfer to other environments often takes longer than the modality timeline assumes.' },
+    { dom: 'Generalization', who: 'Both', src: '', text: 'Take pictures of the other environments where the skill needs to happen, and build a social story or handout showing how the skill adapts to each one.' },
+    { dom: 'Generalization', who: 'Both', src: '', text: 'Work on one environment at a time rather than expecting the skill to transfer to every setting at once.' },
+
+    // Social and relational
+    { dom: 'Social & relational', who: 'Client', src: '', text: 'Concrete social scripts; social stories to preview; role-play before it happens.' },
+    { dom: 'Social & relational', who: 'Client', src: '', text: 'A peer buddy or mentor; small, structured groups; explicit turn-taking rules.' },
+    { dom: 'Social & relational', who: 'Client', src: '', text: 'Pre-arrange a graceful exit; allow parallel participation.' },
+    { dom: 'Social & relational', who: 'Client', src: '', text: 'Teach the hidden curriculum explicitly.' },
+    { dom: 'Social & relational', who: 'Client', src: 'Play Therapy', text: 'Model turn-taking and social response directly in play, rather than assuming it generalizes.' },
+    { dom: 'Social & relational', who: 'Both', src: 'PACT', text: 'Pair group work with caregiver co-treatment, so the same language is reinforced at home.' },
+    { dom: 'Social & relational', who: 'Client', src: '', text: 'Honor special interests as connection points.' },
+    { dom: 'Social & relational', who: 'Caregiver', src: '', text: 'Connect the caregiver with a peer support group or another caregiver further along, not just skills training.' }
+  ];
+
+  var ALL_DOMAINS = Array.from(new Set(ACCOMMODATIONS.map(function (a) { return a.dom; })));
+  var activeDomains = [];
+  var activeWho = [];
+
+  function renderChips() {
+    document.getElementById('domainChips').innerHTML = ALL_DOMAINS.map(function (d) {
+      var count = ACCOMMODATIONS.filter(function (a) { return a.dom === d; }).length;
+      return '<button class="chip" data-d="' + d + '" type="button">' + d + ' <span class="domain-count">(' + count + ')</span></button>';
+    }).join('');
+
+    document.querySelectorAll('#domainChips .chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var d = chip.dataset.d;
+        var idx = activeDomains.indexOf(d);
+        if (idx > -1) activeDomains.splice(idx, 1); else activeDomains.push(d);
+        chip.classList.toggle('on');
+        renderResults();
+      });
+    });
+
+    document.querySelectorAll('#whoChips .chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var w = chip.dataset.w;
+        var idx = activeWho.indexOf(w);
+        if (idx > -1) activeWho.splice(idx, 1); else activeWho.push(w);
+        chip.classList.toggle('on');
+        renderResults();
+      });
+    });
+  }
+
+  function renderResults() {
+    var q = document.getElementById('searchBox').value.trim().toLowerCase();
+    var filtered = ACCOMMODATIONS.filter(function (a) {
+      if (activeDomains.length && activeDomains.indexOf(a.dom) === -1) return false;
+      if (activeWho.length && activeWho.indexOf(a.who) === -1) return false;
+      if (q) {
+        var hay = (a.dom + ' ' + a.who + ' ' + a.src + ' ' + a.text).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    document.getElementById('resultCount').textContent = filtered.length + ' of ' + ACCOMMODATIONS.length + ' accommodations shown.';
+
+    if (!filtered.length) {
+      document.getElementById('resultsList').innerHTML = '<div class="no-results">No matches. Try clearing a filter or a different search word.</div>';
+      return;
+    }
+
+    var groups = [];
+    var groupIndex = {};
+    filtered.forEach(function (a) {
+      if (!(a.dom in groupIndex)) {
+        groupIndex[a.dom] = groups.length;
+        groups.push({ dom: a.dom, items: [] });
+      }
+      groups[groupIndex[a.dom]].items.push(a);
+    });
+
+    document.getElementById('resultsList').innerHTML = groups.map(function (g) {
+      var cards = g.items.map(function (a) {
+        var srcNote = a.src ? '<span class="src-note">seen in: ' + a.src + '</span>' : '';
+        return '<div class="acc-card">' +
+          '<div class="tags"><span class="who-tag ' + a.who + '">' + a.who + '</span>' + srcNote + '</div>' +
+          '<div class="acc-text">' + a.text + '</div>' +
+          '</div>';
+      }).join('');
+      return '<div class="domain-group"><div class="domain-group-h">' + g.dom + ' (' + g.items.length + ')</div>' + cards + '</div>';
+    }).join('');
+  }
+
+  document.getElementById('searchBox').addEventListener('input', renderResults);
+  document.getElementById('clearBtn').addEventListener('click', function () {
+    document.getElementById('searchBox').value = '';
+    activeDomains = []; activeWho = [];
+    document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+    renderResults();
+  });
+
+  renderChips();
+  renderResults();
+</script>
+
+</body>
+</html>
