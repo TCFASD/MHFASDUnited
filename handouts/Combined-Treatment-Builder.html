@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combined Treatment Builder: Concept Mockup</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --bg: #eef1f5;
+    --surface: #ffffff;
+    --border: #dde3ec;
+    --ink: #1f2733;
+    --ink-dim: #54616f;
+    --ink-faint: #8890a0;
+    --navy: #16335c;
+    --navy-2: #1a3a6b;
+    --blue: #2c5aa0;
+    --blue-bg: #eef3fb;
+    --blue-border: #cfe0f5;
+    --green: #0e8a6e;
+    --green-2: #1a6b5a;
+    --green-bg: #eaf6f0;
+    --green-border: #bfe3d2;
+    --amber-ink: #8a6516;
+    --amber-bg: #fef6e7;
+    --amber-border: #f0d9a8;
+    --purple: #5b21b6;
+    --purple-bg: #f3f0fb;
+    --purple-border: #ddd3f3;
+    --danger-ink: #9a2b2b;
+    --danger-bg: #fbe7e7;
+    --danger-border: #eccaca;
+    --focus: #2c5aa0;
+    --font-display: -apple-system, "Segoe UI", "Segoe UI Semibold", system-ui, sans-serif;
+    --font-body: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1620;
+      --surface: #16202f;
+      --border: #2a3648;
+      --ink: #e7ecf3;
+      --ink-dim: #a3aec1;
+      --ink-faint: #6f7a8c;
+      --navy: #9db8e8;
+      --navy-2: #b8cdf2;
+      --blue: #6fa2e8;
+      --blue-bg: #1c2b42;
+      --blue-border: #2f486e;
+      --green: #6fd9b5;
+      --green-2: #8fe6c8;
+      --green-bg: #12352b;
+      --green-border: #1f5a44;
+      --amber-ink: #e8c675;
+      --amber-bg: #3a2f14;
+      --amber-border: #6b5220;
+      --purple: #c9b6f0;
+      --purple-bg: #241a3d;
+      --purple-border: #4a3570;
+      --danger-ink: #ec9a9a;
+      --danger-bg: #3a1616;
+      --danger-border: #6b2626;
+      --focus: #8fb8f0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1620; --surface: #16202f; --border: #2a3648; --ink: #e7ecf3; --ink-dim: #a3aec1; --ink-faint: #6f7a8c;
+    --navy: #9db8e8; --navy-2: #b8cdf2; --blue: #6fa2e8; --blue-bg: #1c2b42; --blue-border: #2f486e;
+    --green: #6fd9b5; --green-2: #8fe6c8; --green-bg: #12352b; --green-border: #1f5a44;
+    --amber-ink: #e8c675; --amber-bg: #3a2f14; --amber-border: #6b5220;
+    --purple: #c9b6f0; --purple-bg: #241a3d; --purple-border: #4a3570;
+    --danger-ink: #ec9a9a; --danger-bg: #3a1616; --danger-border: #6b2626; --focus: #8fb8f0;
+  }
+  :root[data-theme="light"] {
+    --bg: #eef1f5; --surface: #ffffff; --border: #dde3ec; --ink: #1f2733; --ink-dim: #54616f; --ink-faint: #8890a0;
+    --navy: #16335c; --navy-2: #1a3a6b; --blue: #2c5aa0; --blue-bg: #eef3fb; --blue-border: #cfe0f5;
+    --green: #0e8a6e; --green-2: #1a6b5a; --green-bg: #eaf6f0; --green-border: #bfe3d2;
+    --amber-ink: #8a6516; --amber-bg: #fef6e7; --amber-border: #f0d9a8;
+    --purple: #5b21b6; --purple-bg: #f3f0fb; --purple-border: #ddd3f3;
+    --danger-ink: #9a2b2b; --danger-bg: #fbe7e7; --danger-border: #eccaca; --focus: #2c5aa0;
+  }
+
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); font-size: 14px; line-height: 1.6; color: var(--ink); background: var(--bg); margin: 0; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 22px 18px 90px; }
+
+  a { color: var(--blue); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+
+  .hdr {
+    position: relative;
+    background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6b 30%, #2c5aa0 55%, #1a6b5a 80%, #0d3b2e 100%);
+    border-radius: 12px; padding: 26px 30px; color: #fff; overflow: hidden;
+  }
+  .hdr h1 { font-family: var(--font-display); font-size: 23px; font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
+  .hdr p { color: rgba(255,255,255,.85); font-size: 13.5px; margin-top: 6px; max-width: 760px; }
+  .hdr .rule { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, #a78bfa, #38bdf8, #34d399, #f472b6, #a78bfa); }
+
+  .banner { display: flex; gap: 10px; border-radius: 8px; padding: 11px 15px; margin: 14px 0; font-size: 12.5px; border: 1px solid; }
+  .banner.mock { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-ink); }
+  .banner.gap { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger-ink); }
+  .banner strong { font-weight: 700; }
+
+  .roadmap { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
+  .rstep { flex: 1 1 96px; text-align: center; border: 1px solid var(--border); background: var(--surface); border-radius: 7px; padding: 8px 6px; font-family: var(--font-display); font-size: 10.5px; color: var(--ink-dim); }
+  .rstep.now { background: var(--navy); color: #fff; border-color: var(--navy); font-weight: 600; }
+  .rstep .n { display: block; font-size: 9px; opacity: .75; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+
+  .step { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin: 16px 0; }
+  .step-k { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--blue); }
+  .step h2 { font-family: var(--font-display); font-size: 18px; color: var(--navy); margin: 3px 0 4px; text-wrap: balance; }
+  .step .lead { font-size: 13px; color: var(--ink-dim); margin-bottom: 14px; max-width: 62ch; }
+
+  .anno { display: flex; gap: 9px; align-items: flex-start; background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 10px 13px; margin: 12px 0; font-size: 12px; color: var(--ink); }
+  .anno .tag { flex-shrink: 0; font-weight: 700; color: var(--green-2); white-space: nowrap; }
+
+  .branches { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+  .branch { flex: 1 1 220px; border: 2px solid var(--border); border-radius: 9px; padding: 13px 15px; cursor: pointer; transition: .15s; background: var(--surface); text-align: left; font-family: inherit; color: inherit; }
+  .branch:hover { border-color: var(--blue); }
+  .branch.sel { border-color: var(--navy); background: var(--blue-bg); }
+  .branch .bt { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--navy); }
+  .branch .bd { font-size: 11.5px; color: var(--ink-dim); margin-top: 3px; }
+
+  .people { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .pcard { border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 13px; font-size: 12.5px; background: var(--bg); }
+  .pcard .role { font-weight: 600; color: var(--navy); } .pcard .sub { color: var(--ink-faint); font-size: 11px; }
+  .addbtn { border: 1px dashed var(--blue-border); background: var(--blue-bg); color: var(--navy-2); border-radius: 8px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; font-family: var(--font-display); cursor: pointer; }
+  .agefield { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--ink); }
+  .agefield input { width: 70px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; background: var(--surface); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .supportive-prompt { background: var(--green-bg); border: 1px solid var(--green-border); border-left: 4px solid var(--green); border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 12px; color: var(--green-2); display: none; }
+  .supportive-prompt.show { display: block; }
+
+  .script-box { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--bg); margin-top: 8px; }
+  .script-box h4 { font-family: var(--font-display); font-size: 13px; color: var(--navy); margin-bottom: 6px; }
+  .script-box ol { margin: 0 0 0 18px; font-size: 12.5px; color: var(--ink); padding: 0; }
+  .script-box li { margin: 5px 0; }
+  .script-box .q { font-style: italic; }
+  .srcnote { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-faint); border: 1px solid var(--border); background: var(--surface); border-radius: 6px; padding: 4px 9px; margin: 3px 6px 0 0; }
+  .srcnote::before { content: "source:"; font-weight: 700; color: var(--ink-dim); }
+
+  .navigator { background: var(--amber-bg); border: 1px solid var(--amber-border); border-left: 4px solid #e0a93b; border-radius: 0 6px 6px 0; padding: 12px 16px; margin-top: 12px; font-size: 12.5px; color: var(--amber-ink); }
+  .navigator b { font-weight: 700; }
+  .navigator a { color: var(--amber-ink); font-weight: 700; text-decoration: underline; }
+  .navigator .connect-script { background: var(--surface); border: 1px solid var(--amber-border); border-radius: 6px; padding: 9px 12px; margin-top: 8px; font-style: italic; color: var(--ink); }
+  .navigator .connect-who { display: block; font-style: normal; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 10.5px; color: var(--amber-ink); margin-bottom: 3px; }
+
+  .why-box { background: var(--blue-bg); border: 1px solid var(--blue-border); border-radius: 8px; padding: 13px 16px; margin-bottom: 12px; font-size: 12.5px; color: var(--ink); }
+  .why-box b { color: var(--navy); }
+
+  .audience-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+  .achip { border: 1.5px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 16px; padding: 6px 14px; font-size: 12px; font-family: var(--font-display); font-weight: 600; cursor: pointer; }
+  .achip.on { border-color: var(--navy); background: var(--blue-bg); color: var(--navy); }
+  .audience-note { font-size: 11.5px; color: var(--ink-faint); margin-bottom: 4px; }
+
+  .pcard { display: inline-flex; flex-direction: column; gap: 2px; position: relative; }
+  .pcard .rm { position: absolute; top: 3px; right: 5px; border: none; background: none; color: var(--ink-faint); cursor: pointer; font-size: 12px; line-height: 1; padding: 2px; }
+  .pcard .rm:hover { color: var(--danger-ink); }
+  .pcard input.edit { border: 1px solid transparent; background: transparent; font-size: inherit; font-family: inherit; color: inherit; padding: 0; width: 100%; }
+  .pcard input.edit:hover, .pcard input.edit:focus { border-color: var(--border); background: var(--surface); border-radius: 4px; padding: 1px 3px; }
+  .pcard input.role-edit { font-weight: 600; color: var(--navy); }
+  .pcard input.sub-edit { color: var(--ink-faint); font-size: 11px; }
+
+  .gapbox { border: 1.5px dashed var(--danger-border); background: var(--danger-bg); border-radius: 8px; padding: 12px 15px; margin-top: 10px; font-size: 12.5px; color: var(--danger-ink); }
+  .gapbox b { font-weight: 700; }
+  .domtable { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+  .domtable th, .domtable td { border: 1px solid var(--border); padding: 6px 9px; text-align: left; }
+  .domtable th { background: var(--navy); color: #fff; font-family: var(--font-display); font-weight: 500; font-size: 11.5px; }
+  .domtable td.n { text-align: center; font-variant-numeric: tabular-nums; }
+  .domtable tr.key td:first-child { font-weight: 700; color: var(--green-2); }
+
+  .qa-everyone { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .qa-card { flex: 1 1 260px; border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; background: var(--bg); }
+  .qa-card .who { font-family: var(--font-display); font-weight: 600; color: var(--navy); font-size: 12.5px; margin-bottom: 4px; }
+  .qa-card textarea { width: 100%; min-height: 44px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; font-family: inherit; resize: vertical; background: var(--surface); color: var(--ink); }
+
+  .scale-compare { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+  .scale-opt { flex: 1 1 300px; border: 1px solid var(--border); border-radius: 8px; padding: 12px 15px; }
+  .scale-opt h4 { font-family: var(--font-display); font-size: 12.5px; color: var(--navy); margin-bottom: 8px; }
+  .scale-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+  .lvl { font-size: 10.5px; border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; color: var(--ink-dim); }
+  .lvl.a1 { background: var(--danger-bg); color: var(--danger-ink); border-color: var(--danger-border); }
+  .lvl.a2 { background: var(--amber-bg); color: var(--amber-ink); border-color: var(--amber-border); }
+  .lvl.a3 { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+  .lvl.a4 { background: var(--green-bg); color: var(--green-2); border-color: var(--green-border); }
+  .scale-note { font-size: 11.5px; color: var(--ink-faint); }
+
+  .stage-capture { border: 1px solid var(--purple-border); background: var(--purple-bg); border-radius: 8px; padding: 13px 16px; margin-top: 12px; }
+  .stage-capture h4 { font-family: var(--font-display); font-size: 13px; color: var(--purple); margin-bottom: 6px; }
+  .stage-capture p { font-size: 12px; color: var(--purple); opacity: .9; }
+  .stage-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .pill { border: 1px solid var(--purple-border); background: var(--surface); border-radius: 14px; padding: 5px 12px; font-size: 11.5px; color: var(--purple); cursor: pointer; font-family: inherit; }
+  .pill.on { background: var(--purple); border-color: var(--purple); color: #fff; font-weight: 600; }
+  .agehint-toggle { font-size: 11px; color: var(--ink-faint); margin-top: 8px; }
+
+  .placeholder-list { margin: 6px 0 0 20px; font-size: 13px; color: var(--ink-dim); line-height: 1.9; padding: 0; }
+  .placeholder-list b { color: var(--ink); }
+
+  .picker-box { background: var(--surface); border: 1.5px dashed var(--purple-border); border-radius: 8px; padding: 12px 15px; margin: 10px 0; }
+  .picker-box .pk-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--purple); margin-bottom: 7px; }
+  .pk-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+  .pk-chip { border: 1.5px solid var(--purple-border); background: var(--surface); color: var(--ink-dim); border-radius: 14px; padding: 5px 12px; font-size: 11.5px; font-family: var(--font-display); font-weight: 600; cursor: pointer; }
+  .pk-chip.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .pk-display { font-size: 13px; color: var(--ink); line-height: 1.55; }
+  .pk-display.hdr-style { color: rgba(255,255,255,.92); }
+
+  .persontabs { display: flex; gap: 6px; margin: 4px 0 12px; }
+  .ptab { border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 7px 7px 0 0; padding: 8px 15px; font-family: var(--font-display); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .ptab.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .ppane { display: none; }
+  .ppane.on { display: block; }
+
+  .ratetable { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 12.5px; }
+  .ratetable th, .ratetable td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: middle; }
+  .ratetable th { background: var(--navy); color: #fff; font-family: var(--font-display); font-weight: 500; font-size: 11.5px; }
+  .ratetable .dom { font-weight: 600; color: var(--navy); }
+  .ratetable .dom .sub { display: block; font-weight: 400; color: var(--ink-faint); font-size: 11px; }
+  .rate-row { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  .rate-btn { border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; cursor: pointer; font-family: inherit; }
+  .rate-btn.sel-ne { background: var(--green-bg); border-color: var(--green-border); color: var(--green-2); font-weight: 700; }
+  .rate-btn.sel-mild { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); font-weight: 700; }
+  .rate-btn.sel-mod { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-ink); font-weight: 700; }
+  .rate-btn.sel-sev { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger-ink); font-weight: 700; }
+  .strengths-input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12.5px; background: var(--surface); color: var(--ink); font-family: inherit; }
+  .rate-summary { font-size: 12px; color: var(--ink-faint); margin-top: 8px; }
+
+  .block-h { font-family: var(--font-display); font-size: 14.5px; color: var(--navy); margin: 18px 0 6px; }
+  .modality-select { width: 100%; max-width: 480px; border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; font-size: 13px; background: var(--surface); color: var(--ink); font-family: inherit; }
+  .other-modality-input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; background: var(--surface); color: var(--ink); font-family: inherit; margin-top: 6px; }
+
+  .fit-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; border-radius: 12px; padding: 2px 9px; white-space: nowrap; }
+  .fit-pill::before { content: ''; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .fit-pill.fit-ok { background: var(--green-bg); color: var(--green-2); } .fit-pill.fit-ok::before { background: var(--green-2); }
+  .fit-pill.fit-strain { background: var(--amber-bg); color: var(--amber-ink); } .fit-pill.fit-strain::before { background: var(--amber-ink); }
+  .fit-pill.fit-mis { background: var(--danger-bg); color: var(--danger-ink); } .fit-pill.fit-mis::before { background: var(--danger-ink); }
+  .fit-pill.fit-unrated { background: var(--bg); color: var(--ink-faint); border: 1px solid var(--border); } .fit-pill.fit-unrated::before { background: var(--ink-faint); }
+
+  .goal-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 15px; margin-bottom: 8px; background: var(--bg); }
+  .goal-card.chosen { border-color: var(--navy); background: var(--blue-bg); }
+  .goal-card .gtitle { font-family: var(--font-display); font-weight: 600; color: var(--navy); font-size: 12.5px; margin-bottom: 4px; }
+  .goal-card .gwhy { font-size: 12px; color: var(--ink-dim); margin-top: 4px; }
+  .goal-pick-btn { border: 1px solid var(--blue-border); background: var(--surface); color: var(--navy-2); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; cursor: pointer; font-family: var(--font-display); font-weight: 600; margin-top: 8px; }
+  .goal-pick-btn.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .manual-goal-input { width: 100%; min-height: 50px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; background: var(--surface); color: var(--ink); font-family: inherit; resize: vertical; }
+
+  .role-card { border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; margin-bottom: 8px; background: var(--surface); }
+  .role-card .rd { font-weight: 600; color: var(--navy); font-size: 12.5px; }
+  .role-card .rt { font-size: 12px; color: var(--ink-dim); margin-top: 4px; }
+  .role-card .who { font-weight: 700; }
+  .role-card.role-shared { background: var(--green-bg); border-color: var(--green-border); }
+
+  .comp-card { border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; margin-bottom: 12px; background: var(--surface); }
+  .comp-card .cname { font-family: var(--font-display); font-weight: 600; color: var(--navy); font-size: 13.5px; margin-bottom: 6px; }
+  .comp-card .cline { font-size: 12.5px; color: var(--ink); margin: 5px 0; }
+  .comp-card .cline b { color: var(--navy); }
+  .comp-card .lookslike { background: var(--bg); border-radius: 6px; padding: 9px 12px; margin-top: 8px; }
+  .comp-card .lookslike .llrow { font-size: 12px; color: var(--ink-dim); margin: 3px 0; }
+  .comp-card .lookslike .llrow b { color: var(--green-2); }
+  .goal-pill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .goal-pill { border: 1px solid var(--blue-border); background: var(--blue-bg); color: var(--navy-2); border-radius: 14px; padding: 5px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
+  .goal-pill .rm { border: none; background: none; color: var(--navy-2); cursor: pointer; font-size: 12px; }
+
+  .foot { margin-top: 26px; text-align: center; font-size: 11px; color: var(--ink-faint); }
+
+  .out-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; justify-content: space-between; align-items: center; }
+  .out-btn { font-family: var(--font-display); font-size: 12.5px; font-weight: 600; border-radius: 7px; padding: 8px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); }
+  .out-btn.primary { background: linear-gradient(135deg, var(--navy-2), var(--blue)); border-color: var(--navy-2); color: #fff; }
+  .out-views { display: inline-flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; flex-wrap: wrap; }
+  .out-view-btn { border: none; border-left: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); padding: 8px 16px; font-size: 12.5px; font-family: var(--font-display); font-weight: 600; cursor: pointer; }
+  .out-view-btn:first-child { border-left: none; }
+  .out-view-btn.on { background: var(--navy); color: #fff; }
+  .out-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 26px 30px; }
+  .out-panel h3 { font-family: var(--font-display); font-size: 15px; color: var(--blue); border-bottom: 2px solid var(--border); padding-bottom: 5px; margin: 20px 0 8px; }
+  .out-panel h3:first-child { margin-top: 0; }
+  .out-panel p, .out-panel li { font-size: 12.5px; color: var(--ink); line-height: 1.55; }
+  .out-panel ul, .out-panel ol { margin: 4px 0 0 18px; }
+  .out-empty { font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+  .out-guide { background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: 8px; padding: 12px 15px; margin-top: 6px; }
+  .out-guide ol { margin: 4px 0 0 18px; }
+  .out-guide li { color: var(--purple); font-size: 12.5px; margin: 5px 0; }
+  .out-linkbox { background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 9px 13px; margin-top: 10px; font-size: 12.5px; }
+  .out-paste { white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 12.5px; line-height: 1.6; color: var(--ink); margin: 0; }
+
+  .onepager-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; margin-top: 10px; }
+  .onepager-box h4 { font-family: var(--font-display); font-size: 13.5px; color: var(--navy); margin: 14px 0 6px; }
+  .onepager-box h4:first-child { margin-top: 0; }
+  .onepager-box p, .onepager-box li { font-size: 12.5px; color: var(--ink); line-height: 1.55; }
+  .onepager-box ul { margin: 4px 0 0 18px; }
+  .brain-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+  .brain-pill { font-size: 11px; border-radius: 12px; padding: 3px 10px; }
+  .brain-pill.strain { background: var(--amber-bg); color: var(--amber-ink); }
+  .brain-pill.fit { background: var(--green-bg); color: var(--green-2); }
+  .qbox { background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: 8px; padding: 12px 15px; margin-top: 6px; }
+  .qbox ol { margin: 4px 0 0 18px; }
+  .qbox li { color: var(--purple); font-size: 12.5px; margin: 5px 0; }
+  .goalbox { background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 9px 13px; margin: 6px 0; font-size: 12.5px; }
+
+  @media print {
+    body { background: #fff; }
+    .hdr .rule, .banner, .picker-box, .roadmap, .out-toolbar, .delve-toolbar, .foot { display: none !important; }
+    .step { display: none !important; border: none; padding: 0; margin: 0; }
+    body[data-print-target="outputs"] .step.out-print-only { display: block !important; }
+    body[data-print-target="delve"] .step.delve-print-only { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hdr">
+    <h1>Combined Treatment Builder: Concept Mockup</h1>
+    <p>Working title only. One flow merging screening, assessment, treatment planning, and treatment adaptation into a single guided, brain-based tool. Hosted here so it's viewable regardless of local browser/network restrictions.</p>
+    <div class="rule"></div>
+  </div>
+
+  <div class="banner mock"><strong>Static mockup for design review.</strong> Nothing here saves or generates real output. Interactive bits: population branches plus editable people cards (Step 1), the audience chips in Step 2 (select any combination, scripts and FASD United connect-language update to match), the working Option A domain-rating table and stage pills (Step 4), and the purple-dashed <strong>wording pickers</strong> throughout. Click any option live to compare with a group. Local file references are shown as source notes, not live links, since this preview isn't running from the project folder.</div>
+
+  <div class="picker-box">
+    <div class="pk-label">Pick live: opening instructions shown at the top of the real tool</div>
+    <div class="pk-chips" id="framingPicker">
+      <button class="pk-chip on" data-v="a" type="button">Option A (direct)</button>
+      <button class="pk-chip" data-v="b" type="button">Option B (warmer)</button>
+    </div>
+    <div class="pk-display" id="framingDisplay"></div>
+  </div>
+
+  <div class="roadmap">
+    <div class="rstep now"><span class="n">1</span>People involved</div>
+    <div class="rstep now"><span class="n">2</span>Screening</div>
+    <div class="rstep now"><span class="n">3</span>Presenting problems</div>
+    <div class="rstep now"><span class="n">4</span>Brain function</div>
+    <div class="rstep"><span class="n">5</span>Modality</div>
+    <div class="rstep"><span class="n">6</span>Fit &amp; goal realism</div>
+    <div class="rstep"><span class="n">7</span>Delve into treatment</div>
+    <div class="rstep"><span class="n">8</span>Outputs</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-k">Step 1</div>
+    <h2 id="step1Heading">People involved in treatment</h2>
+
+    <div class="picker-box">
+      <div class="pk-label">Pick live: Step 1 heading</div>
+      <div class="pk-chips" id="headingPicker">
+        <button class="pk-chip on" data-v="People involved in treatment" type="button">People Involved in Treatment</button>
+        <button class="pk-chip" data-v="Who&#8217;s involved in treatment" type="button">Who's Involved in Treatment</button>
+        <button class="pk-chip" data-v="Treatment team &amp; support network" type="button">Treatment Team &amp; Support Network</button>
+        <button class="pk-chip" data-v="Who&#8217;s in the picture" type="button">Who's in the Picture</button>
+      </div>
+    </div>
+
+    <p class="lead">The answer below decides which screening script Step 2 uses, and how many brain-profile columns Step 4 needs. Pick a path to see it change below.</p>
+
+    <div class="branches" id="branches">
+      <button class="branch sel" data-b="kin" type="button"><div class="bt">Child with a caregiver, not living with birth parent</div><div class="bd">Adoptive, kinship (grandparent, other relative), or other placement</div></button>
+      <button class="branch" data-b="bm" type="button"><div class="bt" id="bmLabel">Child with a caregiver, and the birth mother is also part of treatment</div><div class="bd">Caregiver plus direct access to the birth mother</div></button>
+      <button class="branch" data-b="foster" type="button"><div class="bt">Child without a caregiver</div><div class="bd">Foster care / no consistent caregiver in the treatment picture</div></button>
+      <button class="branch" data-b="adult" type="button"><div class="bt">Adult</div><div class="bd">Client is the adult themselves</div></button>
+    </div>
+
+    <div class="picker-box">
+      <div class="pk-label">Pick live: wording for the "birth mother involved" branch above</div>
+      <div class="pk-chips" id="bmPicker">
+        <button class="pk-chip on" data-v="Child with a caregiver, and the birth mother is also part of treatment" type="button">...and the birth mother is also part of treatment</button>
+        <button class="pk-chip" data-v="Child in a caregiver&#8217;s home, birth mother participating in treatment" type="button">...birth mother participating in treatment</button>
+        <button class="pk-chip" data-v="Caregiver plus an involved birth mother" type="button">Caregiver plus an involved birth mother</button>
+        <button class="pk-chip" data-v="Child with a caregiver &#8212; birth mother is part of the picture" type="button">...birth mother is part of the picture</button>
+      </div>
+    </div>
+
+    <div class="agefield"><label for="ageInput">Client's age:</label> <input type="number" placeholder="e.g. 9" id="ageInput"></div>
+
+    <div class="people" id="people">
+      <div class="pcard"><input class="edit role-edit" value="Client" disabled><input class="edit sub-edit" value="identified client" disabled></div>
+      <div class="pcard" id="cgCard"><input class="edit role-edit" value="Caregiver 1"><input class="edit sub-edit" value="adoptive / kinship caregiver"></div>
+      <button class="addbtn" type="button" id="addPersonBtn">+ Add another caregiver / support person</button>
+    </div>
+
+    <div class="supportive-prompt" id="supportivePrompt">Since this is an adult client, take a moment to think through whether there's a supportive adult worth bringing into the case (a partner, sibling, close friend, or mentor). This isn't required, just worth a deliberate pause before moving on.</div>
+
+    <div class="anno"><span class="tag">Why it matters</span><span>This branch is the fork point for the whole tool, not just a label. It changes the exact wording of the screening script in Step 2, and who gets a brain-function profile in Step 4.</span></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-k">Step 2</div>
+    <h2>PAE / FASD screening</h2>
+    <p class="lead">Full source material lives in the <code>pae-fasd-screening</code> skill.</p>
+
+    <div class="why-box"><b>Why we ask:</b> prenatal alcohol exposure is one of the most common, and most commonly missed, contributors to the neurodevelopmental profile this tool helps you think through. Naming it early, even when the answer is "unknown," changes how we understand behavior, tailor treatment, and connect the family to the right supports. This isn't about assigning blame. Ask the same way in every case, not just ones that "look at risk." That's what keeps it from feeling like an accusation.</p></div>
+
+    <div class="audience-note">Who are you talking to? Select any that apply. The case may call for more than one script (e.g. a caregiver <em>and</em> an involved birth mother).</div>
+    <div class="audience-tabs" id="audienceTabs">
+      <button class="achip" data-a="bm" type="button">Birth parent</button>
+      <button class="achip on" data-a="kin" type="button">Caregiver (adoptive / kinship / foster)</button>
+      <button class="achip" data-a="foster" type="button">No consistent caregiver (records &amp; observation)</button>
+      <button class="achip" data-a="adult" type="button">Adult client, self-report</button>
+    </div>
+
+    <div class="script-box" id="scriptKin">
+      <h4>Screening through the adoptive/kinship caregiver</h4>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">Opener (adapt either, before moving into the questions alongside other routine birth-history items):</p>
+      <ol>
+        <li class="q">"As part of getting to know your child's story, we ask a few questions about the pregnancy, birth, and early experiences after birth. These questions help us understand your child's early environment and how we can best support them. You're welcome to answer as much or as little as feels comfortable."</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Short screening questions:</p>
+      <ol>
+        <li class="q">"Did [child]'s mother drink alcohol before she knew she was pregnant?"</li>
+        <li class="q">"Did [child]'s mother drink alcohol after she knew she was pregnant?"</li>
+        <li class="q">"How do you know? (Did you witness use? Is there indirect evidence such as a DUI, records, or a reliable informant?)"</li>
+      </ol>
+      <div><span class="srcnote">PAE Clinician Toolkit</span><span class="srcnote">Home Visitors Implementation Guide</span></div>
+    </div>
+
+    <div class="script-box" id="scriptBm" style="display:none">
+      <h4>Direct screening with the birth mother</h4>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">Opener:</p>
+      <ol>
+        <li class="q">"We'll ask a few questions about your pregnancy and your child's early life after birth. Understanding these early experiences can help us better support your child. Please take your time, and feel free to share only what you feel comfortable with."</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Short screening questions:</p>
+      <ol>
+        <li class="q">"How far along were you before you found out you were pregnant?"</li>
+        <li class="q">"Before you knew you were pregnant, how much alcohol did you drink?"</li>
+        <li class="q">"After you found out you were pregnant, how much alcohol did you drink?"</li>
+        <li>Any disclosure = a positive screen. No need to quantify to act on it.</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">If it's positive, one way to respond:</p>
+      <ol>
+        <li class="q">"Thank you for sharing that with me. I know that's not always easy to talk about. Many families have had similar experiences. It doesn't mean anything is wrong, but it can be helpful for us to keep it in mind as we support your child's development."</li>
+      </ol>
+      <div><span class="srcnote">AAP Screening Implementation Guide</span><span class="srcnote">Home Visitors Implementation Guide</span></div>
+    </div>
+
+    <div class="script-box" id="scriptFoster" style="display:none">
+      <h4>No consistent caregiver, talking to a case manager or case worker</h4>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">Opener, since the case manager wasn't present for the pregnancy and is being asked to help piece together a record, not to disclose personal history:</p>
+      <ol>
+        <li class="q">"I'd like to ask a few questions about [child]'s background before they came into care. Some of this might be in the file, and some you might not know, and that's fine too. Anything you can tell me helps us take better care of [child]."</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Questions and steps, noted in the Home Visitors guide as "most common with foster and adoptive families":</p>
+      <ol>
+        <li class="q">"Is there anything in the case file about the birth mother's alcohol use during the pregnancy?"</li>
+        <li class="q">"When did the birth mother find out she was pregnant, if that's documented?"</li>
+        <li class="q">"Do you know anything about the birth mother's history with alcohol, before or after this pregnancy?"</li>
+        <li>Ask the family or agency to review child welfare documents, birth records, and legal records. Exposure is sometimes documented but gets overlooked.</li>
+        <li>Check for growth issues (short stature, low weight), intellectual disability, seizure disorder, or microcephaly.</li>
+        <li>Document the outcome regardless of what you find. Use one of four labels: Confirmed, Suspected, Unconfirmed with red flags, or No information.</li>
+      </ol>
+      <div><span class="srcnote">Home Visitors Implementation Guide</span><span class="srcnote">Neurodevelopmental Screen (Waite)</span></div>
+    </div>
+
+    <div class="script-box" id="scriptAdult" style="display:none">
+      <h4>Adult self-report, no reliable prenatal history</h4>
+      <div class="gapbox" style="margin-bottom:10px;"><b>Real BSI-FASD items still not sourced.</b> Citation for contacting the authors: Widder et al. (2021), <i>Evaluation of the German biographic screening interview for FASD (BSI-FASD)</i>, Scientific Reports 11:5233, doi.org/10.1038/s41598-021-83942-2. Corresponding author Michael Widder, Dept. of Psychiatry &amp; Psychotherapy, FAU Erlangen-Nürnberg, Germany. Until those items are in hand, questions below are a working draft, not verbatim BSI-FASD.</div>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">Opener:</p>
+      <ol>
+        <li class="q">"I'm going to ask a few questions about your own early life and your family. Some of these you might not know the answer to, and that's fine. Just tell me what you do know."</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Questions below are written in plain, simple language on purpose, since processing complex or multi-part questions is often one of the very things this screen is trying to identify. Direct history, asked in third person (the adult is reporting on their mother's pregnancy secondhand):</p>
+      <ol>
+        <li class="q">"Do you know anything about when your mom was pregnant with you?"</li>
+        <li class="q">"Was your mom trying to have a baby, or did it happen as a surprise?"</li>
+        <li class="q">"Was your mom going through a hard time when she was pregnant with you? Like a divorce, a big fight, or something scary?"</li>
+        <li class="q">"Is your mom still alive? Is your dad still alive?"</li>
+        <li class="q">"Do you know how many weeks or months your mom was pregnant before she found out?"</li>
+        <li class="q">"Do you know if your mom drank alcohol before she found out she was pregnant? Did she drink after she found out?"</li>
+        <li class="q">"Did your mom or dad drink alcohol when you were growing up? Did you ever see them get really drunk?"</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Adapted from the Home Visitors guide's supplemental questions:</p>
+      <ol>
+        <li class="q">"Do you know if your mom used drugs when she was pregnant with you?"</li>
+        <li class="q">"Were you a small baby? Did you have trouble growing when you were little?"</li>
+        <li class="q">"Were you adopted, or did you live in foster care as a kid?"</li>
+        <li class="q">"Does anyone in your family have brain, learning, or mental health problems?"</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Original, inspired by the BSI-FASD's domain structure, not verbatim:</p>
+      <ol>
+        <li class="q">"Did you learn to walk or talk later than other kids?"</li>
+        <li class="q">"Has a doctor ever told you that you have ADHD, a learning problem, or a mental health problem?"</li>
+        <li class="q">"Is it hard for you to keep track of money, remember your schedule, or finish plans, even when you're trying hard?"</li>
+        <li class="q">"Have you had trouble keeping a job or a place to live, even when you're trying hard?"</li>
+      </ol>
+      <div><span class="srcnote">BSI-FASD structure (Widder et al. 2021)</span><span class="srcnote">Home Visitors Implementation Guide</span></div>
+    </div>
+
+    <div class="navigator" id="navBox">
+      <b>Screen came back positive or suspected?</b> Treat this as a bridge to support groups, education, and community for the family, not just a diagnostic referral. It helps the clinician navigating this for the first time too. Suggested script, by who you're talking to:
+      <div id="connectScripts"></div>
+      <div style="margin-top:8px;">Link: <a href="https://fasdunited.org/family-navigator/" target="_blank" rel="noopener">fasdunited.org/family-navigator</a></div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-k">Step 3</div>
+    <h2>Presenting problems</h2>
+    <p class="lead">Why is the client entering treatment, and what are they hoping to get out of it? Everyone in the room answers, not just the client.</p>
+    <div class="qa-everyone">
+      <div class="qa-card"><div class="who">Client</div><textarea placeholder="What brought you in? What are you hoping for?"></textarea></div>
+      <div class="qa-card"><div class="who">Caregiver</div><textarea placeholder="What brought [child] in? What are you hoping for?"></textarea></div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-k">Step 4</div>
+    <h2>Brain function</h2>
+    <div class="why-box">
+      <b>Before rating anything, take a moment to look at what already exists.</b> Ask the individual or family whether they have any past evaluations, an IEP, or a neuropsych, OT, speech-language, or school evaluation on hand. If testing exists, use it to inform the ratings below. If it doesn't, you can still fill this out from direct observation.
+      <div style="margin-top:8px;"><span class="srcnote">Assessment.html: common assessments and what they measure, who administers each, and where results are usually found</span></div>
+    </div>
+
+    <div class="anno" id="caregiverAssessNote">
+      <span class="tag">Why assess the caregiver too</span>
+      <span>When a caregiver is part of treatment, their brain function shapes what the plan can actually ask of them, not just what the client needs. Even a quick observational read, not a formal test, tells you whether a plan is realistic. A caregiver who is stretched thin, has their own executive function challenges, or works from a different sensory or regulation baseline may not be able to consistently deliver what a plan asks, no matter how motivated they are. Naming that early keeps the plan from resting on more capacity than the caregiver actually has, and points to where the caregiver may need their own support to carry their part.</span>
+    </div>
+
+    <div class="banner mock" style="margin-top:14px;"><strong>Both scales shown for comparison, Option A built out below so you can test it live:</strong> your original wording was non-existent/mild/moderate/severe. Option B (Strength/fit language) is shown for reference only, not yet built into a working table.</div>
+
+    <div class="scale-compare">
+      <div class="scale-opt">
+        <h4>Option A: Severity language (built out below)</h4>
+        <div class="scale-row"><span class="lvl a4">Non-existent</span><span class="lvl a3">Mild</span><span class="lvl a2">Moderate</span><span class="lvl a1">Severe</span></div>
+        <div class="scale-note">Familiar to clinicians (matches diagnostic-style language); can read as pathologizing.</div>
+      </div>
+      <div class="scale-opt">
+        <h4>Option B: Strength/fit language (from the Adaptation Builder, reference only)</h4>
+        <div class="scale-row"><span class="lvl a4">Strength</span><span class="lvl a3">Within range</span><span class="lvl a2">Mild difference</span><span class="lvl a1">Significant difference</span></div>
+        <div class="scale-note">Leads with strengths; already proven in the Adaptation Builder; less "textbook" for a court/payer reader.</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--font-display);font-size:14.5px;color:var(--navy);margin:18px 0 6px;">Try it: rate brain function with Option A</h3>
+    <p class="lead" style="margin-bottom:8px;">Click a level for each domain. Client first, then Caregiver 1 if there's a caregiver in the picture.</p>
+
+    <div class="persontabs" id="personTabs">
+      <button class="ptab on" data-p="client" type="button">Client</button>
+      <button class="ptab" data-p="cg1" type="button">Caregiver 1</button>
+    </div>
+
+    <div class="ppane on" data-p="client">
+      <table class="ratetable" id="rateTableClient"></table>
+    </div>
+    <div class="ppane" data-p="cg1">
+      <table class="ratetable" id="rateTableCg1"></table>
+    </div>
+
+    <div class="rate-summary" id="rateSummary"></div>
+
+    <div class="stage-capture">
+      <h4>Developmental timeline (not "dysmaturity")</h4>
+      <p>Framed as where a skill sits on its own timeline, never a label on the person. Age band is an optional clinician-only planning aid, switchable off.</p>
+      <div class="stage-pills" id="stagePills">
+        <button class="pill" type="button">Emerging</button><button class="pill on" type="button">Early childhood</button><button class="pill" type="button">Middle childhood</button><button class="pill" type="button">Pre-teen</button><button class="pill" type="button">Adolescent</button><button class="pill" type="button">Adult</button>
+      </div>
+      <div class="agehint-toggle">Show clinician age-band estimate: off by default, toggle in the real tool.</div>
+    </div>
+
+    <div class="anno"><span class="tag">Child cases</span><span>When there's a caregiver in the picture, this same brain-function pass is repeated for the caregiver, not just the client.</span></div>
+  </div>
+
+  <!-- STEPS 5-6: MODALITY, FIT CHART, ADAPTED GOALS, ROLES -->
+  <div class="step">
+    <div class="step-k">Steps 5–6</div>
+    <h2>Treatment modality, fit, and roles</h2>
+    <p class="lead">One causal chain, in this order: the modality's brain demands are compared against the Step 4 profile, that comparison decides the roles (who covers what), and only then do the adapted goals get written, so the goal wording can reflect the role split instead of guessing at it first.</p>
+
+    <h3 class="block-h">What is the primary treatment modality you are using?</h3>
+    <select class="modality-select" id="modalitySelect">
+      <option value="">Select a modality</option>
+      <option value="pcit">PCIT (Parent-Child Interaction Therapy)</option>
+      <option value="cbt">CBT (Cognitive Behavioral Therapy)</option>
+      <option value="tfcbt">TF-CBT</option>
+      <option value="play">Child-Centered Play Therapy</option>
+      <option value="talk">General / Integrative Talk Therapy</option>
+      <option value="dbt">DBT</option>
+      <option value="emdr">EMDR</option>
+      <option value="theraplay">Theraplay</option>
+      <option value="tbri">TBRI</option>
+      <option value="aba">ABA</option>
+      <option value="pmt">Parent Management Training</option>
+    </select>
+
+    <h3 class="block-h">Are there other modalities you are also using that influence your treatment?</h3>
+    <input class="other-modality-input" type="text" id="otherModalityInput" placeholder="e.g. brief regulation-focused check-ins alongside the primary modality">
+
+    <div id="sampleGoalsBox" class="script-box" style="display:none;margin-top:14px;">
+      <h4 id="sampleGoalsTitle"></h4>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">A general sense of what this modality typically asks for, samples to react to, not the final goals.</p>
+      <ol id="sampleGoalsList" style="margin:0 0 0 18px;font-size:12.5px;"></ol>
+    </div>
+
+    <div id="demandChartBox" style="display:none;">
+      <h3 class="block-h">Brain demands of this modality, compared to the Step 4 profile</h3>
+      <p class="lead" style="margin-bottom:8px;">Pulled directly from what was rated in Step 4. Rate a domain there first if it shows as not yet rated here.</p>
+      <table class="ratetable" id="demandChart"></table>
+    </div>
+
+    <div id="rolesBox" style="display:none;">
+      <h3 class="block-h">Roles &amp; responsibilities</h3>
+      <p class="lead" style="margin-bottom:8px;">Read directly off the chart above: whoever's brain has the gap in a domain determines who needs support there, and whose strength should carry that piece instead. Settling this first is what lets the adapted goals below actually name who does what.</p>
+      <div id="rolesList"></div>
+    </div>
+
+    <div id="altGoalsBox" style="display:none;">
+      <h3 class="block-h">Adapted treatment plan goals</h3>
+      <p class="lead" style="margin-bottom:8px;">Written to reflect the roles above, not just the original goal with a note attached. Pick one, or write your own.</p>
+      <div id="altGoalsList"></div>
+      <div class="goal-card" id="manualGoalCard">
+        <div class="gtitle">Write your own</div>
+        <textarea class="manual-goal-input" id="manualGoalInput" placeholder="Type an adapted goal in your own words..."></textarea>
+        <button class="goal-pick-btn" id="pickManualBtn" type="button">Use this one</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7: DELVE INTO TREATMENT -->
+  <div class="step">
+    <div class="step-k">Step 7</div>
+    <h2>Delve into treatment</h2>
+    <p class="lead">The modality broken into its real components, not treated as one lump. For each component: what it asks of the brain, the accommodation, and a plain sentence describing what each person is actually doing differently in the room.</p>
+
+    <div class="banner mock"><strong>These are samples, not fact.</strong> Every accommodation shown here and below is a starting point for clinical judgment, not a verified prescription for this specific person. For a much larger, searchable set of ideas organized by brain function (not just the few components built into this mockup), see the <a href="../handouts/Accommodations-Idea-Bank.html" target="_blank" rel="noopener">Accommodations Idea Bank</a>, which carries the same disclaimer.</div>
+
+    <div class="anno" id="delveAnchor"><span class="tag">Working from</span><span id="delveAnchorText">Pick a modality and a goal above first.</span></div>
+
+    <div id="delveEmptyNote" class="banner mock" style="display:none;">No component breakdown built yet for this modality in the mockup.</div>
+
+    <div id="componentsList"></div>
+
+    <h3 class="block-h">Other treatment goals active in this case</h3>
+    <p class="lead" style="margin-bottom:8px;">There is often more than one. Add each one here so it is not lost.</p>
+    <div id="otherGoalsList"></div>
+    <input class="other-modality-input" type="text" id="otherGoalInput" placeholder="Type another active treatment goal and press Add">
+    <button class="addbtn" type="button" id="addOtherGoalBtn" style="margin-top:8px;">+ Add another treatment goal</button>
+
+    <h3 class="block-h">Add another component or adaptation</h3>
+    <textarea class="manual-goal-input" id="customComponentInput" placeholder="Describe another part of treatment and the adaptation you are making..."></textarea>
+    <button class="addbtn" type="button" id="addComponentBtn" style="margin-top:8px;">+ Add to the plan</button>
+  </div>
+
+  <!-- STEP 7 DOWNLOADABLE ONE-PAGE SUMMARY -->
+  <div class="step delve-print-only">
+    <div class="step-k">Step 7 &middot; downloadable</div>
+    <h2>Personalized one-page summary</h2>
+    <p class="lead">Generated live from this case, not written from scratch: the brain-based profile, what this modality asks of the brain, the goal, the treatment broken into its parts, and guiding questions with no pre-written answers. Meant to print or save and take with you, so it does not require coming back to the website.</p>
+
+    <div class="delve-toolbar" style="display:flex;gap:8px;margin-bottom:10px;">
+      <button class="out-btn" type="button" id="copyDelveBtn">Copy text</button>
+      <button class="out-btn primary" type="button" id="printDelveBtn">Print / Save PDF</button>
+    </div>
+
+    <div class="onepager-box" id="delveOnepager"></div>
+  </div>
+
+  <!-- STEP 8: OUTPUTS -->
+  <div class="step out-print-only">
+    <div class="step-k">Step 8</div>
+    <h2>Outputs</h2>
+    <p class="lead">Built live from everything entered above, in three versions like the existing Treatment Adaptation Builder: one for the clinician's own note or EHR, one in caregiver-friendly language, and one brief version to share with the rest of the team. Print or save as a PDF, or copy whichever version is showing.</p>
+
+    <div class="out-toolbar">
+      <div class="out-views" id="outViews">
+        <button class="out-view-btn on" type="button" data-v="clin">Full clinical version</button>
+        <button class="out-view-btn" type="button" data-v="paste">Paste-ready (EHR)</button>
+        <button class="out-view-btn" type="button" data-v="fam">Caregiver handout</button>
+        <button class="out-view-btn" type="button" data-v="prov">For other providers</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="out-btn" type="button" id="copyOutputBtn">Copy text</button>
+        <button class="out-btn primary" type="button" id="printOutputBtn">Print / Save PDF</button>
+      </div>
+    </div>
+
+    <div class="out-panel" id="outputPanel"></div>
+
+    <div class="out-linkbox">Need more accommodation ideas than what's built into Step 7? See the <a href="../handouts/Accommodations-Idea-Bank.html" target="_blank" rel="noopener">Accommodations Idea Bank</a>, a much larger, searchable set organized by brain function.</div>
+  </div>
+
+  <div class="foot">Combined Treatment Builder · concept mockup · FASD United Mental Health Work Group</div>
+</div>
+
+<script>
+  var scriptIds = { kin: 'scriptKin', bm: 'scriptBm', foster: 'scriptFoster', adult: 'scriptAdult' };
+  var defaultAudience = { kin: ['kin'], bm: ['bm', 'kin'], foster: ['foster'], adult: ['adult'] };
+  var connectScriptText = {
+    bm: 'To a birth parent: "I\'d like to connect you with FASD United\'s Family Navigator program. They also work directly with birth parents, connecting you with community and resources, without judgment, whether or not we\'re able to confirm anything today."',
+    kin: 'To a caregiver: "I\'d like to connect you with FASD United\'s Family Navigator program. A Navigator can connect you with other families who\'ve walked this road, along with education and community, whether or not this ever becomes a formal diagnosis. You don\'t have to figure this out alone."',
+    foster: 'To the current caregiver or case worker: "I\'d like to connect [child]\'s caregiver with FASD United\'s Family Navigator program so there\'s support and education in place while we keep gathering information."',
+    adult: 'To an adult client: "I\'d like to connect you with FASD United\'s Family Navigator program. They connect adults navigating this for themselves with community, education, and other people who understand what you\'re dealing with. Either way, you\'ll have support."'
+  };
+  var connectWho = { bm: 'Birth parent', kin: 'Caregiver', foster: 'Current caregiver / case worker', adult: 'Adult client' };
+
+  function setAudience(keys) {
+    Object.keys(scriptIds).forEach(function (k) {
+      document.getElementById(scriptIds[k]).style.display = keys.indexOf(k) > -1 ? 'block' : 'none';
+    });
+    document.querySelectorAll('#audienceTabs .achip').forEach(function (chip) {
+      chip.classList.toggle('on', keys.indexOf(chip.dataset.a) > -1);
+    });
+    var box = document.getElementById('connectScripts');
+    box.innerHTML = keys.map(function (k) {
+      return '<div class="connect-script"><span class="connect-who">' + connectWho[k] + '</span>' + connectScriptText[k] + '</div>';
+    }).join('');
+  }
+
+  function updateCaregiverNote(branchKey) {
+    var note = document.getElementById('caregiverAssessNote');
+    note.style.display = (branchKey === 'kin' || branchKey === 'bm') ? 'flex' : 'none';
+  }
+
+  document.getElementById('branches').querySelectorAll('.branch').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.branch').forEach(function (x) { x.classList.remove('sel'); });
+      b.classList.add('sel');
+      setAudience(defaultAudience[b.dataset.b]);
+      updateCaregiverNote(b.dataset.b);
+      renderModalitySection();
+      var cg = document.getElementById('cgCard');
+      var sp = document.getElementById('supportivePrompt');
+      if (b.dataset.b === 'adult') { cg.style.display = 'none'; sp.classList.add('show'); }
+      else { cg.style.display = ''; sp.classList.remove('show'); }
+      if (b.dataset.b === 'foster') {
+        cg.querySelector('.role-edit').value = 'No consistent caregiver';
+        cg.querySelector('.sub-edit').value = 'foster care, roster may stay empty';
+      } else {
+        cg.querySelector('.role-edit').value = 'Caregiver 1';
+        cg.querySelector('.sub-edit').value = 'adoptive / kinship caregiver';
+      }
+    });
+  });
+  updateCaregiverNote('kin');
+
+  document.querySelectorAll('#audienceTabs .achip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var active = Array.prototype.slice.call(document.querySelectorAll('#audienceTabs .achip.on')).map(function (c) { return c.dataset.a; });
+      var k = chip.dataset.a;
+      var idx = active.indexOf(k);
+      if (idx > -1) { if (active.length > 1) active.splice(idx, 1); }
+      else { active.push(k); }
+      setAudience(active);
+    });
+  });
+
+  document.querySelectorAll('#stagePills .pill').forEach(function (p) {
+    p.addEventListener('click', function () {
+      document.querySelectorAll('#stagePills .pill').forEach(function (x) { x.classList.remove('on'); });
+      p.classList.add('on');
+    });
+  });
+
+  var personCount = 1;
+  document.getElementById('addPersonBtn').addEventListener('click', function () {
+    personCount++;
+    var isAdultBranch = document.querySelector('.branch.sel').dataset.b === 'adult';
+    var card = document.createElement('div');
+    card.className = 'pcard';
+    var defaultRole = isAdultBranch ? 'Support person' : ('Caregiver ' + personCount);
+    var defaultSub = isAdultBranch ? 'partner, sibling, friend, mentor...' : 'role / relationship';
+    card.innerHTML =
+      '<button class="rm" type="button" title="Remove">✕</button>' +
+      '<input class="edit role-edit" value="' + defaultRole + '">' +
+      '<input class="edit sub-edit" value="' + defaultSub + '">';
+    card.querySelector('.rm').addEventListener('click', function () { card.remove(); });
+    document.getElementById('addPersonBtn').insertAdjacentElement('beforebegin', card);
+  });
+
+  setAudience(defaultAudience.kin);
+
+  // --- Live wording pickers ---
+  function wirePicker(containerId, onPick) {
+    var box = document.getElementById(containerId);
+    box.querySelectorAll('.pk-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        box.querySelectorAll('.pk-chip').forEach(function (c) { c.classList.remove('on'); });
+        chip.classList.add('on');
+        onPick(chip.dataset.v);
+      });
+    });
+  }
+
+  var framingText = {
+    a: 'This tool doesn’t replace the assessment or treatment plan you’re already building. It adds one more layer, a place to think through this case from an FASD-informed, Brain-Based Responsive perspective: what this particular brain can actually do, and what that means for the plan in front of you.',
+    b: 'This isn’t a replacement for your assessment or treatment plan, it’s a companion step. Use it alongside your current process to look at what you’re already building through an FASD-informed, Brain-Based Responsive lens, so the brain in front of you shapes the plan as much as the presenting problem does.'
+  };
+  document.getElementById('framingDisplay').textContent = framingText.a;
+  wirePicker('framingPicker', function (v) {
+    document.getElementById('framingDisplay').textContent = framingText[v];
+  });
+
+  wirePicker('headingPicker', function (v) {
+    document.getElementById('step1Heading').textContent = v.charAt(0).toUpperCase() + v.slice(1);
+  });
+
+  wirePicker('bmPicker', function (v) {
+    document.getElementById('bmLabel').textContent = v;
+  });
+
+  // --- Step 4: Option A domain rating table ---
+  var domains = [
+    { name: 'Working memory', sub: 'holding and using information in the moment' },
+    { name: 'Processing speed', sub: 'how long it takes to take in and respond' },
+    { name: 'Receptive language', sub: 'understanding what is said' },
+    { name: 'Executive function', sub: 'planning, organizing, starting, switching' },
+    { name: 'Abstract reasoning', sub: 'cause and effect, time, hypotheticals' },
+    { name: 'Sensory processing', sub: 'response to sound, light, touch, movement' },
+    { name: 'Interoception', sub: 'sensing what is happening inside the body: hunger, pain, needing the bathroom, or catching the early physical signs of a big emotion before it takes over' },
+    { name: 'Affect regulation', sub: 'window of tolerance, calming back down' },
+    { name: 'Physiological regulation', sub: 'sleep, hunger, blood sugar' },
+    { name: 'Adaptive & social', sub: 'daily living skills, reading social situations' }
+  ];
+  var levels = [
+    { key: 'ne', label: 'Non-existent' },
+    { key: 'mild', label: 'Mild' },
+    { key: 'mod', label: 'Moderate' },
+    { key: 'sev', label: 'Severe' }
+  ];
+
+  function buildRateTable(tableId) {
+    var table = document.getElementById(tableId);
+    var thead = '<thead><tr><th>Domain</th><th>Rating</th></tr></thead>';
+    var rows = domains.map(function (d, i) {
+      var btns = levels.map(function (lv) {
+        return '<button class="rate-btn" type="button" data-domain="' + i + '" data-level="' + lv.key + '">' + lv.label + '</button>';
+      }).join('');
+      return '<tr><td class="dom">' + d.name + '<span class="sub">' + d.sub + '</span></td><td><div class="rate-row">' + btns + '</div></td></tr>';
+    }).join('');
+    var strengthsRow = '<tr><td class="dom">Strengths<span class="sub">free text, always worth capturing alongside the ratings</span></td><td><input class="strengths-input" type="text" placeholder="e.g. music, gross-motor skills, warm relational engagement"></td></tr>';
+    table.innerHTML = thead + '<tbody>' + rows + strengthsRow + '</tbody>';
+
+    table.querySelectorAll('.rate-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var domainIdx = btn.dataset.domain;
+        table.querySelectorAll('.rate-btn[data-domain="' + domainIdx + '"]').forEach(function (b) {
+          b.classList.remove('sel-ne', 'sel-mild', 'sel-mod', 'sel-sev');
+        });
+        btn.classList.add('sel-' + btn.dataset.level);
+        updateRateSummary();
+        renderModalitySection();
+      });
+    });
+  }
+
+  function updateRateSummary() {
+    var activePane = document.querySelector('.ppane.on table');
+    var flagged = activePane.querySelectorAll('.rate-btn.sel-mod, .rate-btn.sel-sev').length;
+    var rated = activePane.querySelectorAll('.rate-btn.sel-ne, .rate-btn.sel-mild, .rate-btn.sel-mod, .rate-btn.sel-sev').length;
+    document.getElementById('rateSummary').textContent = rated + ' of ' + domains.length + ' domains rated, ' + flagged + ' at moderate or severe.';
+  }
+
+  buildRateTable('rateTableClient');
+  buildRateTable('rateTableCg1');
+  updateRateSummary();
+
+  document.getElementById('personTabs').querySelectorAll('.ptab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var p = tab.dataset.p;
+      document.querySelectorAll('#personTabs .ptab').forEach(function (t) { t.classList.toggle('on', t === tab); });
+      document.querySelectorAll('.ppane').forEach(function (pane) { pane.classList.toggle('on', pane.dataset.p === p); });
+      updateRateSummary();
+    });
+  });
+
+  // --- Steps 5-7: modality, demand chart, adapted goals, roles ---
+  var domainIndex = {};
+  domains.forEach(function (d, i) { domainIndex[d.name] = i; });
+
+  var MODALITY_DATA = {
+    pcit: {
+      name: 'PCIT (Parent-Child Interaction Therapy)',
+      sampleGoals: [
+        'Caregiver will use PRIDE skills consistently during CDI sessions to strengthen the relationship.',
+        'Child will comply with parent-led commands within the PDI structure.',
+        'Caregiver will use effective, calm limit-setting during PDI without escalating conflict.'
+      ],
+      demands: ['Executive function', 'Processing speed', 'Affect regulation', 'Adaptive & social']
+    },
+    cbt: {
+      name: 'CBT (Cognitive Behavioral Therapy)',
+      sampleGoals: [
+        'Client will identify and reframe at least one automatic negative thought per session.',
+        'Client will complete a behavioral activation activity three times per week.',
+        'Client will use a coping thought card when anxiety increases outside of session.'
+      ],
+      demands: ['Abstract reasoning', 'Executive function', 'Receptive language']
+    },
+    tfcbt: {
+      name: 'TF-CBT',
+      sampleGoals: [
+        'Client will create a trauma narrative at a pace matched to their own processing ability.',
+        'Caregiver will practice praise and active-ignoring skills to support the child\'s regulation.',
+        'Client will identify and use one relaxation skill when trauma reminders occur.'
+      ],
+      demands: ['Affect regulation', 'Abstract reasoning', 'Working memory']
+    },
+    play: {
+      name: 'Child-Centered Play Therapy',
+      sampleGoals: [
+        'Child will use play to express and process feelings related to the presenting problem.',
+        'Child will show increased self-regulation during play sessions.',
+        'Caregiver will observe and reflect the child\'s play themes to strengthen the relationship.'
+      ],
+      demands: ['Affect regulation', 'Adaptive & social', 'Sensory processing']
+    },
+    talk: {
+      name: 'General / Integrative Talk Therapy',
+      sampleGoals: [
+        'Client will identify and verbally express feelings related to the presenting problem.',
+        'Client will identify one coping strategy to use between sessions.',
+        'Client will describe a recent situation and the thoughts and feelings connected to it.'
+      ],
+      demands: ['Receptive language', 'Abstract reasoning', 'Executive function']
+    },
+    dbt: {
+      name: 'DBT (Dialectical Behavior Therapy)',
+      sampleGoals: [
+        'Client will use one distress tolerance skill (e.g., TIPP) during a moment of high emotional intensity, tracked on a diary card.',
+        'Client will complete a chain analysis with the therapist after a target behavior occurs.',
+        'Client will practice one mindfulness skill daily between sessions.'
+      ],
+      demands: ['Affect regulation', 'Working memory', 'Abstract reasoning']
+    },
+    emdr: {
+      name: 'EMDR (Eye Movement Desensitization and Reprocessing)',
+      sampleGoals: [
+        'Client will identify and rate a target memory using the SUDs and VOC scales before reprocessing begins.',
+        'Client will complete bilateral stimulation sets while holding the target memory, checking in between sets.',
+        'Client will identify and strengthen a personal resource or safe-place image to use between sessions.'
+      ],
+      demands: ['Working memory', 'Interoception', 'Affect regulation']
+    },
+    theraplay: {
+      name: 'Theraplay',
+      sampleGoals: [
+        'Caregiver will lead a structured activity with the child, matching pace to the child\'s regulation.',
+        'Caregiver and child will complete a nurture activity (e.g., lotion, feeding a snack) within the child\'s comfort.',
+        'Caregiver and child will complete a cooperative challenge activity scaffolded for success.'
+      ],
+      demands: ['Sensory processing', 'Affect regulation', 'Adaptive & social']
+    },
+    tbri: {
+      name: 'TBRI (Trust-Based Relational Intervention)',
+      sampleGoals: [
+        'Caregiver will use a proactive strategy (choice, transition warning) before a known trigger.',
+        'Caregiver will guide the child through a "redo" after a behavioral misstep.',
+        'Caregiver will offer a playful engagement invitation daily.'
+      ],
+      demands: ['Executive function', 'Affect regulation', 'Sensory processing']
+    },
+    aba: {
+      name: 'ABA (Applied Behavior Analysis)',
+      sampleGoals: [
+        'Client will respond correctly across a block of discrete trials with reduced prompting.',
+        'Client will earn and exchange tokens on a visual token board within session.',
+        'Client will demonstrate a learned skill in a new setting with caregiver prompting.'
+      ],
+      demands: ['Processing speed', 'Abstract reasoning', 'Adaptive & social']
+    },
+    pmt: {
+      name: 'Parent Management Training',
+      sampleGoals: [
+        'Caregiver will use labeled praise and positive attention for a target replacement behavior.',
+        'Caregiver will deliver a consistent, planned consequence for a target behavior.',
+        'Caregiver will use a token or point system at home matched to the child\'s developmental level.'
+      ],
+      demands: ['Executive function', 'Affect regulation', 'Abstract reasoning']
+    }
+  };
+
+  // Real, rewritten adapted goals, not the original sentence with a note attached.
+  // Keyed by modality -> domain -> { client: "...", caregiver: "..." }. Falls back to a
+  // generic wrapper (see buildFallbackAdaptedGoal) for any combination not written out yet.
+  var ADAPTED_GOALS = {
+    pcit: {
+      'Executive function': { client: 'Caregiver will use PRIDE skills during CDI sessions, breaking any request into one simple step at a time so the child can follow it.' },
+      'Processing speed': { client: 'Caregiver will use PRIDE skills during CDI sessions and pause several extra seconds after speaking, giving the child time to process and respond before repeating or rephrasing.' },
+      'Affect regulation': {
+        client: 'Caregiver will use PRIDE skills during CDI sessions and stay physically close and calm if the child becomes upset, rather than expecting the child to self-regulate alone.',
+        caregiver: 'Caregiver will practice one regulation strategy of their own before each CDI session, then use PRIDE skills for as much of the session as they can sustain.'
+      },
+      'Adaptive & social': {
+        client: 'Caregiver will use PRIDE skills during CDI sessions, narrating the child\'s play in concrete, literal language rather than assuming social cues will be picked up.',
+        caregiver: 'Caregiver will use PRIDE skills during CDI sessions with the therapist modeling each skill first and coaching in the moment, rather than expecting independent use right away.'
+      }
+    },
+    cbt: {
+      'Abstract reasoning': {
+        client: 'Client will point to a concrete example from their week when a thought made them feel bad, and the therapist will help name a more accurate way to see it, rather than the client generating the reframe independently.',
+        caregiver: 'Caregiver will help the client notice one moment in the week when a thought made them feel bad, using a simple feelings chart rather than talking through abstract reasoning.'
+      },
+      'Executive function': { client: 'Client will use a written thought log with a photo or drawing to flag one hard moment between sessions, instead of tracking and reframing thoughts independently in the moment.' },
+      'Receptive language': { client: 'Therapist will use short, concrete sentences and a visual thought-feeling-behavior chart to work through one moment per session, instead of verbal-only reframing.' }
+    },
+    tfcbt: {
+      'Affect regulation': {
+        client: 'Client will build the trauma narrative in small pieces across many sessions, with a regulation check-in before and after each piece, rather than working through it in a few sessions.',
+        caregiver: 'Caregiver will practice their own calming strategy with the therapist first, then join briefly at the end of narrative sessions once they can stay regulated.'
+      },
+      'Abstract reasoning': { client: 'Client will tell the narrative through drawing or play rather than words alone, since putting the experience into abstract verbal sequence is not yet accessible.' },
+      'Working memory': { client: 'Client will build the narrative using a physical storyboard they can see and touch, instead of relying on holding the sequence in memory.' }
+    },
+    play: {
+      'Affect regulation': { client: 'Child will use play to express feelings, with the therapist naming and co-regulating big feelings in the moment rather than expecting the child to self-soothe.' },
+      'Adaptive & social': { client: 'Child will use play to express feelings, with the therapist modeling turn-taking and social response directly in the play rather than assuming the child will generalize it.' },
+      'Sensory processing': { client: 'Child will use play to express feelings, with sensory-friendly materials selected in advance (quiet toys, no strong smells or textures the child avoids) rather than a standard toy set.' }
+    },
+    talk: {
+      'Receptive language': { client: 'Client will point to or select a feeling from a visual feelings chart related to the presenting problem, instead of generating verbal feeling-words independently.' },
+      'Abstract reasoning': { client: 'Client will describe one concrete recent situation, and the therapist will help name the feeling in it, rather than the client abstractly identifying feelings on their own.' },
+      'Executive function': { client: 'Client will use a simple daily feelings check-in card between sessions instead of independently tracking and bringing up feelings in session.' }
+    }
+  };
+
+  function buildFallbackAdaptedGoal(mod, domain, who) {
+    if (who === 'client') {
+      return mod.sampleGoals[0] + ' Adjusted so the client is supported around ' + domain.toLowerCase() + ': ' + ROLE_SUGGESTIONS[domain] + '.';
+    }
+    return mod.sampleGoals[0] + ' Adjusted so the caregiver is not expected to independently carry ' + domain.toLowerCase() + ': the therapist simplifies what is asked of them here (fewer steps, written reminders, check-ins).';
+  }
+
+  function buildAdaptedGoal(modKey, mod, domain, who) {
+    var entry = ADAPTED_GOALS[modKey] && ADAPTED_GOALS[modKey][domain];
+    if (entry && entry[who]) return entry[who];
+    return buildFallbackAdaptedGoal(mod, domain, who);
+  }
+
+  var ROLE_SUGGESTIONS = {
+    'Working memory': 'provide written or visual reminders instead of relying on verbal recall alone',
+    'Processing speed': 'build in extra pause time and avoid rapid-fire questions so the paced skill transfers',
+    'Receptive language': 'use the same simplified phrasing and visual supports the therapist uses',
+    'Executive function': 'pre-teach and structure the environment ahead of time (visual schedule, steps broken down)',
+    'Abstract reasoning': 'use concrete examples and real situations instead of hypothetical reasoning',
+    'Sensory processing': 'adjust the environment (light, sound, textures) to match sensitivity',
+    'Interoception': 'watch for early physical warning signs and prompt a check-in',
+    'Affect regulation': 'co-regulate rather than expecting independent self-calming, staying close during big feelings',
+    'Physiological regulation': 'protect sleep and meal schedule consistency around session days',
+    'Adaptive & social': 'model and practice the specific routine or social skill in real, everyday settings'
+  };
+
+  function getRating(tableId, domainIdx) {
+    var table = document.getElementById(tableId);
+    if (!table) return null;
+    var selBtn = table.querySelector(
+      '.rate-btn[data-domain="' + domainIdx + '"].sel-ne, ' +
+      '.rate-btn[data-domain="' + domainIdx + '"].sel-mild, ' +
+      '.rate-btn[data-domain="' + domainIdx + '"].sel-mod, ' +
+      '.rate-btn[data-domain="' + domainIdx + '"].sel-sev'
+    );
+    return selBtn ? selBtn.dataset.level : null;
+  }
+
+  function fitFromLevel(levelKey) {
+    if (levelKey === 'ne' || levelKey === 'mild') return { cls: 'fit-ok', label: 'Fit' };
+    if (levelKey === 'mod') return { cls: 'fit-strain', label: 'Strain' };
+    if (levelKey === 'sev') return { cls: 'fit-mis', label: 'Mismatch' };
+    return { cls: 'fit-unrated', label: 'Not yet rated' };
+  }
+
+  function caregiverPresent() {
+    var sel = document.querySelector('.branch.sel');
+    return !!(sel && (sel.dataset.b === 'kin' || sel.dataset.b === 'bm'));
+  }
+
+  function renderModalitySection() {
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    var sampleBox = document.getElementById('sampleGoalsBox');
+    var chartBox = document.getElementById('demandChartBox');
+    var altBox = document.getElementById('altGoalsBox');
+    var rolesBox = document.getElementById('rolesBox');
+
+    if (!key) {
+      sampleBox.style.display = 'none'; chartBox.style.display = 'none'; altBox.style.display = 'none'; rolesBox.style.display = 'none';
+      return;
+    }
+
+    if (!mod) {
+      document.getElementById('sampleGoalsTitle').textContent = 'Sample data not yet built for this modality in the mockup';
+      document.getElementById('sampleGoalsList').innerHTML = '<li value="1">Pick a modality from the list above to see the full working example.</li>';
+      sampleBox.style.display = 'block';
+      chartBox.style.display = 'none'; altBox.style.display = 'none'; rolesBox.style.display = 'none';
+      return;
+    }
+
+    document.getElementById('sampleGoalsTitle').textContent = 'Sample treatment goals for ' + mod.name;
+    document.getElementById('sampleGoalsList').innerHTML = mod.sampleGoals.map(function (g) { return '<li>' + g + '</li>'; }).join('');
+    sampleBox.style.display = 'block';
+
+    var cgPresent = caregiverPresent();
+    var thead = '<thead><tr><th>Domain this modality asks of the brain</th><th>Client</th>' + (cgPresent ? '<th>Caregiver 1</th>' : '') + '</tr></thead>';
+    var rows = mod.demands.map(function (domName) {
+      var idx = domainIndex[domName];
+      var clientFit = fitFromLevel(getRating('rateTableClient', idx));
+      var cgCell = '';
+      if (cgPresent) {
+        var cgFit = fitFromLevel(getRating('rateTableCg1', idx));
+        cgCell = '<td><span class="fit-pill ' + cgFit.cls + '">' + cgFit.label + '</span></td>';
+      }
+      return '<tr><td class="dom">' + domName + '</td><td><span class="fit-pill ' + clientFit.cls + '">' + clientFit.label + '</span></td>' + cgCell + '</tr>';
+    }).join('');
+    document.getElementById('demandChart').innerHTML = thead + '<tbody>' + rows + '</tbody>';
+    chartBox.style.display = 'block';
+
+    var strainedClientDomain = null, strainedCgDomain = null;
+    mod.demands.forEach(function (domName) {
+      var idx = domainIndex[domName];
+      var lvl = getRating('rateTableClient', idx);
+      if ((lvl === 'mod' || lvl === 'sev') && !strainedClientDomain) strainedClientDomain = domName;
+      if (cgPresent) {
+        var cgLvl = getRating('rateTableCg1', idx);
+        if ((cgLvl === 'mod' || cgLvl === 'sev') && !strainedCgDomain) strainedCgDomain = domName;
+      }
+    });
+
+    var altHtml = '<div class="goal-card" data-pick="original"><div class="gtitle">Keep the original</div><div>' + mod.sampleGoals[0] + '</div><button class="goal-pick-btn" data-pick="original" type="button">Use this one</button></div>';
+    if (strainedClientDomain) {
+      var clientAdaptedText = buildAdaptedGoal(key, mod, strainedClientDomain, 'client');
+      altHtml += '<div class="goal-card" data-pick="clientAdapt"><div class="gtitle">Adapted for the client\'s ' + strainedClientDomain.toLowerCase() + '</div><div>' + clientAdaptedText + '</div><button class="goal-pick-btn" data-pick="clientAdapt" type="button">Use this one</button></div>';
+    }
+    if (strainedCgDomain) {
+      var cgAdaptedText = buildAdaptedGoal(key, mod, strainedCgDomain, 'caregiver');
+      altHtml += '<div class="goal-card" data-pick="cgAdapt"><div class="gtitle">Adapted for the caregiver\'s ' + strainedCgDomain.toLowerCase() + '</div><div>' + cgAdaptedText + '</div><button class="goal-pick-btn" data-pick="cgAdapt" type="button">Use this one</button></div>';
+    }
+    if (!strainedClientDomain && !strainedCgDomain) {
+      altHtml += '<div class="goal-card"><div class="gtitle">No strain or mismatch found yet</div><div>Rate the domains in Step 4 to see adapted alternatives generated here.</div></div>';
+    }
+    document.getElementById('altGoalsList').innerHTML = altHtml;
+    document.querySelectorAll('#altGoalsList .goal-pick-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('#altGoalsList .goal-card, #manualGoalCard').forEach(function (c) { c.classList.remove('chosen'); });
+        document.querySelectorAll('.goal-pick-btn').forEach(function (b) { b.classList.remove('on'); });
+        btn.closest('.goal-card').classList.add('chosen');
+        btn.classList.add('on');
+        renderDelveSection();
+      });
+    });
+    altBox.style.display = 'block';
+
+    var rolesHtml = mod.demands.map(function (domName) {
+      var idx = domainIndex[domName];
+      var clientLvl = getRating('rateTableClient', idx);
+      var cgLvl = cgPresent ? getRating('rateTableCg1', idx) : null;
+      var clientStrained = clientLvl === 'mod' || clientLvl === 'sev';
+      var cgStrained = cgLvl === 'mod' || cgLvl === 'sev';
+
+      if (clientStrained && !cgStrained) {
+        return '<div class="role-card"><div class="rd">' + domName + '</div><div class="rt"><span class="who">Caregiver\'s role:</span> ' + ROLE_SUGGESTIONS[domName] + ', since this is a strain for the client right now.</div></div>';
+      }
+      if (cgStrained && !clientStrained) {
+        return '<div class="role-card"><div class="rd">' + domName + '</div><div class="rt"><span class="who">Therapist\'s role:</span> simplify what is asked of the caregiver here (fewer steps, written reminders, check-ins), since this is a strain for the caregiver, not the client.</div></div>';
+      }
+      if (clientStrained && cgStrained) {
+        return '<div class="role-card"><div class="rd">' + domName + '</div><div class="rt"><span class="who">Both need support here:</span> this domain is a strain for both client and caregiver. Consider bringing in outside structure (school, another support person) rather than relying on either of them to cover the gap.</div></div>';
+      }
+      return '<div class="role-card role-shared"><div class="rd">' + domName + '</div><div class="rt"><span class="who">Shared strength:</span> neither the client nor the caregiver is strained here, this can stay a shared responsibility.</div></div>';
+    }).join('');
+    document.getElementById('rolesList').innerHTML = rolesHtml;
+    rolesBox.style.display = 'block';
+
+    if (typeof renderOutputs === 'function') renderOutputs();
+    if (typeof renderDelveOnepager === 'function') renderDelveOnepager();
+  }
+
+  document.getElementById('modalitySelect').addEventListener('change', function () {
+    renderModalitySection();
+    renderDelveSection();
+  });
+  document.getElementById('pickManualBtn').addEventListener('click', function () {
+    document.querySelectorAll('#altGoalsList .goal-card, #manualGoalCard').forEach(function (c) { c.classList.remove('chosen'); });
+    document.querySelectorAll('.goal-pick-btn').forEach(function (b) { b.classList.remove('on'); });
+    document.getElementById('manualGoalCard').classList.add('chosen');
+    document.getElementById('pickManualBtn').classList.add('on');
+    renderDelveSection();
+  });
+
+  // --- Step 7: delve into treatment (component-level breakdown) ---
+  var COMPONENT_DATA = {
+    pcit: [
+      {
+        name: 'PDI: wait 5 seconds for compliance',
+        domain: 'Processing speed',
+        ask: 'processing speed and response inhibition, in real time, under a strict clock',
+        accommodation: 'extend the window to 10-15 seconds; pre-teach the command when the child is regulated, not mid-task',
+        looksLike: {
+          therapist: 'changes the timing rule during coaching, this is a delivery decision, not something caregiver or client can do alone',
+          caregiver: 'holds the extended count out loud rather than the standard five, so the child hears a consistent rhythm',
+          client: 'is simply given the time their brain actually needs, nothing extra is being asked of them'
+        }
+      },
+      {
+        name: 'PDI: time-out sequence',
+        domain: 'Affect regulation',
+        ask: 'independent self-calming without support',
+        accommodation: 'co-regulated time-in instead of exclusionary time-out',
+        looksLike: {
+          therapist: 'coaches the caregiver to stay near and calm rather than stepping away',
+          caregiver: 'stays physically present and works on their own regulation first',
+          client: 'calms with support close by, rather than being expected to calm alone'
+        }
+      },
+      {
+        name: 'CDI: PRIDE skills',
+        domain: 'Adaptive & social',
+        ask: 'noticing and narrating the child\'s play consistently, in the moment',
+        accommodation: 'a visible cue card with the 5 PRIDE skills during session and at home',
+        looksLike: {
+          therapist: 'provides the cue card and models one skill at a time',
+          caregiver: 'glances at the card while narrating instead of holding all 5 skills in memory',
+          client: 'experiences consistent, responsive attention regardless of which skill is used'
+        }
+      }
+    ],
+    cbt: [
+      {
+        name: 'Identifying automatic thoughts',
+        domain: 'Abstract reasoning',
+        ask: 'noticing and labeling an internal thought as separate from a feeling or fact',
+        accommodation: 'use a concrete recent example instead of a hypothetical; therapist models the reframe first',
+        looksLike: {
+          therapist: 'models the reframe out loud using the client\'s real event from that week',
+          caregiver: 'reinforces the same labeled thought at home using the same wording, if involved',
+          client: 'picks from 2-3 pre-written thought options rather than generating an original reframe'
+        }
+      },
+      {
+        name: 'Homework / behavioral activation',
+        domain: 'Executive function',
+        ask: 'independently remembering, initiating, and completing an activity between sessions',
+        accommodation: 'pair the activity with a routine that already exists, plus a visual reminder',
+        looksLike: {
+          therapist: 'picks an activity that piggybacks on something already happening daily',
+          caregiver: 'sets a recurring alarm or sticky note and checks in at the same time each day',
+          client: 'does the activity when prompted, rather than needing to remember to start it themselves'
+        }
+      }
+    ],
+    tfcbt: [
+      {
+        name: 'Trauma narrative construction',
+        domain: 'Working memory',
+        ask: 'holding a sequence of events in mind while managing distress',
+        accommodation: 'storyboard the narrative in physical pieces the client can rearrange, with a check-in between pieces',
+        looksLike: {
+          therapist: 'breaks the narrative into small chunked sessions rather than a few long ones',
+          caregiver: 'praises effort afterward, without co-constructing the narrative itself',
+          client: 'uses drawing or storyboard cards instead of holding the sequence verbally'
+        }
+      },
+      {
+        name: 'Caregiver praise / active-ignoring skills',
+        domain: 'Affect regulation',
+        ask: 'staying regulated and consistent while implementing a new skill under real stress',
+        accommodation: 'coach the caregiver\'s own regulation strategy first, before adding the new skill',
+        looksLike: {
+          therapist: 'spends the first part of caregiver coaching on the caregiver\'s own calming strategy',
+          caregiver: 'only takes on the new praise/ignoring skill once they can stay regulated themselves',
+          client: 'experiences a calmer, more consistent response, regardless of which skill is being practiced'
+        }
+      }
+    ],
+    play: [
+      {
+        name: 'Following the child\'s lead in play',
+        domain: 'Adaptive & social',
+        ask: 'reading and responding to non-verbal social cues in real time',
+        accommodation: 'therapist models reflection statements aloud; keep the toy set small and predictable',
+        looksLike: {
+          therapist: 'narrates the child\'s actions in simple language rather than asking open questions',
+          caregiver: 'learns the same reflection phrases to use at home, if observing',
+          client: 'leads the play without needing to explain themselves verbally'
+        }
+      },
+      {
+        name: 'Self-regulation during transitions',
+        domain: 'Affect regulation',
+        ask: 'shifting states or activities without dysregulating',
+        accommodation: 'a visual or verbal warning before transitions, plus a consistent end-of-session ritual',
+        looksLike: {
+          therapist: 'gives a 2-minute warning plus a countdown before ending play',
+          caregiver: 'uses the same warning routine at home before transitions',
+          client: 'gets a predictable heads-up instead of an abrupt stop'
+        }
+      }
+    ],
+    talk: [
+      {
+        name: 'Verbally identifying and expressing feelings',
+        domain: 'Receptive language',
+        ask: 'generating feeling-words and connecting them to internal states',
+        accommodation: 'use a visual feelings chart to point to, instead of generating words from scratch',
+        looksLike: {
+          therapist: 'keeps the chart visible every session',
+          caregiver: 'uses the same chart language at home when checking in, if involved',
+          client: 'points to or selects a feeling rather than searching for the word'
+        }
+      },
+      {
+        name: 'Between-session coping strategy use',
+        domain: 'Executive function',
+        ask: 'remembering and self-initiating a strategy outside of session',
+        accommodation: 'pick one strategy and pair it with a specific daily cue',
+        looksLike: {
+          therapist: 'ties the strategy to something that already happens daily',
+          caregiver: 'says the cue phrase at the right moment, if age-appropriate',
+          client: 'is prompted by the routine rather than needing to remember on their own'
+        }
+      }
+    ],
+    dbt: [
+      {
+        name: 'Distress tolerance: TIPP skill',
+        domain: 'Affect regulation',
+        ask: 'rapid, in-the-moment physiological self-regulation using a multi-step sequence',
+        accommodation: 'use one step at a time (e.g., cold water only) instead of the full sequence; keep a laminated picture cue on hand',
+        looksLike: {
+          therapist: 'teaches and demonstrates one step at a time rather than the full acronym at once',
+          caregiver: 'keeps the needed supplies (ice pack, cold water) ready at home',
+          client: 'uses a single step without needing to recall or sequence the whole skill'
+        }
+      },
+      {
+        name: 'Diary card tracking',
+        domain: 'Working memory',
+        ask: 'daily self-monitoring and recall of urges, emotions, and skills used',
+        accommodation: 'simplify to 2-3 tracked items with checkboxes instead of a full multi-column card; use a phone reminder',
+        looksLike: {
+          therapist: 'reviews a simplified card each session rather than expecting a complete log',
+          caregiver: 'sets a daily reminder alarm',
+          client: 'checks a box rather than writing a narrative entry'
+        }
+      },
+      {
+        name: 'Chain analysis',
+        domain: 'Abstract reasoning',
+        ask: 'reconstructing a detailed, sequential chain of events, thoughts, and feelings leading to a target behavior',
+        accommodation: 'use a visual chain with printed links filled in one at a time, with the therapist scribing',
+        looksLike: {
+          therapist: 'draws the chain live and asks one concrete question per link',
+          caregiver: 'provides collateral detail on what happened before or after, if present',
+          client: 'points to or fills in one link at a time instead of narrating the whole sequence unprompted'
+        }
+      }
+    ],
+    emdr: [
+      {
+        name: 'Bilateral stimulation while holding a target memory',
+        domain: 'Working memory',
+        ask: 'holding a distressing memory in mind while tracking bilateral stimulation and body sensations at the same time',
+        accommodation: 'shorten sets, slow the bilateral pacing, and add extra grounding between sets',
+        looksLike: {
+          therapist: 'shortens each set and checks in more frequently than standard pacing',
+          caregiver: 'is not usually in the room, but may help prepare beforehand',
+          client: 'can use a stop signal to pause at any point instead of pushing through a full set'
+        }
+      },
+      {
+        name: 'SUDs / VOC rating scales',
+        domain: 'Interoception',
+        ask: 'rating internal distress and belief on a 0-10 numeric, fairly abstract scale',
+        accommodation: 'use a visual thermometer or faces scale instead of asking for a number',
+        looksLike: {
+          therapist: 'shows the visual scale each time instead of asking "what number"',
+          caregiver: 'not typically involved in this part',
+          client: 'points to a picture instead of generating a number'
+        }
+      },
+      {
+        name: 'Resource / safe-place installation',
+        domain: 'Sensory processing',
+        ask: 'generating and holding a calm internal image with multiple imagined sensory details',
+        accommodation: 'use a concrete object or photo as the safe-place anchor instead of a purely imagined scene',
+        looksLike: {
+          therapist: 'brings or suggests an actual calming object or photo',
+          caregiver: 'may help identify a meaningful object beforehand',
+          client: 'holds or looks at a physical anchor instead of imagining one from scratch'
+        }
+      }
+    ],
+    theraplay: [
+      {
+        name: 'Structure activities (e.g., following a simple sequence)',
+        domain: 'Executive function',
+        ask: 'quickly following a novel, multi-step sequence led by the adult',
+        accommodation: 'slow the pace and reduce to one or two steps at a time',
+        looksLike: {
+          therapist: 'demonstrates the activity in slow motion first',
+          caregiver: 'leads at the child\'s pace rather than a fixed tempo',
+          client: 'follows one step before the next is given'
+        }
+      },
+      {
+        name: 'Nurture activities (e.g., lotion, feeding a snack)',
+        domain: 'Sensory processing',
+        ask: 'tolerating close physical touch and specific sensory input',
+        accommodation: 'offer a choice of texture or pressure and keep touch optional',
+        looksLike: {
+          therapist: 'offers a menu of textures beforehand',
+          caregiver: 'checks in before each touch rather than assuming consent',
+          client: 'can decline or choose the input'
+        }
+      },
+      {
+        name: 'Challenge activities (e.g., cooperative games)',
+        domain: 'Affect regulation',
+        ask: 'tolerating mild frustration and turn-taking within a playful challenge',
+        accommodation: 'guarantee success by scaffolding difficulty and keeping it cooperative, not competitive',
+        looksLike: {
+          therapist: 'adjusts difficulty in real time so the child can succeed',
+          caregiver: 'celebrates effort over outcome',
+          client: 'experiences a challenge sized to what they can currently handle'
+        }
+      }
+    ],
+    tbri: [
+      {
+        name: 'Compromise / "do you need a redo?"',
+        domain: 'Executive function',
+        ask: 'recognizing a behavioral misstep and independently generating a corrected response',
+        accommodation: 'model the redo out loud the first several times rather than expecting independent recognition',
+        looksLike: {
+          therapist: 'coaches the caregiver on modeling the redo before expecting the child to produce one alone',
+          caregiver: 'says and demonstrates the redo rather than only asking for one',
+          client: 'imitates a modeled redo instead of generating one from scratch'
+        }
+      },
+      {
+        name: 'Proactive strategies (choices, transition warnings)',
+        domain: 'Executive function',
+        ask: 'anticipating and self-managing an upcoming transition from a verbal warning alone',
+        accommodation: 'pair every choice or warning with a visual (picture, timer) rather than verbal-only',
+        looksLike: {
+          therapist: 'teaches the caregiver to pair warnings with a visual timer',
+          caregiver: 'shows the visual timer alongside the verbal warning',
+          client: 'sees the countdown rather than only hearing it'
+        }
+      },
+      {
+        name: 'Engagement / connection rituals (eye contact invitations)',
+        domain: 'Sensory processing',
+        ask: 'sustaining close physical or eye contact engagement',
+        accommodation: 'make engagement invitations optional and varied, such as side-by-side rather than face-to-face',
+        looksLike: {
+          therapist: 'coaches a range of engagement options, not just face-to-face',
+          caregiver: 'offers connection side-by-side instead of insisting on eye contact',
+          client: 'can accept connection in a lower-intensity form'
+        }
+      }
+    ],
+    aba: [
+      {
+        name: 'Discrete trial instruction',
+        domain: 'Processing speed',
+        ask: 'rapid, trial-by-trial responding with high repetition',
+        accommodation: 'extend the inter-trial interval and reduce trials per block before a break',
+        looksLike: {
+          therapist: 'adds pauses and shortens trial blocks',
+          caregiver: 'may observe or practice the same paced approach at home',
+          client: 'responds at their own pace rather than a fixed rapid tempo'
+        }
+      },
+      {
+        name: 'Token economy / reinforcement schedule',
+        domain: 'Abstract reasoning',
+        ask: 'understanding a delayed, symbolic reward system exchanged later for a prize',
+        accommodation: 'shorten the delay and use a visual token board with fewer, more frequent exchanges',
+        looksLike: {
+          therapist: 'sets up a visual board with fewer token slots',
+          caregiver: 'exchanges tokens more frequently at home',
+          client: 'sees concrete progress rather than tracking an abstract count'
+        }
+      },
+      {
+        name: 'Generalization across settings',
+        domain: 'Adaptive & social',
+        ask: 'using a learned skill in a new setting without being directly taught there',
+        accommodation: 'explicitly re-teach the skill in each new setting rather than assuming it transfers',
+        looksLike: {
+          therapist: 'trains the caregiver to prompt the skill at home directly',
+          caregiver: 'practices the same skill in the home setting',
+          client: 'is taught the skill fresh in each context instead of expected to transfer it automatically'
+        }
+      }
+    ],
+    pmt: [
+      {
+        name: 'Labeled praise for a replacement behavior',
+        domain: 'Affect regulation',
+        ask: 'the caregiver noticing and immediately praising a specific behavior in real time',
+        accommodation: 'give the caregiver a short written list of exact praise phrases to reduce the real-time load',
+        looksLike: {
+          therapist: 'writes out 2-3 exact phrases the caregiver can use',
+          caregiver: 'reads from or recalls the short list instead of generating praise on the spot',
+          client: 'hears consistent, specific praise regardless of which phrase is used'
+        }
+      },
+      {
+        name: 'Consistent planned consequence',
+        domain: 'Executive function',
+        ask: 'the caregiver remembering and delivering the same consequence every time, under stress',
+        accommodation: 'post a written if/then card where the caregiver can see it in the moment',
+        looksLike: {
+          therapist: 'creates the visual if/then card with the caregiver in session',
+          caregiver: 'glances at the posted card instead of deciding the consequence from memory in the moment',
+          client: 'experiences a predictable, consistent response regardless of who is delivering it'
+        }
+      },
+      {
+        name: 'Token / point system at home',
+        domain: 'Abstract reasoning',
+        ask: 'tracking and understanding a symbolic points-for-privileges system',
+        accommodation: 'use a visual chart with stickers or checkmarks instead of a numeric point tally',
+        looksLike: {
+          therapist: 'builds the visual chart with the family before sending it home',
+          caregiver: 'marks the chart in the moment rather than tallying points mentally',
+          client: 'sees a visual fill up rather than tracking an abstract number'
+        }
+      }
+    ]
+  };
+
+  var otherGoals = [];
+  var customComponents = [];
+
+  function getChosenGoalText() {
+    var chosenCard = document.querySelector('#altGoalsList .goal-card.chosen, #manualGoalCard.chosen');
+    if (!chosenCard) return null;
+    if (chosenCard.id === 'manualGoalCard') {
+      var txt = document.getElementById('manualGoalInput').value.trim();
+      return txt || null;
+    }
+    return chosenCard.querySelector('div:nth-child(2)') ? chosenCard.querySelector('div:nth-child(2)').textContent : null;
+  }
+
+  function renderDelveSection() {
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    var anchorText = document.getElementById('delveAnchorText');
+    var emptyNote = document.getElementById('delveEmptyNote');
+    var compList = document.getElementById('componentsList');
+
+    if (!key || !mod) {
+      anchorText.textContent = 'Pick a modality and a goal above first.';
+      emptyNote.style.display = key && !mod ? 'block' : 'none';
+      compList.innerHTML = '';
+      return;
+    }
+
+    var goalText = getChosenGoalText();
+    anchorText.textContent = mod.name + (goalText ? ': "' + goalText + '"' : ' (pick a goal above to anchor this section)');
+
+    var components = COMPONENT_DATA[key];
+    if (!components) {
+      emptyNote.style.display = 'block';
+      compList.innerHTML = '';
+      return;
+    }
+    emptyNote.style.display = 'none';
+
+    compList.innerHTML = components.map(function (c) {
+      return '<div class="comp-card">' +
+        '<div class="cname">' + c.name + '</div>' +
+        '<div class="cline"><b>What it asks the brain:</b> ' + c.ask + ' (' + c.domain + ')</div>' +
+        '<div class="cline"><b>Accommodation:</b> ' + c.accommodation + '</div>' +
+        '<div class="lookslike">' +
+        '<div class="llrow"><b>Therapist</b> ' + c.looksLike.therapist + '.</div>' +
+        '<div class="llrow"><b>Caregiver</b> ' + c.looksLike.caregiver + '.</div>' +
+        '<div class="llrow"><b>Client</b> ' + c.looksLike.client + '.</div>' +
+        '</div></div>';
+    }).join('') + customComponents.map(function (txt, i) {
+      return '<div class="comp-card"><div class="cname">Added by the clinician</div><div class="cline">' + txt + '</div></div>';
+    }).join('');
+
+    if (typeof renderOutputs === 'function') renderOutputs();
+    if (typeof renderDelveOnepager === 'function') renderDelveOnepager();
+  }
+
+  function renderDelveOnepager() {
+    var box = document.getElementById('delveOnepager');
+    if (!box) return;
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    var nm = clientLabel();
+
+    var html = '<h4>Who this is for</h4><p>' + getPeopleSummary().join(' &middot; ') + '</p>';
+
+    html += '<h4>Brain-based profile at a glance</h4>';
+    html += '<p><em>' + nm + '</em></p><div class="brain-row">';
+    domains.forEach(function (d, i) {
+      var lvl = getRating('rateTableClient', i);
+      if (!lvl) return;
+      var cls = (lvl === 'mod' || lvl === 'sev') ? 'strain' : 'fit';
+      html += '<span class="brain-pill ' + cls + '">' + d.name + ': ' + CLIN_SEVERITY[lvl] + '</span>';
+    });
+    html += '</div>';
+    if (caregiverPresent()) {
+      var cards = document.querySelectorAll('#people .pcard');
+      var cgName = cards.length > 1 ? cards[1].querySelector('.role-edit').value.trim() : 'Caregiver';
+      html += '<p><em>' + cgName + '</em></p><div class="brain-row">';
+      domains.forEach(function (d, i) {
+        var lvl = getRating('rateTableCg1', i);
+        if (!lvl) return;
+        var cls = (lvl === 'mod' || lvl === 'sev') ? 'strain' : 'fit';
+        html += '<span class="brain-pill ' + cls + '">' + d.name + ': ' + CLIN_SEVERITY[lvl] + '</span>';
+      });
+      html += '</div>';
+    }
+
+    html += '<h4>Treatment modality and what it asks of the brain</h4>';
+    if (!key) {
+      html += '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>';
+    } else {
+      html += '<p><strong>' + (mod ? mod.name : key) + '.</strong>' + (mod ? (' Asks for: ' + mod.demands.join(', ') + '.') : '') + '</p>';
+    }
+
+    var goalText = getChosenGoalText();
+    html += '<div class="goalbox"><strong>Treatment goal:</strong> ' + (goalText || 'Pick or write a goal in Step 5-6 to see it here.') + '</div>';
+
+    html += '<h4>The different parts of treatment</h4>';
+    html += getComponentsHtml(false);
+
+    html += '<h4>Guiding questions for accommodations (work through these, don\'t just read an answer)</h4>';
+    html += '<div class="qbox"><ol>' +
+      '<li>What is this part of treatment actually asking the brain to do?</li>' +
+      '<li>Does the client or caregiver have that capacity right now, based on what is known about them?</li>' +
+      '<li>If not, what could change: the pace, the format, the environment, who is responsible, or the goal itself?</li>' +
+      '<li>What is one idea that has not been tried yet?</li>' +
+      '<li>What will look different in the very next session because of this?</li>' +
+      '</ol></div>';
+    html += '<p style="margin-top:10px;"><em>Need inspiration? See the <a href="../handouts/Accommodations-Idea-Bank.html" target="_blank" rel="noopener">Accommodations Idea Bank</a>.</em></p>';
+
+    box.innerHTML = html;
+  }
+
+  function renderOtherGoals() {
+    document.getElementById('otherGoalsList').innerHTML =
+      '<div class="goal-pill-list">' +
+      otherGoals.map(function (g, i) {
+        return '<span class="goal-pill">' + g + '<button class="rm" type="button" data-idx="' + i + '">&times;</button></span>';
+      }).join('') + '</div>';
+    document.querySelectorAll('#otherGoalsList .rm').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        otherGoals.splice(Number(btn.dataset.idx), 1);
+        renderOtherGoals();
+      });
+    });
+  }
+
+  document.getElementById('addOtherGoalBtn').addEventListener('click', function () {
+    var input = document.getElementById('otherGoalInput');
+    var val = input.value.trim();
+    if (!val) return;
+    otherGoals.push(val);
+    input.value = '';
+    renderOtherGoals();
+  });
+
+  document.getElementById('addComponentBtn').addEventListener('click', function () {
+    var input = document.getElementById('customComponentInput');
+    var val = input.value.trim();
+    if (!val) return;
+    customComponents.push(val);
+    input.value = '';
+    renderDelveSection();
+  });
+
+  renderDelveSection();
+  renderOtherGoals();
+
+  // --- Step 8: Outputs, three versions like the live Treatment Adaptation Builder ---
+  var PLAIN_SEVERITY = { ne: 'not a concern', mild: 'a little different than typical', mod: 'a real challenge right now', sev: 'a big challenge right now' };
+  var CLIN_SEVERITY = { ne: 'Non-existent', mild: 'Mild', mod: 'Moderate', sev: 'Severe' };
+
+  function getPeopleSummary() {
+    return Array.prototype.slice.call(document.querySelectorAll('#people .pcard')).map(function (card) {
+      var role = card.querySelector('.role-edit').value.trim();
+      var sub = card.querySelector('.sub-edit') ? card.querySelector('.sub-edit').value.trim() : '';
+      return sub ? (role + ' (' + sub + ')') : role;
+    });
+  }
+
+  function clientLabel() {
+    var cards = document.querySelectorAll('#people .pcard');
+    return cards.length ? cards[0].querySelector('.role-edit').value.trim() : 'the client';
+  }
+
+  function getDomainSummary(tableId, plain) {
+    var table = document.getElementById(tableId);
+    if (!table) return [];
+    var out = [];
+    domains.forEach(function (d, i) {
+      var lvl = getRating(tableId, i);
+      if (!lvl) return;
+      var label = plain ? d.sub : d.name;
+      var sevLabel = plain ? PLAIN_SEVERITY[lvl] : CLIN_SEVERITY[lvl];
+      out.push(plain ? (label + ': ' + sevLabel) : (d.name + ': ' + sevLabel));
+    });
+    var strengthsInput = table.querySelector('.strengths-input');
+    if (strengthsInput && strengthsInput.value.trim()) out.push((plain ? 'Strengths' : 'Strengths') + ': ' + strengthsInput.value.trim());
+    return out;
+  }
+
+  function getBrainProfileHtml(plain) {
+    var clientDomains = getDomainSummary('rateTableClient', plain);
+    var cgDomains = getDomainSummary('rateTableCg1', plain);
+    var cName = plain ? clientLabel() : clientLabel() + ' (client)';
+    var html = '<p><em>' + cName + '</em></p>' + (clientDomains.length ? ('<ul>' + clientDomains.map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>') : '<p class="out-empty">Not yet rated in Step 4.</p>');
+    if (caregiverPresent()) {
+      var cards = document.querySelectorAll('#people .pcard');
+      var cgName = cards.length > 1 ? cards[1].querySelector('.role-edit').value.trim() : 'Caregiver';
+      html += '<p><em>' + cgName + '</em></p>' + (cgDomains.length ? ('<ul>' + cgDomains.map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>') : '<p class="out-empty">Not yet rated in Step 4.</p>');
+    }
+    return html;
+  }
+
+  function computeRoleData() {
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    if (!mod) return [];
+    var cgPresent = caregiverPresent();
+    return mod.demands.map(function (domName) {
+      var idx = domainIndex[domName];
+      var clientLvl = getRating('rateTableClient', idx);
+      var cgLvl = cgPresent ? getRating('rateTableCg1', idx) : null;
+      return {
+        domain: domName,
+        plainDomain: domains[idx].sub,
+        clientStrained: clientLvl === 'mod' || clientLvl === 'sev',
+        cgStrained: cgLvl === 'mod' || cgLvl === 'sev'
+      };
+    });
+  }
+
+  function getRolesHtml(plain) {
+    var rows = computeRoleData();
+    if (!rows.length) return '<p class="out-empty">Pick a modality and rate domains above to see roles here.</p>';
+    return '<ul>' + rows.map(function (r) {
+      var label = plain ? r.plainDomain : r.domain;
+      if (r.clientStrained && !r.cgStrained) {
+        return plain
+          ? '<li><b>' + label + ':</b> this is something the caregiver will especially support right now, since it is harder for ' + clientLabel() + ' at the moment.</li>'
+          : '<li><b>' + label + ':</b> caregiver\'s role, since this is a strain for the client right now.</li>';
+      }
+      if (r.cgStrained && !r.clientStrained) {
+        return plain
+          ? '<li><b>' + label + ':</b> the therapist is keeping this simple for the caregiver right now (fewer steps, written reminders), since this is harder for the caregiver, not ' + clientLabel() + '.</li>'
+          : '<li><b>' + label + ':</b> therapist simplifies what is asked of the caregiver here, since this is a strain for the caregiver, not the client.</li>';
+      }
+      if (r.clientStrained && r.cgStrained) {
+        return plain
+          ? '<li><b>' + label + ':</b> this is hard for everyone right now, so we are bringing in outside support (school, another support person) rather than relying on the family alone.</li>'
+          : '<li><b>' + label + ':</b> both need support here; consider outside structure (school, another support person) rather than relying on either party to cover the gap.</li>';
+      }
+      return plain
+        ? '<li><b>' + label + ':</b> this is going well and can stay a shared part of everyday life.</li>'
+        : '<li><b>' + label + ':</b> shared strength, neither party is strained here.</li>';
+    }).join('') + '</ul>';
+  }
+
+  function getComponentsHtml(plain) {
+    var key = document.getElementById('modalitySelect').value;
+    var components = COMPONENT_DATA[key];
+    if (!components || !components.length) return '<p class="out-empty">Pick a modality in Step 5 to see the treatment breakdown here.</p>';
+    return '<ul>' + components.map(function (c) {
+      return plain
+        ? '<li><b>' + c.name + ':</b> ' + c.looksLike.client + '. ' + c.looksLike.caregiver + '.</li>'
+        : '<li><b>' + c.name + ' (' + c.domain + '):</b> asks for ' + c.ask + '. Accommodation: ' + c.accommodation + '.</li>';
+    }).join('') + '</ul>' + customComponents.map(function (txt) { return '<p>' + txt + '</p>'; }).join('');
+  }
+
+  function getModalityGoalHtml() {
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    var goalText = getChosenGoalText();
+    if (!key) return '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>';
+    var html = '<p><strong>' + (mod ? mod.name : key) + '</strong></p>';
+    html += goalText ? ('<p>' + goalText + '</p>') : '<p class="out-empty">Pick or write a goal in Step 5-6 to see it here.</p>';
+    return html;
+  }
+
+  function renderClinOut() {
+    var people = getPeopleSummary();
+    var peopleHtml = people.length ? ('<ul>' + people.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>') : '<p class="out-empty">Add people in Step 1 to see them here.</p>';
+    var otherGoalsHtml = otherGoals.length ? ('<ul>' + otherGoals.map(function (g) { return '<li>' + g + '</li>'; }).join('') + '</ul>') : '<p class="out-empty">None added.</p>';
+    return '<h3>People involved</h3>' + peopleHtml +
+      '<h3>Brain-based profile</h3>' + getBrainProfileHtml(false) +
+      '<h3>Treatment modality and goal</h3>' + getModalityGoalHtml() +
+      '<h3>Roles &amp; responsibilities</h3>' + getRolesHtml(false) +
+      '<h3>Treatment, broken into its parts</h3>' + getComponentsHtml(false) +
+      '<h3>Other active treatment goals</h3>' + otherGoalsHtml +
+      '<h3>Guiding questions to keep working through as treatment continues</h3>' +
+      '<div class="out-guide"><ol>' +
+      '<li>What is this part of treatment actually asking the brain to do?</li>' +
+      '<li>Does the client or caregiver have that capacity right now, based on what is known about them?</li>' +
+      '<li>If not, what could change: the pace, the format, the environment, who is responsible, or the goal itself?</li>' +
+      '<li>What is one idea that has not been tried yet?</li>' +
+      '<li>What will look different in the very next session because of this?</li>' +
+      '</ol></div>';
+  }
+
+  function renderFamOut() {
+    var nm = clientLabel();
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    return '<p>A plain-language summary to keep and use at home, so support fits how ' + nm + '\'s brain works best.</p>' +
+      '<h3>What we are working on</h3>' + (mod ? ('<p>' + mod.name + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
+      '<h3>How ' + nm + '\'s brain (and yours, if you are the caregiver) is doing right now</h3>' + getBrainProfileHtml(true) +
+      '<h3>What we are changing, and why</h3>' + getRolesHtml(true) +
+      '<h3>What this looks like day to day</h3>' + getComponentsHtml(true) +
+      '<p style="margin-top:14px">We made this together, and it can change as we learn what works. If something does not fit your family, tell us and we will adjust it.</p>';
+  }
+
+  function renderProvOut() {
+    var nm = clientLabel();
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    return '<p>A brief, brain-based summary for the other professionals who support ' + nm + ' (teachers, case managers, support workers). Share with consent, so support stays consistent across settings.</p>' +
+      '<h3>What treatment involves</h3>' + (mod ? ('<p>' + mod.name + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
+      '<h3>What it asks of ' + nm + '\'s brain</h3>' + getBrainProfileHtml(false) +
+      '<h3>What helps, and what to keep consistent</h3>' + getComponentsHtml(false) +
+      '<p style="margin-top:12px">The more home, school, and clinic use the same supports, the better they work. Please reach out to coordinate.</p>';
+  }
+
+  function escText(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function renderPasteText() {
+    var L = [];
+    L.push('BRAIN-BASED TREATMENT PLAN');
+    L.push('Client: ' + clientLabel() + (caregiverPresent() ? ' (caregiver/support included)' : ' (individual)'));
+    L.push('');
+
+    var qaTextareas = document.querySelectorAll('.qa-everyone textarea');
+    L.push('PRESENTING PROBLEM');
+    L.push('  Client: ' + (qaTextareas[0] && qaTextareas[0].value.trim() ? qaTextareas[0].value.trim() : '[enter]'));
+    if (caregiverPresent()) L.push('  Caregiver/family: ' + (qaTextareas[1] && qaTextareas[1].value.trim() ? qaTextareas[1].value.trim() : '[enter]'));
+    L.push('');
+
+    L.push('BRAIN-BASED PROFILE');
+    var clientDomains = getDomainSummary('rateTableClient', false);
+    L.push('  Client:');
+    (clientDomains.length ? clientDomains : ['[not yet rated]']).forEach(function (d) { L.push('    - ' + d); });
+    if (caregiverPresent()) {
+      var cgDomains = getDomainSummary('rateTableCg1', false);
+      L.push('  Caregiver:');
+      (cgDomains.length ? cgDomains : ['[not yet rated]']).forEach(function (d) { L.push('    - ' + d); });
+    }
+    L.push('');
+
+    var key = document.getElementById('modalitySelect').value;
+    var mod = MODALITY_DATA[key];
+    var goalText = getChosenGoalText();
+    L.push('TREATMENT APPROACH');
+    L.push('  Primary: ' + (mod ? mod.name : (key || '[select a modality]')));
+    if (mod) L.push('  Standard goal: ' + mod.sampleGoals[0]);
+    L.push('  Brain-based adapted goal: ' + (goalText || '[pick or write an adapted goal]'));
+    L.push('');
+
+    L.push('OTHER ACTIVE TREATMENT GOALS');
+    if (otherGoals.length) otherGoals.forEach(function (g, i) { L.push('  ' + (i + 1) + '. ' + g); });
+    else L.push('  [none added]');
+    L.push('');
+
+    L.push('ROLES & RESPONSIBILITIES');
+    var roleRows = computeRoleData();
+    if (roleRows.length) {
+      roleRows.forEach(function (r) {
+        if (r.clientStrained && !r.cgStrained) L.push('  - ' + r.domain + ': caregiver role, since this is a strain for the client right now.');
+        else if (r.cgStrained && !r.clientStrained) L.push('  - ' + r.domain + ': therapist simplifies what is asked of the caregiver here.');
+        else if (r.clientStrained && r.cgStrained) L.push('  - ' + r.domain + ': both need support; consider outside structure.');
+        else L.push('  - ' + r.domain + ': shared strength, no extra support needed.');
+      });
+    } else L.push('  [pick a modality and rate domains above]');
+    L.push('');
+
+    L.push('INTERVENTIONS / ACCOMMODATIONS (treatment broken into its parts)');
+    var comps = COMPONENT_DATA[key];
+    if (comps && comps.length) {
+      comps.forEach(function (c) { L.push('  - ' + c.name + ' [' + c.domain + ']: ' + c.accommodation); });
+    } else L.push('  [pick a modality in Step 5]');
+    if (customComponents.length) customComponents.forEach(function (txt) { L.push('  - ' + txt); });
+    L.push('');
+
+    L.push('GUIDING QUESTIONS TO KEEP WORKING THROUGH');
+    L.push('  1. What is this part of treatment actually asking the brain to do?');
+    L.push('  2. Does the client or caregiver have that capacity right now?');
+    L.push('  3. If not, what could change: pace, format, environment, who is responsible, or the goal itself?');
+    L.push('  4. What is one idea that has not been tried yet?');
+    L.push('  5. What will look different in the very next session because of this?');
+
+    return L.join('\n');
+  }
+
+  var outView = 'clin';
+  function renderOutputs() {
+    var panel = document.getElementById('outputPanel');
+    if (!panel) return;
+    if (outView === 'paste') {
+      panel.innerHTML = '<pre class="out-paste">' + escText(renderPasteText()) + '</pre>';
+      return;
+    }
+    panel.innerHTML = outView === 'fam' ? renderFamOut() : outView === 'prov' ? renderProvOut() : renderClinOut();
+  }
+
+  document.querySelectorAll('#outViews .out-view-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      outView = btn.dataset.v;
+      document.querySelectorAll('#outViews .out-view-btn').forEach(function (b) { b.classList.toggle('on', b === btn); });
+      renderOutputs();
+    });
+  });
+
+  document.getElementById('printOutputBtn').addEventListener('click', function () {
+    renderOutputs();
+    document.body.dataset.printTarget = 'outputs';
+    window.print();
+  });
+  document.getElementById('copyOutputBtn').addEventListener('click', function () {
+    renderOutputs();
+    var panel = document.getElementById('outputPanel');
+    var text = panel.innerText;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text);
+    }
+  });
+
+  document.getElementById('printDelveBtn').addEventListener('click', function () {
+    renderDelveOnepager();
+    document.body.dataset.printTarget = 'delve';
+    window.print();
+  });
+  document.getElementById('copyDelveBtn').addEventListener('click', function () {
+    renderDelveOnepager();
+    var box = document.getElementById('delveOnepager');
+    var text = box.innerText;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text);
+    }
+  });
+
+  renderOutputs();
+  renderDelveOnepager();
+</script>
+</body>
+</html>
