@@ -296,12 +296,33 @@
   .qbox li { color: var(--purple); font-size: 12.5px; margin: 5px 0; }
   .goalbox { background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 9px 13px; margin: 6px 0; font-size: 12.5px; }
 
+  .profile-bar-row { margin: 12px 0; }
+  .profile-bar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 12.5px; margin-bottom: 4px; }
+  .profile-bar-head .pname { font-weight: 600; color: var(--navy); }
+  .profile-bar-track { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; height: 13px; overflow: hidden; }
+  .profile-bar-fill { height: 100%; border-radius: 5px 0 0 5px; }
+  .profile-bar-fill.lvl-ne { background: var(--green-2); width: 22%; }
+  .profile-bar-fill.lvl-mild { background: var(--blue); width: 48%; }
+  .profile-bar-fill.lvl-mod { background: var(--amber-ink); width: 74%; }
+  .profile-bar-fill.lvl-sev { background: var(--danger-ink); width: 100%; }
+  .profile-empty { font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+  .profile-setting-note { font-size: 11.5px; color: var(--ink-dim); margin-top: 5px; }
+  details.setting-toggle { margin-top: 6px; font-size: 11.5px; }
+  details.setting-toggle summary { cursor: pointer; color: var(--blue); font-weight: 600; list-style: none; }
+  details.setting-toggle summary::-webkit-details-marker { display: none; }
+  details.setting-toggle summary::before { content: "+ "; }
+  details.setting-toggle[open] summary::before { content: "\2212 "; }
+  .setting-chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+  .setting-chip { border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 14px; padding: 4px 11px; font-size: 11px; cursor: pointer; font-family: inherit; }
+  .setting-chip.on { border-color: var(--navy); background: var(--blue-bg); color: var(--navy); font-weight: 600; }
+
   @media print {
     body { background: #fff; }
     .hdr .rule, .banner, .picker-box, .roadmap, .out-toolbar, .delve-toolbar, .foot { display: none !important; }
     .step { display: none !important; border: none; padding: 0; margin: 0; }
     body[data-print-target="outputs"] .step.out-print-only { display: block !important; }
     body[data-print-target="delve"] .step.delve-print-only { display: block !important; }
+    body[data-print-target="profile"] .step.profile-print-only { display: block !important; }
   }
 </style>
 </head>
@@ -315,7 +336,7 @@
     <div class="rule"></div>
   </div>
 
-  <div class="banner mock"><strong>Static mockup for design review.</strong> Nothing here saves or generates real output. Interactive bits: population branches plus editable people cards (Step 1), the audience chips in Step 2 (select any combination, scripts and FASD United connect-language update to match), the working Option A domain-rating table and stage pills (Step 4), and the purple-dashed <strong>wording pickers</strong> throughout. Click any option live to compare with a group. Local file references are shown as source notes, not live links, since this preview isn't running from the project folder.</div>
+  <div class="banner mock"><strong>Static mockup for design review.</strong> Nothing here saves or generates real output. Interactive bits: population branches plus editable people cards (Step 1), the audience chips in Step 2 (select any combination, scripts and FASD United connect-language update to match), the working Option A domain-rating table, the new brain-profile chart with its printable version and per-setting "where does this show up?" tags, and stage pills (Step 4), and the purple-dashed <strong>wording pickers</strong> throughout. Click any option live to compare with a group. Local file references are shown as source notes, not live links, since this preview isn't running from the project folder.</div>
 
   <div class="picker-box">
     <div class="pk-label">Pick live: opening instructions shown at the top of the real tool</div>
@@ -551,6 +572,14 @@
 
     <div class="rate-summary" id="rateSummary"></div>
 
+    <h3 class="block-h">Brain profile at a glance</h3>
+    <p class="lead" style="margin-bottom:8px;">Sorted so what needs the most support shows first, so nothing gets buried in a full table. Domains rated Moderate or Severe get an optional "where does this show up?" tag, since functioning isn't always uniform across home, school, work, and community &mdash; leave it closed if it doesn't apply.</p>
+    <div class="onepager-box" id="profileViz" style="margin-top:0;"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <button class="out-btn primary" type="button" id="printProfileBtn">Print / Save this chart</button>
+      <span style="font-size:11.5px;color:var(--ink-faint);">Prints the chart for whichever person tab is selected above.</span>
+    </div>
+
     <div class="stage-capture">
       <h4>Developmental timeline (not "dysmaturity")</h4>
       <p>Framed as where a skill sits on its own timeline, never a label on the person. Age band is an optional clinician-only planning aid, switchable off.</p>
@@ -561,6 +590,14 @@
     </div>
 
     <div class="anno"><span class="tag">Child cases</span><span>When there's a caregiver in the picture, this same brain-function pass is repeated for the caregiver, not just the client.</span></div>
+  </div>
+
+  <!-- STEP 4 DOWNLOADABLE BRAIN PROFILE CHART -->
+  <div class="step profile-print-only">
+    <div class="step-k">Step 4 &middot; downloadable</div>
+    <h2>Brain profile chart</h2>
+    <p class="lead">A visual instead of a table for the printed record, sorted by what needs the most support. Setting tags only appear where they were actually noted.</p>
+    <div class="onepager-box" id="profilePrintOut"></div>
   </div>
 
   <!-- STEPS 5-6: MODALITY, FIT CHART, ADAPTED GOALS, ROLES -->
@@ -841,6 +878,7 @@
         btn.classList.add('sel-' + btn.dataset.level);
         updateRateSummary();
         renderModalitySection();
+        renderProfileViz();
       });
     });
   }
@@ -852,9 +890,120 @@
     document.getElementById('rateSummary').textContent = rated + ' of ' + domains.length + ' domains rated, ' + flagged + ' at moderate or severe.';
   }
 
+  // --- Brain profile chart: sorted bars + optional per-setting tags (Joanne's per-setting idea) ---
+  var SETTINGS = [
+    { key: 'home', label: 'Home', icon: '\u{1F3E0}' },
+    { key: 'school', label: 'School', icon: '\u{1F3EB}' },
+    { key: 'work', label: 'Work', icon: '\u{1F4BC}' },
+    { key: 'community', label: 'Community', icon: '\u{1F30D}' }
+  ];
+  var domainSettings = { client: {}, cg1: {} };
+  var openDomains = { client: {}, cg1: {} };
+  var lvlClass = { ne: 'a4', mild: 'a3', mod: 'a2', sev: 'a1' };
+  var lvlLabel = { ne: 'Non-existent', mild: 'Mild', mod: 'Moderate', sev: 'Severe' };
+  var fillClass = { ne: 'lvl-ne', mild: 'lvl-mild', mod: 'lvl-mod', sev: 'lvl-sev' };
+  function severityRank(k) { return { sev: 3, mod: 2, mild: 1, ne: 0 }[k]; }
+  function settingLabel(k) { var m = SETTINGS.filter(function (s) { return s.key === k; }); return m.length ? m[0].label : k; }
+
+  function getRatedDomains(person) {
+    var tableId = person === 'client' ? 'rateTableClient' : 'rateTableCg1';
+    var table = document.getElementById(tableId);
+    var rated = [], unratedCount = 0;
+    domains.forEach(function (d, i) {
+      var found = null;
+      levels.forEach(function (lv) {
+        if (table.querySelector('.rate-btn[data-domain="' + i + '"].sel-' + lv.key)) found = lv.key;
+      });
+      if (!found) { unratedCount++; return; }
+      rated.push({ idx: i, name: d.name, level: found });
+    });
+    rated.sort(function (a, b) { return severityRank(b.level) - severityRank(a.level); });
+    return { rated: rated, unratedCount: unratedCount };
+  }
+
+  function settingChipsMarkup(person, idx) {
+    var sel = domainSettings[person][idx] || [];
+    return SETTINGS.map(function (s) {
+      var on = sel.indexOf(s.key) > -1;
+      return '<button class="setting-chip' + (on ? ' on' : '') + '" type="button" data-domain="' + idx + '" data-setting="' + s.key + '">' + s.icon + ' ' + s.label + '</button>';
+    }).join('');
+  }
+
+  function profileBarRowHTML(person, r, interactive) {
+    var sel = domainSettings[person][r.idx] || [];
+    var isStrained = r.level === 'mod' || r.level === 'sev';
+    var settingsHtml = '';
+    if (isStrained) {
+      if (interactive) {
+        var isOpen = !!openDomains[person][r.idx];
+        var summaryText = 'Where does this show up?' + (sel.length ? ' (' + sel.map(settingLabel).join(', ') + ')' : '');
+        settingsHtml = '<details class="setting-toggle"' + (isOpen ? ' open' : '') + ' data-domain="' + r.idx + '"><summary>' + summaryText + '</summary><div class="setting-chip-row">' + settingChipsMarkup(person, r.idx) + '</div></details>';
+      } else if (sel.length) {
+        settingsHtml = '<div class="profile-setting-note">Shows up at: ' + sel.map(settingLabel).join(', ') + '</div>';
+      }
+    }
+    return '<div class="profile-bar-row">' +
+      '<div class="profile-bar-head"><span class="pname">' + r.name + '</span><span class="lvl ' + lvlClass[r.level] + '">' + lvlLabel[r.level] + '</span></div>' +
+      '<div class="profile-bar-track"><div class="profile-bar-fill ' + fillClass[r.level] + '"></div></div>' +
+      settingsHtml +
+      '</div>';
+  }
+
+  function renderProfileViz() {
+    var p = document.querySelector('.ptab.on').dataset.p;
+    var res = getRatedDomains(p);
+    var html;
+    if (res.rated.length === 0) {
+      html = '<div class="profile-empty">Rate at least one domain above to see the profile chart.</div>';
+    } else {
+      html = res.rated.map(function (r) { return profileBarRowHTML(p, r, true); }).join('');
+    }
+    if (res.unratedCount > 0) {
+      html += '<div class="profile-empty" style="margin-top:8px;">' + res.unratedCount + ' domain' + (res.unratedCount === 1 ? '' : 's') + ' not yet rated, not shown here.</div>';
+    }
+    document.getElementById('profileViz').innerHTML = html;
+
+    document.querySelectorAll('#profileViz .setting-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var di = chip.dataset.domain, sk = chip.dataset.setting;
+        if (!domainSettings[p][di]) domainSettings[p][di] = [];
+        var arr = domainSettings[p][di];
+        var idx = arr.indexOf(sk);
+        if (idx > -1) arr.splice(idx, 1); else arr.push(sk);
+        chip.classList.toggle('on');
+        var summary = chip.closest('details').querySelector('summary');
+        summary.textContent = 'Where does this show up?' + (arr.length ? ' (' + arr.map(settingLabel).join(', ') + ')' : '');
+      });
+    });
+    document.querySelectorAll('#profileViz details.setting-toggle').forEach(function (det) {
+      det.addEventListener('toggle', function () {
+        openDomains[p][det.dataset.domain] = det.open;
+      });
+    });
+  }
+
+  document.getElementById('printProfileBtn').addEventListener('click', function () {
+    var p = document.querySelector('.ptab.on').dataset.p;
+    var personLabel = p === 'client' ? 'Client' : (document.getElementById('cgCard').querySelector('.role-edit').value || 'Caregiver 1');
+    var res = getRatedDomains(p);
+    var html = '<h4 style="margin-top:0;">' + personLabel + '</h4>';
+    if (res.rated.length === 0) {
+      html += '<div class="profile-empty">No domains rated yet for this person.</div>';
+    } else {
+      html += res.rated.map(function (r) { return profileBarRowHTML(p, r, false); }).join('');
+    }
+    if (res.unratedCount > 0) {
+      html += '<div class="profile-empty" style="margin-top:8px;">' + res.unratedCount + ' domain' + (res.unratedCount === 1 ? '' : 's') + ' not yet rated.</div>';
+    }
+    document.getElementById('profilePrintOut').innerHTML = html;
+    document.body.dataset.printTarget = 'profile';
+    window.print();
+  });
+
   buildRateTable('rateTableClient');
   buildRateTable('rateTableCg1');
   updateRateSummary();
+  renderProfileViz();
 
   document.getElementById('personTabs').querySelectorAll('.ptab').forEach(function (tab) {
     tab.addEventListener('click', function () {
@@ -862,6 +1011,7 @@
       document.querySelectorAll('#personTabs .ptab').forEach(function (t) { t.classList.toggle('on', t === tab); });
       document.querySelectorAll('.ppane').forEach(function (pane) { pane.classList.toggle('on', pane.dataset.p === p); });
       updateRateSummary();
+      renderProfileViz();
     });
   });
 
