@@ -645,10 +645,36 @@
       <option value="tbri">TBRI</option>
       <option value="aba">ABA</option>
       <option value="pmt">Parent Management Training</option>
+      <option value="ddp">DDP (Dyadic Developmental Psychotherapy)</option>
+      <option value="cps">Collaborative &amp; Proactive Solutions (CPS)</option>
+      <option value="se">Somatic Experiencing (SE)</option>
+      <option value="dir">DIR Floortime</option>
     </select>
 
     <h3 class="block-h">Are there other modalities you are also using that influence your treatment?</h3>
-    <input class="other-modality-input" type="text" id="otherModalityInput" placeholder="e.g. brief regulation-focused check-ins alongside the primary modality">
+    <p class="lead" style="margin-bottom:8px;">Pick from the list and add as many as apply &mdash; they'll show up alongside the primary modality in Step 7 and in the Step 8 outputs.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <select class="modality-select" id="otherModalitySelect" style="max-width:400px;">
+        <option value="">Select a modality to add</option>
+        <option value="pcit">PCIT (Parent-Child Interaction Therapy)</option>
+        <option value="cbt">CBT (Cognitive Behavioral Therapy)</option>
+        <option value="tfcbt">TF-CBT</option>
+        <option value="play">Child-Centered Play Therapy</option>
+        <option value="talk">General / Integrative Talk Therapy</option>
+        <option value="dbt">DBT</option>
+        <option value="emdr">EMDR</option>
+        <option value="theraplay">Theraplay</option>
+        <option value="tbri">TBRI</option>
+        <option value="aba">ABA</option>
+        <option value="pmt">Parent Management Training</option>
+        <option value="ddp">DDP (Dyadic Developmental Psychotherapy)</option>
+        <option value="cps">Collaborative &amp; Proactive Solutions (CPS)</option>
+        <option value="se">Somatic Experiencing (SE)</option>
+        <option value="dir">DIR Floortime</option>
+      </select>
+      <button class="addbtn" type="button" id="addOtherModalityBtn">+ Add</button>
+    </div>
+    <div class="goal-pill-list" id="otherModalityList" style="margin-top:10px;"></div>
 
     <div id="sampleGoalsBox" class="script-box" style="display:none;margin-top:14px;">
       <h4 id="sampleGoalsTitle"></h4>
@@ -1387,7 +1413,7 @@
       return;
     }
 
-    document.getElementById('sampleGoalsTitle').textContent = 'Sample treatment goals for ' + mod.name;
+    document.getElementById('sampleGoalsTitle').textContent = 'Sample treatment goals for ' + mod.name + (otherModalities.length ? ' (also blending in: ' + otherModalityNames().join(', ') + ')' : '');
     document.getElementById('sampleGoalsList').innerHTML = mod.sampleGoals.map(function (g) { return '<li>' + g + '</li>'; }).join('');
     sampleBox.style.display = 'block';
 
@@ -1467,6 +1493,39 @@
   }
 
   document.getElementById('modalitySelect').addEventListener('change', function () {
+    renderModalitySection();
+    renderDelveSection();
+  });
+
+  // --- Other modalities that influence treatment (dropdown + chips, actually propagates downstream) ---
+  var otherModalities = [];
+  function modalityNameFor(key) {
+    var opt = document.querySelector('#modalitySelect option[value="' + key + '"]');
+    return opt ? opt.textContent : key;
+  }
+  function otherModalityNames() { return otherModalities.map(function (m) { return m.name; }); }
+  function renderOtherModalityList() {
+    var box = document.getElementById('otherModalityList');
+    box.innerHTML = otherModalities.map(function (m, i) {
+      return '<span class="goal-pill">' + m.name + '<button class="rm" type="button" data-i="' + i + '">✕</button></span>';
+    }).join('');
+    box.querySelectorAll('.rm').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        otherModalities.splice(Number(btn.dataset.i), 1);
+        renderOtherModalityList();
+        renderModalitySection();
+        renderDelveSection();
+      });
+    });
+  }
+  document.getElementById('addOtherModalityBtn').addEventListener('click', function () {
+    var sel = document.getElementById('otherModalitySelect');
+    var key = sel.value;
+    if (!key) return;
+    if (otherModalities.some(function (m) { return m.key === key; })) { sel.value = ''; return; }
+    otherModalities.push({ key: key, name: modalityNameFor(key) });
+    sel.value = '';
+    renderOtherModalityList();
     renderModalitySection();
     renderDelveSection();
   });
@@ -1851,7 +1910,7 @@
     }
 
     var goalText = getChosenGoalText();
-    anchorText.textContent = mod.name + (goalText ? ': "' + goalText + '"' : ' (pick a goal above to anchor this section)');
+    anchorText.textContent = mod.name + (otherModalities.length ? ' + ' + otherModalityNames().join(', ') : '') + (goalText ? ': "' + goalText + '"' : ' (pick a goal above to anchor this section)');
 
     var components = COMPONENT_DATA[key];
     if (!components) {
@@ -2078,6 +2137,7 @@
     var goalText = getChosenGoalText();
     if (!key) return '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>';
     var html = '<p><strong>' + (mod ? mod.name : key) + '</strong></p>';
+    if (otherModalities.length) html += '<p style="color:var(--ink-dim);">Also blending in: ' + otherModalityNames().join(', ') + '</p>';
     html += goalText ? ('<p>' + goalText + '</p>') : '<p class="out-empty">Pick or write a goal in Step 5-6 to see it here.</p>';
     return html;
   }
@@ -2107,7 +2167,7 @@
     var key = document.getElementById('modalitySelect').value;
     var mod = MODALITY_DATA[key];
     return '<p>A plain-language summary to keep and use at home, so support fits how ' + nm + '\'s brain works best.</p>' +
-      '<h3>What we are working on</h3>' + (mod ? ('<p>' + mod.name + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
+      '<h3>What we are working on</h3>' + (mod ? ('<p>' + mod.name + (otherModalities.length ? ', alongside ' + otherModalityNames().join(', ') : '') + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
       '<h3>How ' + nm + '\'s brain (and yours, if you are the caregiver) is doing right now</h3>' + getBrainProfileHtml(true) +
       '<h3>What we are changing, and why</h3>' + getRolesHtml(true) +
       '<h3>What this looks like day to day</h3>' + getComponentsHtml(true) +
@@ -2119,7 +2179,7 @@
     var key = document.getElementById('modalitySelect').value;
     var mod = MODALITY_DATA[key];
     return '<p>A brief, brain-based summary for the other professionals who support ' + nm + ' (teachers, case managers, support workers). Share with consent, so support stays consistent across settings.</p>' +
-      '<h3>What treatment involves</h3>' + (mod ? ('<p>' + mod.name + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
+      '<h3>What treatment involves</h3>' + (mod ? ('<p>' + mod.name + (otherModalities.length ? ', alongside ' + otherModalityNames().join(', ') : '') + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
       '<h3>What it asks of ' + nm + '\'s brain</h3>' + getBrainProfileHtml(false) +
       '<h3>What helps, and what to keep consistent</h3>' + getComponentsHtml(false) +
       '<p style="margin-top:12px">The more home, school, and clinic use the same supports, the better they work. Please reach out to coordinate.</p>';
@@ -2157,6 +2217,7 @@
     var goalText = getChosenGoalText();
     L.push('TREATMENT APPROACH');
     L.push('  Primary: ' + (mod ? mod.name : (key || '[select a modality]')));
+    if (otherModalities.length) L.push('  Other modalities blended in: ' + otherModalityNames().join(', '));
     if (mod) L.push('  Standard goal: ' + mod.sampleGoals[0]);
     L.push('  Brain-based adapted goal: ' + (goalText || '[pick or write an adapted goal]'));
     L.push('');
