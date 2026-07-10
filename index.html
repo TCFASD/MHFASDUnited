@@ -61,6 +61,14 @@
   .journey-redesign .checkin { font-size:13px; color:#48535f; margin-top:16px; padding-top:13px; border-top:1px solid #eef1f5; }
   .journey-redesign .checkin a { color:#0d5c4a; font-weight:600; text-decoration:none; }
 
+  /* tool spotlight: a cross-step tool, not nested under one numbered step */
+  .journey-redesign .tool-spotlight { position:relative; overflow:hidden; border-radius:12px; padding:24px 26px; margin-bottom:22px; color:#fff; background:linear-gradient(135deg,#0d1b3e 0%,#1a3a6b 35%,#2c5aa0 65%,#1a6b5a 100%); }
+  .journey-redesign .tool-spotlight .ts-badge { display:inline-block; font-family:'Lexend',sans-serif; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; background:rgba(255,255,255,.16); padding:4px 11px; border-radius:12px; margin-bottom:10px; }
+  .journey-redesign .tool-spotlight h3 { font-family:'Lexend',sans-serif; font-size:20px; margin:0 0 8px; }
+  .journey-redesign .tool-spotlight p { font-size:13.5px; color:rgba(255,255,255,.88); max-width:640px; margin:0 0 14px; line-height:1.6; }
+  .journey-redesign .tool-spotlight .btn-int { background:#fff; color:#16335c !important; padding:9px 18px; border-radius:7px; font-weight:700; }
+  .journey-redesign .tool-spotlight .ts-note { font-size:11.5px; color:rgba(255,255,255,.7); margin-top:10px; }
+
   /* collapsible steps (accordion) */
   .journey-redesign .jhead { cursor:pointer; user-select:none; transition:background .12s; }
   .journey-redesign .jhead:hover { background:#f7f9fc; }
@@ -138,6 +146,14 @@
       <h4>About our IMPACT partners</h4>
       <p>Several tools below come from the IMPACT toolkit at the University of Alberta, shared with us through our partnership. They are their work, not ours; we link to their materials and credit them throughout. Resources marked <strong style="color:#5b21b6;">IMPACT</strong> are theirs; resources marked <strong style="color:#0d5c4a;">FASD United</strong> are ours.</p>
     </div>
+  </div>
+
+  <div class="tool-spotlight">
+    <div class="ts-badge">Guided interactive tool</div>
+    <h3>Brain-Based Treatment Builder</h3>
+    <p>One guided tool to use alongside the journey below, not tied to a single step. It walks with you through PAE/FASD screening, presenting problems, brain function, treatment modality and fit, and adapting treatment &mdash; so you can move through several of the steps below in one place, in order, instead of jumping between separate resources.</p>
+    <a class="btn-int" href="handouts/Combined-Treatment-Builder.html">Open the tool &raquo;</a>
+    <div class="ts-note">Read the steps below first if you want the full grounding, or open the tool directly if you're ready to work a case.</div>
   </div>
 
   <div class="journey-controls"><span>Click a step to expand it.</span> <button id="toggleAll" type="button">Expand all</button></div>
@@ -297,8 +313,8 @@
     <div class="jbody">
       <div class="why-here"><p>A brain-based plan starts with an honest look at what the client's brain can actually do right now, then sets goals to match. Because you keep assessing, the plan keeps flexing. The aim is a plan that is measurable and medically defensible <em>and</em> matched to the brain in front of you.</p></div>
 
-      <h4 class="sec">Build the plan</h4>
-      <div class="sec-note">Start with the approach, then build the plan. Same brain-based thinking, two formats.</div>
+      <h4 class="sec">Understand the approach</h4>
+      <div class="sec-note">For the interactive builder itself, see the Brain-Based Treatment Builder above &mdash; it now covers this step as part of the full guided pathway.</div>
       <div class="stack">
         <div class="rcard">
           <span class="rtype t-read">&#128214; Read / printable</span>
@@ -308,22 +324,7 @@
           <div class="go"><a class="btn-out" href="handouts/Updated-Handouts/Creating-Brain-Based-Treatment-Plan.pdf" target="_blank">Download PDF &raquo;</a></div>
           <div class="src"><span class="ours">FASD United</span> &middot; handout</div>
         </div>
-        <div class="rcard feat">
-          <span class="rtype t-int">&#128421; Interactive</span>
-          <h5>Brain-Based Treatment Plan Builder</h5>
-          <div class="why"><b>What it is:</b> a guided, on-screen builder that walks you through a capacity-matched plan, names what each goal asks the brain to do, and checks the fit for the client and the caregiver. <b>Why it helps:</b> it does the brain-based thinking <em>with</em> you and writes the plan as you go.</div>
-          <div class="when"><b>When you finish, you can take away:</b></div>
-          <ul style="margin:2px 0 12px 18px; font-size:12.5px; color:#48535f; line-height:1.55;">
-            <li>a clinician treatment plan</li>
-            <li>an EHR paste-in version</li>
-            <li>a caregiver handout, in plain language</li>
-            <li>and, if needed, a handout for other providers (teachers, case managers, support workers)</li>
-          </ul>
-          <div class="go"><a class="btn-int" href="handouts/Treatment-Plan-Builder.html">Open the builder &raquo;</a></div>
-          <div class="src"><span class="ours">FASD United</span> &middot; Mental Health Work Group</div>
-        </div>
       </div>
-      <div class="bridge"><b>Read first, then build.</b> Use the <b>handout</b> to understand the approach; use the <b>builder</b> to create the plan on screen and generate the versions you need to share.</div>
 
       <h4 class="sec">Tools to use with your client</h4>
       <div class="sec-note">From our IMPACT partners.</div>
