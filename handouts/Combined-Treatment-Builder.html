@@ -308,6 +308,30 @@
   .wizard-nav { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
   .wizard-nav .out-btn:disabled { opacity: 0.4; cursor: default; }
 
+  .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 10px 0 20px; }
+  .profile-tile { border-radius: 8px; padding: 11px 13px; border: 1px solid transparent; }
+  .profile-tile .tname { font-family: var(--font-display); font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: block; }
+  .profile-tile .tmeta { display: flex; align-items: center; gap: 8px; }
+  .tile-dots { display: inline-flex; gap: 3px; }
+  .tile-dots span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .profile-tile .tlevel { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+  .profile-tile .tlocs { margin-top: 6px; font-size: 11px; }
+  .profile-tile.tile-ne { background: var(--green-bg); border-color: var(--green-border); }
+  .profile-tile.tile-ne .tlevel { color: var(--green-2); }
+  .profile-tile.tile-ne .tile-dots span.on { background: var(--green-2); }
+  .profile-tile.tile-mild { background: var(--blue-bg); border-color: var(--blue-border); }
+  .profile-tile.tile-mild .tlevel { color: var(--blue); }
+  .profile-tile.tile-mild .tile-dots span.on { background: var(--blue); }
+  .profile-tile.tile-mod { background: var(--amber-bg); border-color: var(--amber-border); }
+  .profile-tile.tile-mod .tlevel { color: var(--amber-ink); }
+  .profile-tile.tile-mod .tile-dots span.on { background: var(--amber-ink); }
+  .profile-tile.tile-sev { background: var(--danger-bg); border-color: var(--danger-border); }
+  .profile-tile.tile-sev .tlevel { color: var(--danger-ink); }
+  .profile-tile.tile-sev .tile-dots span.on { background: var(--danger-ink); }
+  .profile-tile.tile-unrated { background: var(--bg); border-color: var(--border); }
+  .profile-tile.tile-unrated .tlevel { color: var(--ink-faint); }
+  .tile-dots span.off { background: var(--border); }
+
   .loc-group { margin-bottom: 14px; }
   .loc-bar-head { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-display); font-size: 13px; color: var(--amber-ink); margin-bottom: 4px; }
   .loc-bar-head .loc-count { font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -322,7 +346,6 @@
     .step { display: none !important; border: none; padding: 0; margin: 0; }
     body[data-print-target="outputs"] .step.out-print-only { display: block !important; }
     body[data-print-target="delve"] .step.delve-print-only { display: block !important; }
-    body[data-print-target="profile"] .step.profile-print-only { display: block !important; }
   }
 </style>
 </head>
@@ -578,12 +601,16 @@
 
     <div class="rate-summary" id="rateSummary"></div>
 
-    <h3 class="block-h">Brain profile: challenges by where they show up</h3>
-    <p class="lead" style="margin-bottom:8px;">Instead of a flat challenges list, domains rated Moderate or Severe are grouped by location &mdash; Home, School, Work, Community &mdash; with a "Not tied to a specific setting" bucket for anything left untagged. This is the same live summary the print button below uses.</p>
+    <h3 class="block-h">Brain profile at a glance</h3>
+    <p class="lead" style="margin-bottom:8px;">Every rated domain, strengths and challenges together, as a tile grid instead of a table &mdash; color and a dot meter show where it lands at a glance.</p>
+    <div class="tile-grid" id="profileTiles"></div>
+
+    <h3 class="block-h">Challenges by where they show up</h3>
+    <p class="lead" style="margin-bottom:8px;">Domains rated Moderate or Severe, grouped by location &mdash; Home, School, Work, Community &mdash; with a "Not tied to a specific setting" bucket for anything left untagged.</p>
     <div class="onepager-box" id="profileViz" style="margin-top:0;"></div>
     <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <button class="out-btn primary" type="button" id="printProfileBtn">Print / Save this chart</button>
-      <span style="font-size:11.5px;color:var(--ink-faint);">Prints the strengths note and the location-grouped challenges together, for whichever person tab is selected above.</span>
+      <button class="out-btn primary" type="button" id="downloadPdfBtn">Download PDF</button>
+      <span style="font-size:11.5px;color:var(--ink-faint);" id="pdfHint">A designed PDF with the tile grid and location summary together, for whichever person tab is selected above.</span>
     </div>
 
     <div class="stage-capture">
@@ -596,14 +623,6 @@
     </div>
 
     <div class="anno"><span class="tag">Child cases</span><span>When there's a caregiver in the picture, this same brain-function pass is repeated for the caregiver, not just the client.</span></div>
-  </div>
-
-  <!-- STEP 4 DOWNLOADABLE BRAIN PROFILE CHART -->
-  <div class="step profile-print-only">
-    <div class="step-k">Step 4 &middot; downloadable</div>
-    <h2>Brain profile chart</h2>
-    <p class="lead">Strengths noted alongside the challenges, grouped by where each one shows up, for the printed record.</p>
-    <div class="onepager-box" id="profilePrintOut"></div>
   </div>
 
   <!-- STEPS 5-6: MODALITY, FIT CHART, ADAPTED GOALS, ROLES -->
@@ -727,6 +746,7 @@
   <div class="foot">Combined Treatment Builder · concept mockup · FASD United Mental Health Work Group</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   var scriptIds = { kin: 'scriptKin', bm: 'scriptBm', foster: 'scriptFoster', adult: 'scriptAdult' };
   var defaultAudience = { kin: ['kin'], bm: ['bm', 'kin'], foster: ['foster'], adult: ['adult'] };
@@ -966,56 +986,167 @@
     else { document.getElementById('profileViz').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
 
-  // --- Brain profile: challenges grouped by where they show up ---
+  // --- Brain profile: tile grid (all domains) + challenges grouped by where they show up ---
   var lvlClass = { ne: 'a4', mild: 'a3', mod: 'a2', sev: 'a1' };
   var lvlLabel = { ne: 'Non-existent', mild: 'Mild', mod: 'Moderate', sev: 'Severe' };
+  var dotCount = { ne: 1, mild: 2, mod: 3, sev: 4 };
+  var LOC_META = { home: { label: 'Home', icon: '\u{1F3E0}' }, school: { label: 'School', icon: '\u{1F3EB}' }, work: { label: 'Work', icon: '\u{1F4BC}' }, community: { label: 'Community', icon: '\u{1F30D}' }, other: { label: 'Not tied to a specific setting', icon: '—' } };
 
-  function locationGroupsHTML(person) {
-    var tableId = person === 'client' ? 'rateTableClient' : 'rateTableCg1';
+  function levelFor(tableId, idx) {
     var table = document.getElementById(tableId);
+    var found = null;
+    levels.forEach(function (lv) { if (table.querySelector('.rate-btn[data-domain="' + idx + '"].sel-' + lv.key)) found = lv.key; });
+    return found;
+  }
+
+  function dotsHTML(level) {
+    var n = level ? dotCount[level] : 0;
+    var out = '';
+    for (var i = 1; i <= 4; i++) out += '<span class="' + (i <= n ? 'on' : 'off') + '"></span>';
+    return '<span class="tile-dots">' + out + '</span>';
+  }
+
+  function renderProfileTiles(person) {
+    var tableId = person === 'client' ? 'rateTableClient' : 'rateTableCg1';
+    var html = domains.map(function (d, i) {
+      var level = levelFor(tableId, i);
+      var cls = level ? 'tile-' + level : 'tile-unrated';
+      var label = level ? lvlLabel[level] : 'Not yet rated';
+      var locs = (level === 'mod' || level === 'sev') ? (domainSettings[person][i] || []) : [];
+      var locsHtml = locs.length ? '<div class="tlocs">' + locs.map(function (l) { return LOC_META[l] ? LOC_META[l].icon : ''; }).join(' ') + '</div>' : '';
+      return '<div class="profile-tile ' + cls + '">' +
+        '<span class="tname">' + d.name + '</span>' +
+        '<div class="tmeta">' + dotsHTML(level) + '<span class="tlevel">' + label + '</span></div>' +
+        locsHtml +
+        '</div>';
+    }).join('');
+    document.getElementById('profileTiles').innerHTML = html;
+  }
+
+  function locationGroups(person) {
+    var tableId = person === 'client' ? 'rateTableClient' : 'rateTableCg1';
     var LOC_ORDER = ['home', 'school', 'work', 'community', 'other'];
-    var LOC_META = { home: { label: 'Home', icon: '\u{1F3E0}' }, school: { label: 'School', icon: '\u{1F3EB}' }, work: { label: 'Work', icon: '\u{1F4BC}' }, community: { label: 'Community', icon: '\u{1F30D}' }, other: { label: 'Not tied to a specific setting', icon: '—' } };
     var groups = { home: [], school: [], work: [], community: [], other: [] };
     domains.forEach(function (d, i) {
-      var level = null;
-      levels.forEach(function (lv) { if (table.querySelector('.rate-btn[data-domain="' + i + '"].sel-' + lv.key)) level = lv.key; });
+      var level = levelFor(tableId, i);
       if (level !== 'mod' && level !== 'sev') return;
       var locs = domainSettings[person][i] || [];
-      var label = d.name + ' <span class="lvl ' + lvlClass[level] + '">' + lvlLabel[level] + '</span>';
-      if (!locs.length) groups.other.push(label);
-      else locs.forEach(function (l) { if (groups[l]) groups[l].push(label); });
+      var item = { name: d.name, level: level };
+      if (!locs.length) groups.other.push(item);
+      else locs.forEach(function (l) { if (groups[l]) groups[l].push(item); });
     });
-    var activeKeys = LOC_ORDER.filter(function (k) { return groups[k].length; });
-    if (!activeKeys.length) return '<div class="profile-empty">Rate a domain Moderate or Severe above to see it grouped here.</div>';
-    var maxCount = Math.max.apply(null, activeKeys.map(function (k) { return groups[k].length; }));
-    return activeKeys.map(function (k) {
-      var pct = Math.max(8, Math.round((groups[k].length / maxCount) * 100));
+    return LOC_ORDER.filter(function (k) { return groups[k].length; }).map(function (k) { return { key: k, meta: LOC_META[k], items: groups[k] }; });
+  }
+
+  function locationGroupsHTML(person) {
+    var active = locationGroups(person);
+    if (!active.length) return '<div class="profile-empty">Rate a domain Moderate or Severe above to see it grouped here.</div>';
+    var maxCount = Math.max.apply(null, active.map(function (g) { return g.items.length; }));
+    return active.map(function (g) {
+      var pct = Math.max(8, Math.round((g.items.length / maxCount) * 100));
       return '<div class="loc-group">' +
-        '<div class="loc-bar-head"><span>' + LOC_META[k].icon + ' ' + LOC_META[k].label + '</span><span class="loc-count">' + groups[k].length + '</span></div>' +
+        '<div class="loc-bar-head"><span>' + g.meta.icon + ' ' + g.meta.label + '</span><span class="loc-count">' + g.items.length + '</span></div>' +
         '<div class="loc-bar-track"><div class="loc-bar-fill" style="width:' + pct + '%"></div></div>' +
-        '<ul>' + groups[k].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' +
+        '<ul>' + g.items.map(function (x) { return '<li>' + x.name + ' <span class="lvl ' + lvlClass[x.level] + '">' + lvlLabel[x.level] + '</span></li>'; }).join('') + '</ul>' +
         '</div>';
     }).join('');
   }
 
   function renderProfileViz() {
     var p = document.querySelector('.ptab.on').dataset.p;
+    renderProfileTiles(p);
     document.getElementById('profileViz').innerHTML = locationGroupsHTML(p);
   }
 
-  document.getElementById('printProfileBtn').addEventListener('click', function () {
+  // --- Download PDF: drawn directly with jsPDF, not a screenshot of the page ---
+  var PDF_LVL = {
+    ne: { fill: [234, 246, 240], text: [14, 138, 110] },
+    mild: { fill: [238, 243, 251], text: [44, 90, 160] },
+    mod: { fill: [254, 246, 231], text: [138, 101, 22] },
+    sev: { fill: [251, 231, 231], text: [154, 43, 43] },
+    unrated: { fill: [240, 242, 245], text: [136, 144, 160] }
+  };
+  function pdfAvailable() { return typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF; }
+
+  document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+    if (!pdfAvailable()) {
+      document.getElementById('pdfHint').textContent = 'PDF generation needs a library this preview sandbox blocks from loading (jsPDF, via CDN). It works once this page is on the live site.';
+      return;
+    }
     var p = document.querySelector('.ptab.on').dataset.p;
     var personLabel = p === 'client' ? 'Client' : (document.getElementById('cgCard').querySelector('.role-edit').value || 'Caregiver 1');
     var tableId = p === 'client' ? 'rateTableClient' : 'rateTableCg1';
     var strengthsVal = (document.getElementById(tableId).querySelector('.strengths-input') || {}).value || '';
-    var html = '<h4 style="margin-top:0;">' + personLabel + '</h4>';
-    html += '<h5 style="font-family:var(--font-display);font-size:12.5px;color:var(--navy);margin:10px 0 4px;">Strengths</h5>';
-    html += strengthsVal ? '<p style="margin:0 0 10px;">' + strengthsVal + '</p>' : '<div class="profile-empty">None noted.</div>';
-    html += '<h5 style="font-family:var(--font-display);font-size:12.5px;color:var(--navy);margin:10px 0 4px;">Challenges by where they show up</h5>';
-    html += locationGroupsHTML(p);
-    document.getElementById('profilePrintOut').innerHTML = html;
-    document.body.dataset.printTarget = 'profile';
-    window.print();
+
+    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter' });
+    var pageW = 612, marginX = 42;
+    var y = 50;
+
+    doc.setFillColor(22, 51, 92);
+    doc.rect(0, 0, pageW, 34, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(255, 255, 255);
+    doc.text('Brain Profile — ' + personLabel, marginX, 22);
+    y = 56;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(22, 51, 92);
+    doc.text('Strengths', marginX, y); y += 14;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(60, 66, 76);
+    var strengthsLines = doc.splitTextToSize(strengthsVal || 'None noted.', pageW - marginX * 2);
+    doc.text(strengthsLines, marginX, y); y += strengthsLines.length * 12 + 14;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(22, 51, 92);
+    doc.text('Brain profile at a glance', marginX, y); y += 16;
+
+    var colGap = 10, colW = (pageW - marginX * 2 - colGap) / 2, tileH = 44;
+    var x = marginX;
+    domains.forEach(function (d, i) {
+      var level = levelFor(tableId, i);
+      var meta = level ? PDF_LVL[level] : PDF_LVL.unrated;
+      doc.setFillColor(meta.fill[0], meta.fill[1], meta.fill[2]);
+      doc.roundedRect(x, y, colW, tileH, 4, 4, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(30, 40, 50);
+      doc.text(d.name, x + 9, y + 16, { maxWidth: colW - 18 });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(meta.text[0], meta.text[1], meta.text[2]);
+      doc.text((level ? lvlLabel[level] : 'Not yet rated').toUpperCase(), x + 9, y + 30);
+      var n = level ? dotCount[level] : 0;
+      for (var dd = 0; dd < 4; dd++) {
+        doc.setFillColor(dd < n ? meta.text[0] : 225, dd < n ? meta.text[1] : 228, dd < n ? meta.text[2] : 232);
+        doc.circle(x + colW - 34 + dd * 8, y + 30, 2.4, 'F');
+      }
+      if (i % 2 === 1) { x = marginX; y += tileH + colGap; } else { x += colW + colGap; }
+    });
+    if (domains.length % 2 === 1) y += tileH + colGap;
+    y += 8;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(22, 51, 92);
+    doc.text('Challenges by where they show up', marginX, y); y += 16;
+    var groups = locationGroups(p);
+    if (!groups.length) {
+      doc.setFont('helvetica', 'italic'); doc.setFontSize(9.5); doc.setTextColor(136, 144, 160);
+      doc.text('No domains rated Moderate or Severe.', marginX, y); y += 14;
+    } else {
+      var maxCount = Math.max.apply(null, groups.map(function (g) { return g.items.length; }));
+      groups.forEach(function (g) {
+        if (y > 700) { doc.addPage(); y = 50; }
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(138, 101, 22);
+        doc.text(g.meta.label + ' (' + g.items.length + ')', marginX, y); y += 8;
+        var barW = Math.max(24, Math.round((g.items.length / maxCount) * (pageW - marginX * 2)));
+        doc.setFillColor(254, 246, 231); doc.rect(marginX, y, pageW - marginX * 2, 8, 'F');
+        doc.setFillColor(224, 169, 59); doc.rect(marginX, y, barW, 8, 'F');
+        y += 16;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(50, 56, 66);
+        g.items.forEach(function (it) {
+          doc.text('•  ' + it.name + ' — ' + lvlLabel[it.level], marginX + 6, y);
+          y += 13;
+        });
+        y += 6;
+      });
+    }
+
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(140, 140, 140);
+    doc.text('Combined Treatment Builder · FASD United Mental Health Work Group', marginX, 780);
+
+    doc.save('brain-profile-' + personLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.pdf');
   });
 
   buildRateTable('rateTableClient');
