@@ -308,12 +308,6 @@
   .wizard-nav { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
   .wizard-nav .out-btn:disabled { opacity: 0.4; cursor: default; }
 
-  .modpicker-group { margin-bottom: 14px; }
-  .modpicker-group h5 { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--ink-faint); margin-bottom: 7px; }
-  .modpicker-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .mod-chip { border: 1.5px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 16px; padding: 6px 13px; font-size: 12px; font-family: var(--font-display); font-weight: 600; cursor: pointer; }
-  .mod-chip.on { border-color: var(--navy); background: var(--blue-bg); color: var(--navy); }
-
   .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 10px 0 20px; }
   .profile-tile { border-radius: 8px; padding: 11px 13px; border: 1px solid transparent; }
   .profile-tile .tname { font-family: var(--font-display); font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: block; }
@@ -644,8 +638,14 @@
     </select>
 
     <h3 class="block-h">Are there other modalities you are also using that influence your treatment?</h3>
-    <p class="lead" style="margin-bottom:8px;">Browse by category and click to add as many as apply &mdash; no dropdown to scroll through. They'll show up alongside the primary modality in Step 7 and in the Step 8 outputs.</p>
-    <div id="otherModalityPicker"></div>
+    <p class="lead" style="margin-bottom:8px;">Grouped the same way as above. Pick one, add it, and pick again for each additional modality &mdash; they'll show up alongside the primary modality in Step 7 and in the Step 8 outputs.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <select class="modality-select" id="otherModalitySelect" style="max-width:400px;">
+        <option value="">Select a modality to add</option>
+      </select>
+      <button class="addbtn" type="button" id="addOtherModalityBtn">+ Add</button>
+    </div>
+    <div class="goal-pill-list" id="otherModalityList" style="margin-top:10px;"></div>
 
     <div id="sampleGoalsBox" class="script-box" style="display:none;margin-top:14px;">
       <h4 id="sampleGoalsTitle"></h4>
@@ -1689,55 +1689,62 @@
     if (typeof renderDelveOnepager === 'function') renderDelveOnepager();
   }
 
-  // --- Build the primary modality select as grouped optgroups (36 options, 5 categories) ---
-  (function () {
-    var sel = document.getElementById('modalitySelect');
+  // --- Build both modality selects as grouped optgroups (36 options, 5 categories each) ---
+  function buildGroupedSelect(selectId, excludeKey) {
+    var sel = document.getElementById(selectId);
+    var placeholder = sel.querySelector('option[value=""]');
+    sel.innerHTML = '';
+    if (placeholder) sel.appendChild(placeholder);
     MOD_GROUPS.forEach(function (g) {
+      var keys = Object.keys(MODALITY_DATA).filter(function (key) { return MODALITY_DATA[key].g === g && key !== excludeKey; });
+      if (!keys.length) return;
       var og = document.createElement('optgroup');
       og.label = g;
-      Object.keys(MODALITY_DATA).forEach(function (key) {
-        if (MODALITY_DATA[key].g === g) {
-          var o = document.createElement('option');
-          o.value = key; o.textContent = MODALITY_DATA[key].name;
-          og.appendChild(o);
-        }
+      keys.forEach(function (key) {
+        var o = document.createElement('option');
+        o.value = key; o.textContent = MODALITY_DATA[key].name;
+        og.appendChild(o);
       });
       sel.appendChild(og);
     });
-  })();
+  }
+  buildGroupedSelect('modalitySelect');
 
   document.getElementById('modalitySelect').addEventListener('change', function () {
     renderModalitySection();
     renderDelveSection();
-    renderOtherModalityPicker();
+    buildGroupedSelect('otherModalitySelect', document.getElementById('modalitySelect').value);
   });
 
-  // --- Other modalities that influence treatment: browsable, grouped chip picker (not a dropdown) ---
+  // --- Other modalities that influence treatment: a second grouped dropdown + Add, not a wall of chips ---
   var otherModalities = [];
   function otherModalityNames() { return otherModalities.map(function (key) { return MODALITY_DATA[key].name; }); }
-  function renderOtherModalityPicker() {
-    var box = document.getElementById('otherModalityPicker');
-    var primary = document.getElementById('modalitySelect').value;
-    box.innerHTML = MOD_GROUPS.map(function (g) {
-      var chips = Object.keys(MODALITY_DATA).filter(function (key) { return MODALITY_DATA[key].g === g && key !== primary; }).map(function (key) {
-        var on = otherModalities.indexOf(key) > -1;
-        return '<button class="mod-chip' + (on ? ' on' : '') + '" type="button" data-key="' + key + '">' + MODALITY_DATA[key].name + '</button>';
-      }).join('');
-      if (!chips) return '';
-      return '<div class="modpicker-group"><h5>' + g + '</h5><div class="modpicker-chips">' + chips + '</div></div>';
+  function renderOtherModalityList() {
+    var box = document.getElementById('otherModalityList');
+    box.innerHTML = otherModalities.map(function (key, i) {
+      return '<span class="goal-pill">' + MODALITY_DATA[key].name + '<button class="rm" type="button" data-i="' + i + '">✕</button></span>';
     }).join('');
-    box.querySelectorAll('.mod-chip').forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        var key = chip.dataset.key;
-        var idx = otherModalities.indexOf(key);
-        if (idx > -1) otherModalities.splice(idx, 1); else otherModalities.push(key);
-        chip.classList.toggle('on');
+    box.querySelectorAll('.rm').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        otherModalities.splice(Number(btn.dataset.i), 1);
+        renderOtherModalityList();
         renderModalitySection();
         renderDelveSection();
       });
     });
   }
-  renderOtherModalityPicker();
+  buildGroupedSelect('otherModalitySelect', document.getElementById('modalitySelect').value);
+  document.getElementById('addOtherModalityBtn').addEventListener('click', function () {
+    var sel = document.getElementById('otherModalitySelect');
+    var key = sel.value;
+    if (!key) return;
+    if (otherModalities.indexOf(key) > -1) { sel.value = ''; return; }
+    otherModalities.push(key);
+    sel.value = '';
+    renderOtherModalityList();
+    renderModalitySection();
+    renderDelveSection();
+  });
   document.getElementById('pickManualBtn').addEventListener('click', function () {
     document.querySelectorAll('#altGoalsList .goal-card, #manualGoalCard').forEach(function (c) { c.classList.remove('chosen'); });
     document.querySelectorAll('.goal-pick-btn').forEach(function (b) { b.classList.remove('on'); });
