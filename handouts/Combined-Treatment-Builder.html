@@ -396,36 +396,18 @@
       </div>
     </div>
 
-    <p class="lead">The answer below decides which screening script Step 2 uses, and how many brain-profile columns Step 4 needs. Pick a path to see it change below.</p>
+    <p class="lead">One question at a time, so nothing gets decided by accident. The answers below decide which screening script Step 2 uses, and how many brain-profile columns Step 4 needs.</p>
 
-    <div class="branches" id="branches">
-      <button class="branch sel" data-b="kin" type="button"><div class="bt">Child with a caregiver, not living with birth parent</div><div class="bd">Adoptive, kinship (grandparent, other relative), or other placement</div></button>
-      <button class="branch" data-b="bm" type="button"><div class="bt" id="bmLabel">Child with a caregiver, and the birth mother is also part of treatment</div><div class="bd">Caregiver plus direct access to the birth mother</div></button>
-      <button class="branch" data-b="foster" type="button"><div class="bt">Child without a caregiver</div><div class="bd">Foster care / no consistent caregiver in the treatment picture</div></button>
-      <button class="branch" data-b="adult" type="button"><div class="bt">Adult</div><div class="bd">Client is the adult themselves</div></button>
+    <div class="wizard-progress" id="s1Progress"></div>
+    <div id="s1QuestionArea"></div>
+    <div id="s1PeopleArea" style="display:none;"></div>
+    <div class="wizard-nav">
+      <button class="out-btn" type="button" id="s1PrevBtn">&larr; Back</button>
+      <button class="out-btn primary" type="button" id="s1NextBtn">Next &rarr;</button>
     </div>
+    <div class="hint-note" id="s1ValidationNote" style="display:none;color:var(--danger-ink);font-size:12px;margin-top:6px;">Enter an age to continue &mdash; it decides which question comes next.</div>
 
-    <div class="picker-box">
-      <div class="pk-label">Pick live: wording for the "birth mother involved" branch above</div>
-      <div class="pk-chips" id="bmPicker">
-        <button class="pk-chip on" data-v="Child with a caregiver, and the birth mother is also part of treatment" type="button">...and the birth mother is also part of treatment</button>
-        <button class="pk-chip" data-v="Child in a caregiver&#8217;s home, birth mother participating in treatment" type="button">...birth mother participating in treatment</button>
-        <button class="pk-chip" data-v="Caregiver plus an involved birth mother" type="button">Caregiver plus an involved birth mother</button>
-        <button class="pk-chip" data-v="Child with a caregiver &#8212; birth mother is part of the picture" type="button">...birth mother is part of the picture</button>
-      </div>
-    </div>
-
-    <div class="agefield"><label for="ageInput">Client's age:</label> <input type="number" placeholder="e.g. 9" id="ageInput"></div>
-
-    <div class="people" id="people">
-      <div class="pcard"><input class="edit role-edit" value="Client" disabled><input class="edit sub-edit" value="identified client" disabled></div>
-      <div class="pcard" id="cgCard"><input class="edit role-edit" value="Caregiver 1"><input class="edit sub-edit" value="adoptive / kinship caregiver"></div>
-      <button class="addbtn" type="button" id="addPersonBtn">+ Add another caregiver / support person</button>
-    </div>
-
-    <div class="supportive-prompt" id="supportivePrompt">Since this is an adult client, take a moment to think through whether there's a supportive adult worth bringing into the case (a partner, sibling, close friend, or mentor). This isn't required, just worth a deliberate pause before moving on.</div>
-
-    <div class="anno"><span class="tag">Why it matters</span><span>This branch is the fork point for the whole tool, not just a label. It changes the exact wording of the screening script in Step 2, and who gets a brain-function profile in Step 4.</span></div>
+    <div class="anno"><span class="tag">Why it matters</span><span>Who's involved is the fork point for the whole tool, not just a label. It changes the exact wording of the screening script in Step 2, and who gets a brain-function profile in Step 4.</span></div>
   </div>
 
   <!-- STEP 2 -->
@@ -746,7 +728,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   var scriptIds = { kin: 'scriptKin', bm: 'scriptBm', foster: 'scriptFoster', adult: 'scriptAdult' };
-  var defaultAudience = { kin: ['kin'], bm: ['bm', 'kin'], foster: ['foster'], adult: ['adult'] };
+  var defaultAudience = { kin: ['kin'], bm: ['bm'], foster: ['foster'], adult: ['adult'] };
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var connectScriptText = {
     bm: 'To a birth parent: "I\'d like to connect you with FASD United\'s Family Navigator program. They also work directly with birth parents, connecting you with community and resources, without judgment, whether or not we\'re able to confirm anything today."',
     kin: 'To a caregiver: "I\'d like to connect you with FASD United\'s Family Navigator program. A Navigator can connect you with other families who\'ve walked this road, along with education and community, whether or not this ever becomes a formal diagnosis. You don\'t have to figure this out alone."',
@@ -773,27 +756,8 @@
     note.style.display = (branchKey === 'kin' || branchKey === 'bm') ? 'flex' : 'none';
   }
 
-  document.getElementById('branches').querySelectorAll('.branch').forEach(function (b) {
-    b.addEventListener('click', function () {
-      document.querySelectorAll('.branch').forEach(function (x) { x.classList.remove('sel'); });
-      b.classList.add('sel');
-      setAudience(defaultAudience[b.dataset.b]);
-      updateCaregiverNote(b.dataset.b);
-      renderModalitySection();
-      var cg = document.getElementById('cgCard');
-      var sp = document.getElementById('supportivePrompt');
-      if (b.dataset.b === 'adult') { cg.style.display = 'none'; sp.classList.add('show'); }
-      else { cg.style.display = ''; sp.classList.remove('show'); }
-      if (b.dataset.b === 'foster') {
-        cg.querySelector('.role-edit').value = 'No consistent caregiver';
-        cg.querySelector('.sub-edit').value = 'foster care, roster may stay empty';
-      } else {
-        cg.querySelector('.role-edit').value = 'Caregiver 1';
-        cg.querySelector('.sub-edit').value = 'adoptive / kinship caregiver';
-      }
-    });
-  });
   updateCaregiverNote('kin');
+  setAudience(defaultAudience.kin);
 
   document.querySelectorAll('#audienceTabs .achip').forEach(function (chip) {
     chip.addEventListener('click', function () {
@@ -813,23 +777,151 @@
     });
   });
 
+  // --- Step 1: one question at a time (client basics -> caregiver situation -> people details) ---
+  var currentBranchKey = 'kin';
+  var s1State = { name: '', age: '', caregiverType: null, hasSupportAdult: null, step: 0 };
+  var s1PeopleBuilt = false;
   var personCount = 1;
-  document.getElementById('addPersonBtn').addEventListener('click', function () {
-    personCount++;
-    var isAdultBranch = document.querySelector('.branch.sel').dataset.b === 'adult';
+
+  function s1IsAdult() { var a = parseInt(s1State.age, 10); return !isNaN(a) && a >= 18; }
+  function s1TotalSteps() { return 3; }
+
+  function s1ApplyBranch() {
+    var key;
+    if (s1IsAdult()) key = 'adult';
+    else if (s1State.caregiverType === 'birth') key = 'bm';
+    else if (s1State.caregiverType === 'foster') key = 'kin';
+    else key = 'foster';
+    currentBranchKey = key;
+    setAudience(defaultAudience[key]);
+    updateCaregiverNote(key);
+    if (typeof renderModalitySection === 'function') renderModalitySection();
+  }
+
+  function buildPersonCard(role, sub, locked) {
     var card = document.createElement('div');
     card.className = 'pcard';
-    var defaultRole = isAdultBranch ? 'Support person' : ('Caregiver ' + personCount);
-    var defaultSub = isAdultBranch ? 'partner, sibling, friend, mentor...' : 'role / relationship';
-    card.innerHTML =
-      '<button class="rm" type="button" title="Remove">✕</button>' +
-      '<input class="edit role-edit" value="' + defaultRole + '">' +
-      '<input class="edit sub-edit" value="' + defaultSub + '">';
-    card.querySelector('.rm').addEventListener('click', function () { card.remove(); });
-    document.getElementById('addPersonBtn').insertAdjacentElement('beforebegin', card);
-  });
+    if (locked) {
+      card.innerHTML = '<input class="edit role-edit" value="' + esc(role) + '" disabled><input class="edit sub-edit" value="' + esc(sub) + '" disabled>';
+    } else {
+      card.innerHTML =
+        '<button class="rm" type="button" title="Remove">✕</button>' +
+        '<input class="edit role-edit" value="' + esc(role) + '">' +
+        '<input class="edit sub-edit" value="' + esc(sub) + '">';
+      card.querySelector('.rm').addEventListener('click', function () { card.remove(); });
+    }
+    return card;
+  }
 
-  setAudience(defaultAudience.kin);
+  function buildS1PeopleArea() {
+    var area = document.getElementById('s1PeopleArea');
+    area.innerHTML = '<h3 class="block-h" style="margin-top:0;">People involved in treatment</h3><div class="people" id="people"></div>';
+    var people = document.getElementById('people');
+    people.appendChild(buildPersonCard(s1State.name || 'Client', 'identified client', true));
+
+    if (currentBranchKey === 'bm') {
+      var bmCard = buildPersonCard('Birth parent', 'birth parent', false);
+      bmCard.id = 'cgCard';
+      people.appendChild(bmCard);
+    } else if (currentBranchKey === 'kin') {
+      var cgCard = buildPersonCard('Caregiver 1', 'adoptive / kinship caregiver', false);
+      cgCard.id = 'cgCard';
+      people.appendChild(cgCard);
+    } else if (currentBranchKey === 'adult' && s1State.hasSupportAdult === true) {
+      var spCard = buildPersonCard('Support person', 'partner, sibling, friend, mentor...', false);
+      spCard.id = 'cgCard';
+      people.appendChild(spCard);
+    }
+
+    var addBtn = document.createElement('button');
+    addBtn.className = 'addbtn'; addBtn.type = 'button'; addBtn.textContent = '+ Add another caregiver / support person';
+    addBtn.style.marginTop = '8px';
+    addBtn.addEventListener('click', function () {
+      personCount++;
+      var isAdultBranch = currentBranchKey === 'adult';
+      var defaultRole = isAdultBranch ? 'Support person' : ('Caregiver ' + personCount);
+      var defaultSub = isAdultBranch ? 'partner, sibling, friend, mentor...' : 'role / relationship';
+      people.appendChild(buildPersonCard(defaultRole, defaultSub, false));
+    });
+    area.appendChild(addBtn);
+  }
+
+  function renderS1() {
+    var qArea = document.getElementById('s1QuestionArea');
+    var pArea = document.getElementById('s1PeopleArea');
+    document.getElementById('s1Progress').textContent = 'Question ' + (s1State.step + 1) + ' of ' + s1TotalSteps();
+    document.getElementById('s1PrevBtn').disabled = s1State.step === 0;
+    document.getElementById('s1NextBtn').textContent = (s1State.step === s1TotalSteps() - 1) ? 'Done' : 'Next →';
+    document.getElementById('s1ValidationNote').style.display = 'none';
+
+    if (s1State.step >= 2) {
+      qArea.style.display = 'none';
+      pArea.style.display = '';
+      if (!s1PeopleBuilt) { s1ApplyBranch(); buildS1PeopleArea(); s1PeopleBuilt = true; }
+      return;
+    }
+    pArea.style.display = 'none';
+    qArea.style.display = '';
+
+    if (s1State.step === 0) {
+      qArea.innerHTML =
+        '<div class="agefield"><label for="s1Name">Client\'s name (optional):</label> <input type="text" id="s1Name" placeholder="e.g. Jordan" value="' + esc(s1State.name) + '"></div>' +
+        '<div class="agefield" style="margin-top:12px;"><label for="s1Age">Client\'s age:</label> <input type="number" min="0" max="120" placeholder="e.g. 9" id="s1Age" value="' + esc(s1State.age) + '"></div>';
+      document.getElementById('s1Name').addEventListener('input', function (e) { s1State.name = e.target.value; });
+      document.getElementById('s1Age').addEventListener('input', function (e) {
+        if (e.target.value !== '' && Number(e.target.value) < 0) e.target.value = '0';
+        s1State.age = e.target.value;
+      });
+    } else if (s1State.step === 1) {
+      if (s1IsAdult()) {
+        qArea.innerHTML =
+          '<h3 class="block-h" style="margin-top:0;">Is there a caregiver or supportive adult involved in this case?</h3>' +
+          '<div class="branches" id="s1Branches">' +
+          '<button class="branch' + (s1State.hasSupportAdult === true ? ' sel' : '') + '" data-v="yes" type="button"><div class="bt">Yes</div><div class="bd">A partner, family member, close friend, or mentor is part of the picture</div></button>' +
+          '<button class="branch' + (s1State.hasSupportAdult === false ? ' sel' : '') + '" data-v="no" type="button"><div class="bt">No</div><div class="bd">Client is on their own for now</div></button>' +
+          '</div>';
+        document.querySelectorAll('#s1Branches .branch').forEach(function (b) {
+          b.addEventListener('click', function () {
+            s1State.hasSupportAdult = (b.dataset.v === 'yes');
+            s1PeopleBuilt = false;
+            renderS1();
+          });
+        });
+      } else {
+        qArea.innerHTML =
+          '<h3 class="block-h" style="margin-top:0;">Is there a caregiver involved in treatment?</h3>' +
+          '<div class="branches" id="s1Branches">' +
+          '<button class="branch' + (s1State.caregiverType === 'birth' ? ' sel' : '') + '" data-v="birth" type="button"><div class="bt">Yes &mdash; working directly with the birth parent</div><div class="bd">Direct access to the birth parent in treatment</div></button>' +
+          '<button class="branch' + (s1State.caregiverType === 'foster' ? ' sel' : '') + '" data-v="foster" type="button"><div class="bt">Yes &mdash; a foster or adoptive parent</div><div class="bd">Kinship (grandparent, other relative), or other caregiver placement</div></button>' +
+          '<button class="branch' + (s1State.caregiverType === 'none' ? ' sel' : '') + '" data-v="none" type="button"><div class="bt">No caregiver involvement</div><div class="bd">Foster care with no consistent caregiver, or working from records/observation</div></button>' +
+          '</div>';
+        document.querySelectorAll('#s1Branches .branch').forEach(function (b) {
+          b.addEventListener('click', function () {
+            s1State.caregiverType = b.dataset.v;
+            s1PeopleBuilt = false;
+            renderS1();
+          });
+        });
+      }
+    }
+  }
+
+  document.getElementById('s1PrevBtn').addEventListener('click', function () {
+    if (s1State.step > 0) { s1State.step--; renderS1(); }
+  });
+  document.getElementById('s1NextBtn').addEventListener('click', function () {
+    if (s1State.step === 0 && (s1State.age === '' || s1State.age == null)) {
+      document.getElementById('s1ValidationNote').style.display = 'block';
+      return;
+    }
+    if (s1State.step === 1) {
+      var answered = s1IsAdult() ? (s1State.hasSupportAdult !== null) : (s1State.caregiverType !== null);
+      if (!answered) return;
+    }
+    if (s1State.step < s1TotalSteps() - 1) { s1State.step++; renderS1(); }
+    else { document.getElementById('audienceTabs').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+  renderS1();
 
   // --- Live wording pickers ---
   function wirePicker(containerId, onPick) {
@@ -854,10 +946,6 @@
 
   wirePicker('headingPicker', function (v) {
     document.getElementById('step1Heading').textContent = v.charAt(0).toUpperCase() + v.slice(1);
-  });
-
-  wirePicker('bmPicker', function (v) {
-    document.getElementById('bmLabel').textContent = v;
   });
 
   // --- Step 4: Option A domain rating table ---
@@ -1071,7 +1159,8 @@
       return;
     }
     var p = document.querySelector('.ptab.on').dataset.p;
-    var personLabel = p === 'client' ? 'Client' : (document.getElementById('cgCard').querySelector('.role-edit').value || 'Caregiver 1');
+    var cgCardEl = document.getElementById('cgCard');
+    var personLabel = p === 'client' ? 'Client' : ((cgCardEl && cgCardEl.querySelector('.role-edit').value) || 'Caregiver 1');
     var tableId = p === 'client' ? 'rateTableClient' : 'rateTableCg1';
     var strengthsVal = (document.getElementById(tableId).querySelector('.strengths-input') || {}).value || '';
 
@@ -1585,8 +1674,7 @@
   }
 
   function caregiverPresent() {
-    var sel = document.querySelector('.branch.sel');
-    return !!(sel && (sel.dataset.b === 'kin' || sel.dataset.b === 'bm'));
+    return currentBranchKey === 'kin' || currentBranchKey === 'bm' || (currentBranchKey === 'adult' && s1State.hasSupportAdult === true);
   }
 
   function renderModalitySection() {
