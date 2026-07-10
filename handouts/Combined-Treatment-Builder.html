@@ -308,6 +308,12 @@
   .wizard-nav { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
   .wizard-nav .out-btn:disabled { opacity: 0.4; cursor: default; }
 
+  .modpicker-group { margin-bottom: 14px; }
+  .modpicker-group h5 { font-family: var(--font-display); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--ink-faint); margin-bottom: 7px; }
+  .modpicker-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mod-chip { border: 1.5px solid var(--border); background: var(--surface); color: var(--ink-dim); border-radius: 16px; padding: 6px 13px; font-size: 12px; font-family: var(--font-display); font-weight: 600; cursor: pointer; }
+  .mod-chip.on { border-color: var(--navy); background: var(--blue-bg); color: var(--navy); }
+
   .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 10px 0 20px; }
   .profile-tile { border-radius: 8px; padding: 11px 13px; border: 1px solid transparent; }
   .profile-tile .tname { font-family: var(--font-display); font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: block; }
@@ -632,49 +638,14 @@
     <p class="lead">One causal chain, in this order: the modality's brain demands are compared against the Step 4 profile, that comparison decides the roles (who covers what), and only then do the adapted goals get written, so the goal wording can reflect the role split instead of guessing at it first.</p>
 
     <h3 class="block-h">What is the primary treatment modality you are using?</h3>
+    <p class="lead" style="margin-bottom:8px;">Grouped by type so 36 options don't read as one long list. Pick one.</p>
     <select class="modality-select" id="modalitySelect">
       <option value="">Select a modality</option>
-      <option value="pcit">PCIT (Parent-Child Interaction Therapy)</option>
-      <option value="cbt">CBT (Cognitive Behavioral Therapy)</option>
-      <option value="tfcbt">TF-CBT</option>
-      <option value="play">Child-Centered Play Therapy</option>
-      <option value="talk">General / Integrative Talk Therapy</option>
-      <option value="dbt">DBT</option>
-      <option value="emdr">EMDR</option>
-      <option value="theraplay">Theraplay</option>
-      <option value="tbri">TBRI</option>
-      <option value="aba">ABA</option>
-      <option value="pmt">Parent Management Training</option>
-      <option value="ddp">DDP (Dyadic Developmental Psychotherapy)</option>
-      <option value="cps">Collaborative &amp; Proactive Solutions (CPS)</option>
-      <option value="se">Somatic Experiencing (SE)</option>
-      <option value="dir">DIR Floortime</option>
     </select>
 
     <h3 class="block-h">Are there other modalities you are also using that influence your treatment?</h3>
-    <p class="lead" style="margin-bottom:8px;">Pick from the list and add as many as apply &mdash; they'll show up alongside the primary modality in Step 7 and in the Step 8 outputs.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <select class="modality-select" id="otherModalitySelect" style="max-width:400px;">
-        <option value="">Select a modality to add</option>
-        <option value="pcit">PCIT (Parent-Child Interaction Therapy)</option>
-        <option value="cbt">CBT (Cognitive Behavioral Therapy)</option>
-        <option value="tfcbt">TF-CBT</option>
-        <option value="play">Child-Centered Play Therapy</option>
-        <option value="talk">General / Integrative Talk Therapy</option>
-        <option value="dbt">DBT</option>
-        <option value="emdr">EMDR</option>
-        <option value="theraplay">Theraplay</option>
-        <option value="tbri">TBRI</option>
-        <option value="aba">ABA</option>
-        <option value="pmt">Parent Management Training</option>
-        <option value="ddp">DDP (Dyadic Developmental Psychotherapy)</option>
-        <option value="cps">Collaborative &amp; Proactive Solutions (CPS)</option>
-        <option value="se">Somatic Experiencing (SE)</option>
-        <option value="dir">DIR Floortime</option>
-      </select>
-      <button class="addbtn" type="button" id="addOtherModalityBtn">+ Add</button>
-    </div>
-    <div class="goal-pill-list" id="otherModalityList" style="margin-top:10px;"></div>
+    <p class="lead" style="margin-bottom:8px;">Browse by category and click to add as many as apply &mdash; no dropdown to scroll through. They'll show up alongside the primary modality in Step 7 and in the Step 8 outputs.</p>
+    <div id="otherModalityPicker"></div>
 
     <div id="sampleGoalsBox" class="script-box" style="display:none;margin-top:14px;">
       <h4 id="sampleGoalsTitle"></h4>
@@ -1196,9 +1167,10 @@
   var domainIndex = {};
   domains.forEach(function (d, i) { domainIndex[d.name] = i; });
 
+  var MOD_GROUPS = ['Cognitive & behavioral', 'Trauma & body-based', 'Relationship, attachment & play', 'Parent training & family', 'Other psychotherapies'];
   var MODALITY_DATA = {
     pcit: {
-      name: 'PCIT (Parent-Child Interaction Therapy)',
+      name: 'PCIT (Parent-Child Interaction Therapy)', g: 'Parent training & family',
       sampleGoals: [
         'Caregiver will use PRIDE skills consistently during CDI sessions to strengthen the relationship.',
         'Child will comply with parent-led commands within the PDI structure.',
@@ -1207,7 +1179,7 @@
       demands: ['Executive function', 'Processing speed', 'Affect regulation', 'Adaptive & social']
     },
     cbt: {
-      name: 'CBT (Cognitive Behavioral Therapy)',
+      name: 'CBT (Cognitive Behavioral Therapy)', g: 'Cognitive & behavioral',
       sampleGoals: [
         'Client will identify and reframe at least one automatic negative thought per session.',
         'Client will complete a behavioral activation activity three times per week.',
@@ -1216,7 +1188,7 @@
       demands: ['Abstract reasoning', 'Executive function', 'Receptive language']
     },
     tfcbt: {
-      name: 'TF-CBT',
+      name: 'TF-CBT', g: 'Cognitive & behavioral',
       sampleGoals: [
         'Client will create a trauma narrative at a pace matched to their own processing ability.',
         'Caregiver will practice praise and active-ignoring skills to support the child\'s regulation.',
@@ -1225,7 +1197,7 @@
       demands: ['Affect regulation', 'Abstract reasoning', 'Working memory']
     },
     play: {
-      name: 'Child-Centered Play Therapy',
+      name: 'Child-Centered Play Therapy', g: 'Relationship, attachment & play',
       sampleGoals: [
         'Child will use play to express and process feelings related to the presenting problem.',
         'Child will show increased self-regulation during play sessions.',
@@ -1234,7 +1206,7 @@
       demands: ['Affect regulation', 'Adaptive & social', 'Sensory processing']
     },
     talk: {
-      name: 'General / Integrative Talk Therapy',
+      name: 'General / Integrative Talk Therapy', g: 'Other psychotherapies',
       sampleGoals: [
         'Client will identify and verbally express feelings related to the presenting problem.',
         'Client will identify one coping strategy to use between sessions.',
@@ -1243,7 +1215,7 @@
       demands: ['Receptive language', 'Abstract reasoning', 'Executive function']
     },
     dbt: {
-      name: 'DBT (Dialectical Behavior Therapy)',
+      name: 'DBT (Dialectical Behavior Therapy)', g: 'Cognitive & behavioral',
       sampleGoals: [
         'Client will use one distress tolerance skill (e.g., TIPP) during a moment of high emotional intensity, tracked on a diary card.',
         'Client will complete a chain analysis with the therapist after a target behavior occurs.',
@@ -1252,7 +1224,7 @@
       demands: ['Affect regulation', 'Working memory', 'Abstract reasoning']
     },
     emdr: {
-      name: 'EMDR (Eye Movement Desensitization and Reprocessing)',
+      name: 'EMDR (Eye Movement Desensitization and Reprocessing)', g: 'Trauma & body-based',
       sampleGoals: [
         'Client will identify and rate a target memory using the SUDs and VOC scales before reprocessing begins.',
         'Client will complete bilateral stimulation sets while holding the target memory, checking in between sets.',
@@ -1261,7 +1233,7 @@
       demands: ['Working memory', 'Interoception', 'Affect regulation']
     },
     theraplay: {
-      name: 'Theraplay',
+      name: 'Theraplay', g: 'Relationship, attachment & play',
       sampleGoals: [
         'Caregiver will lead a structured activity with the child, matching pace to the child\'s regulation.',
         'Caregiver and child will complete a nurture activity (e.g., lotion, feeding a snack) within the child\'s comfort.',
@@ -1270,7 +1242,7 @@
       demands: ['Sensory processing', 'Affect regulation', 'Adaptive & social']
     },
     tbri: {
-      name: 'TBRI (Trust-Based Relational Intervention)',
+      name: 'TBRI (Trust-Based Relational Intervention)', g: 'Relationship, attachment & play',
       sampleGoals: [
         'Caregiver will use a proactive strategy (choice, transition warning) before a known trigger.',
         'Caregiver will guide the child through a "redo" after a behavioral misstep.',
@@ -1279,7 +1251,7 @@
       demands: ['Executive function', 'Affect regulation', 'Sensory processing']
     },
     aba: {
-      name: 'ABA (Applied Behavior Analysis)',
+      name: 'ABA (Applied Behavior Analysis)', g: 'Cognitive & behavioral',
       sampleGoals: [
         'Client will respond correctly across a block of discrete trials with reduced prompting.',
         'Client will earn and exchange tokens on a visual token board within session.',
@@ -1288,7 +1260,7 @@
       demands: ['Processing speed', 'Abstract reasoning', 'Adaptive & social']
     },
     pmt: {
-      name: 'Parent Management Training',
+      name: 'Parent Management Training', g: 'Parent training & family',
       sampleGoals: [
         'Caregiver will use labeled praise and positive attention for a target replacement behavior.',
         'Caregiver will deliver a consistent, planned consequence for a target behavior.',
@@ -1297,7 +1269,7 @@
       demands: ['Executive function', 'Affect regulation', 'Abstract reasoning']
     },
     ddp: {
-      name: 'DDP (Dyadic Developmental Psychotherapy)',
+      name: 'DDP (Dyadic Developmental Psychotherapy)', g: 'Relationship, attachment & play',
       sampleGoals: [
         'Child will stay regulated during a co-regulated affective conversation with the caregiver, at least once per session.',
         'Caregiver will use a PACE stance (Playful, Accepting, Curious, Empathic) in one daily interaction, logged between sessions.',
@@ -1306,7 +1278,7 @@
       demands: ['Affect regulation', 'Receptive language', 'Adaptive & social', 'Abstract reasoning']
     },
     cps: {
-      name: 'Collaborative & Proactive Solutions (CPS)',
+      name: 'Collaborative & Proactive Solutions (CPS)', g: 'Parent training & family',
       sampleGoals: [
         'Caregiver will identify at least one lagging skill and unsolved problem using the ALSUP before the next session.',
         'Caregiver and child will complete Step 1 (Empathy) of a Plan B conversation for one unsolved problem, staying regulated throughout.',
@@ -1315,7 +1287,7 @@
       demands: ['Receptive language', 'Abstract reasoning', 'Executive function', 'Affect regulation']
     },
     se: {
-      name: 'Somatic Experiencing (SE)',
+      name: 'Somatic Experiencing (SE)', g: 'Trauma & body-based',
       sampleGoals: [
         'Client will notice and name one body sensation linked to arousal, at least once per session.',
         'Client will use a grounding resource to return to baseline within the session, at least twice per week.',
@@ -1324,13 +1296,202 @@
       demands: ['Interoception', 'Affect regulation', 'Physiological regulation']
     },
     dir: {
-      name: 'DIR Floortime',
+      name: 'DIR Floortime', g: 'Relationship, attachment & play',
       sampleGoals: [
         'Child will open and close at least 8 circles of communication per 10-minute play session with the caregiver.',
         'Child will remain co-regulated (no dysregulated shutdown or meltdown) through at least 5 consecutive circles of communication.',
         'Child will initiate a 2-step pretend-play sequence with the caregiver at least twice per session.'
       ],
       demands: ['Processing speed', 'Affect regulation', 'Adaptive & social', 'Abstract reasoning']
+    },
+    act: {
+      name: 'ACT (Acceptance and Commitment Therapy)', g: 'Cognitive & behavioral',
+      sampleGoals: [
+        'Client will take one small values-based action per week.',
+        'Client will use a defusion or acceptance practice when a hard thought shows up, at least three times a week.',
+        'Client will identify one personal value using picture cards or concrete examples.'
+      ],
+      demands: ['Interoception', 'Abstract reasoning', 'Affect regulation']
+    },
+    cpt: {
+      name: 'CPT (Cognitive Processing Therapy)', g: 'Cognitive & behavioral',
+      sampleGoals: [
+        'Client will identify and log three trauma-related "stuck points" by week 3.',
+        'Client will complete a Challenging Beliefs Worksheet on one stuck point per week from week 7.',
+        'Client will verbally process one stuck point per session with the clinician scribing.'
+      ],
+      demands: ['Working memory', 'Abstract reasoning', 'Receptive language']
+    },
+    erp: {
+      name: 'Exposure / ERP', g: 'Cognitive & behavioral',
+      sampleGoals: [
+        'Client will build a fear hierarchy and complete the bottom two steps by week 3.',
+        'Client will resist the target ritual during a triggered exposure at least three times a week.',
+        'Client will rate distress using a thermometer or faces scale during each exposure step.'
+      ],
+      demands: ['Interoception', 'Affect regulation', 'Executive function']
+    },
+    mindfulness: {
+      name: 'Mindfulness-based (MBCT / MBSR)', g: 'Cognitive & behavioral',
+      sampleGoals: [
+        'Client will complete a daily guided mindfulness practice at least five days a week, logged.',
+        'Client will use a brief breathing-space practice at one early warning sign per week.',
+        'Client will name one body sensation noticed during a mindful-movement practice.'
+      ],
+      demands: ['Interoception', 'Affect regulation', 'Abstract reasoning']
+    },
+    sensorimotor: {
+      name: 'Sensorimotor Psychotherapy', g: 'Trauma & body-based',
+      sampleGoals: [
+        'Client will identify hyper- versus hypo-arousal cues by week 4.',
+        'Client will use one somatic resource (grounding, an "act of triumph") to settle, at least twice a week.',
+        'Client will name one body sensation linked to activation during session.'
+      ],
+      demands: ['Interoception', 'Affect regulation', 'Physiological regulation']
+    },
+    cpp: {
+      name: 'Child-Parent Psychotherapy (CPP)', g: 'Trauma & body-based',
+      sampleGoals: [
+        'Caregiver will accurately name the child\'s cue or feeling in session, at least twice per session.',
+        'Dyad will co-construct a trauma narrative through play by the end of the core phase.',
+        'Caregiver will provide a developmentally attuned, protective response to one identified trigger.'
+      ],
+      demands: ['Affect regulation', 'Adaptive & social', 'Receptive language']
+    },
+    directiveplay: {
+      name: 'Directive Play Therapy', g: 'Relationship, attachment & play',
+      sampleGoals: [
+        'Client will name four feelings using play materials by week 4.',
+        'Client will role-play one coping strategy and use it outside session, reported at least once a week.',
+        'Client will follow a structured play activity from start to finish with therapist support.'
+      ],
+      demands: ['Receptive language', 'Executive function', 'Adaptive & social']
+    },
+    filial: {
+      name: 'Filial Therapy', g: 'Relationship, attachment & play',
+      sampleGoals: [
+        'Caregiver will demonstrate the four filial skills in a coded play session.',
+        'Caregiver will hold a 30-minute special playtime weekly, logged.',
+        'Caregiver will reflect the child\'s play themes without directing the session.'
+      ],
+      demands: ['Affect regulation', 'Executive function', 'Adaptive & social']
+    },
+    hnc: {
+      name: 'Helping the Noncompliant Child', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will deliver one-step commands with an extended wait time before repeating.',
+        'Child will comply with parent-led commands within the structured sequence.',
+        'Caregiver will use a visual cue card to support consistent command delivery.'
+      ],
+      demands: ['Receptive language', 'Processing speed', 'Executive function']
+    },
+    fmf: {
+      name: 'Families Moving Forward (FASD)', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will identify one behavior as brain-based rather than willful, reframed weekly.',
+        'Caregiver will build and use one new accommodation for a target behavior.',
+        'Caregiver will identify one self-care strategy to protect their own capacity.'
+      ],
+      demands: ['Executive function', 'Affect regulation', 'Adaptive & social']
+    },
+    pact: {
+      name: 'PACT', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will identify one attuned response to the child\'s cue using video feedback.',
+        'Caregiver will practice one new communication strategy between sessions.',
+        'Caregiver will describe a small, observable change in interaction with the child.'
+      ],
+      demands: ['Affect regulation', 'Adaptive & social', 'Receptive language']
+    },
+    bpt: {
+      name: 'Behavioral Parent Training (generic)', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will use labeled praise for a target replacement behavior, tracked daily.',
+        'Caregiver will deliver an immediate, concrete consequence for a target behavior.',
+        'Caregiver will use an antecedent strategy to prevent one identified trigger.'
+      ],
+      demands: ['Executive function', 'Abstract reasoning', 'Affect regulation']
+    },
+    familytherapy: {
+      name: 'Family / Systemic Therapy', g: 'Parent training & family',
+      sampleGoals: [
+        'Family will identify one repeating interaction pattern connected to the presenting problem.',
+        'Each family member will state one concrete change they want to see.',
+        'Family will practice one new communication structure between sessions.'
+      ],
+      demands: ['Abstract reasoning', 'Receptive language', 'Adaptive & social']
+    },
+    fft: {
+      name: 'FFT (Functional Family Therapy)', g: 'Parent training & family',
+      sampleGoals: [
+        'Family will reframe the presenting behavior in non-blaming, relational terms.',
+        'Caregiver will use one new skill as a change agent, tracked weekly.',
+        'Family will generalize one new pattern across at least two settings.'
+      ],
+      demands: ['Abstract reasoning', 'Executive function', 'Adaptive & social']
+    },
+    mst: {
+      name: 'MST (Multisystemic Therapy)', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will identify one system (school, peers, community) contributing to the target behavior.',
+        'Caregiver will build one piece of ongoing scaffolding or support around the youth.',
+        'Family will complete one action step addressing an identified system barrier this week.'
+      ],
+      demands: ['Executive function', 'Adaptive & social', 'Affect regulation']
+    },
+    triplep: {
+      name: 'Triple P', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will use one new positive parenting strategy across at least two situations this week.',
+        'Caregiver will complete a structured Triple P module and log one practice attempt.',
+        'Caregiver will track a reduction in one target child behavior using a simple log.'
+      ],
+      demands: ['Executive function', 'Adaptive & social']
+    },
+    incredibleyears: {
+      name: 'Incredible Years', g: 'Parent training & family',
+      sampleGoals: [
+        'Caregiver will attend and participate in the group program weekly.',
+        'Caregiver will practice one new skill from group at home, logged.',
+        'Caregiver will role-play one strategy learned in group during the following session.'
+      ],
+      demands: ['Adaptive & social', 'Executive function']
+    },
+    ipt: {
+      name: 'IPT (Interpersonal Psychotherapy)', g: 'Other psychotherapies',
+      sampleGoals: [
+        'Client will identify the focal interpersonal problem area (grief, dispute, transition, deficit).',
+        'Client will practice one role-played exchange related to the interpersonal problem.',
+        'Client will describe one concrete current relationship situation per session.'
+      ],
+      demands: ['Abstract reasoning', 'Working memory', 'Adaptive & social']
+    },
+    mi: {
+      name: 'Motivational Interviewing', g: 'Other psychotherapies',
+      sampleGoals: [
+        'Client will state one piece of change talk related to the target behavior per session.',
+        'Client will rate readiness to change using a concrete 1-10 scale at least weekly.',
+        'Client will identify one value connected to the possible change.'
+      ],
+      demands: ['Abstract reasoning', 'Receptive language', 'Executive function']
+    },
+    sfbt: {
+      name: 'Solution-Focused Brief Therapy', g: 'Other psychotherapies',
+      sampleGoals: [
+        'Client will describe what a "really good day" would look like in concrete terms.',
+        'Client will rate progress on a defined 1-10 scale each session.',
+        'Client will identify one exception (a time the problem didn\'t happen) per session.'
+      ],
+      demands: ['Abstract reasoning', 'Executive function']
+    },
+    group: {
+      name: 'Group Therapy', g: 'Other psychotherapies',
+      sampleGoals: [
+        'Client will participate in one structured group activity per session.',
+        'Client will practice one interpersonal skill within the group setting weekly.',
+        'Client will tolerate group observation and feedback with support, tracked per session.'
+      ],
+      demands: ['Adaptive & social', 'Processing speed', 'Affect regulation']
     }
   };
 
@@ -1528,43 +1689,55 @@
     if (typeof renderDelveOnepager === 'function') renderDelveOnepager();
   }
 
+  // --- Build the primary modality select as grouped optgroups (36 options, 5 categories) ---
+  (function () {
+    var sel = document.getElementById('modalitySelect');
+    MOD_GROUPS.forEach(function (g) {
+      var og = document.createElement('optgroup');
+      og.label = g;
+      Object.keys(MODALITY_DATA).forEach(function (key) {
+        if (MODALITY_DATA[key].g === g) {
+          var o = document.createElement('option');
+          o.value = key; o.textContent = MODALITY_DATA[key].name;
+          og.appendChild(o);
+        }
+      });
+      sel.appendChild(og);
+    });
+  })();
+
   document.getElementById('modalitySelect').addEventListener('change', function () {
     renderModalitySection();
     renderDelveSection();
+    renderOtherModalityPicker();
   });
 
-  // --- Other modalities that influence treatment (dropdown + chips, actually propagates downstream) ---
+  // --- Other modalities that influence treatment: browsable, grouped chip picker (not a dropdown) ---
   var otherModalities = [];
-  function modalityNameFor(key) {
-    var opt = document.querySelector('#modalitySelect option[value="' + key + '"]');
-    return opt ? opt.textContent : key;
-  }
-  function otherModalityNames() { return otherModalities.map(function (m) { return m.name; }); }
-  function renderOtherModalityList() {
-    var box = document.getElementById('otherModalityList');
-    box.innerHTML = otherModalities.map(function (m, i) {
-      return '<span class="goal-pill">' + m.name + '<button class="rm" type="button" data-i="' + i + '">✕</button></span>';
+  function otherModalityNames() { return otherModalities.map(function (key) { return MODALITY_DATA[key].name; }); }
+  function renderOtherModalityPicker() {
+    var box = document.getElementById('otherModalityPicker');
+    var primary = document.getElementById('modalitySelect').value;
+    box.innerHTML = MOD_GROUPS.map(function (g) {
+      var chips = Object.keys(MODALITY_DATA).filter(function (key) { return MODALITY_DATA[key].g === g && key !== primary; }).map(function (key) {
+        var on = otherModalities.indexOf(key) > -1;
+        return '<button class="mod-chip' + (on ? ' on' : '') + '" type="button" data-key="' + key + '">' + MODALITY_DATA[key].name + '</button>';
+      }).join('');
+      if (!chips) return '';
+      return '<div class="modpicker-group"><h5>' + g + '</h5><div class="modpicker-chips">' + chips + '</div></div>';
     }).join('');
-    box.querySelectorAll('.rm').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        otherModalities.splice(Number(btn.dataset.i), 1);
-        renderOtherModalityList();
+    box.querySelectorAll('.mod-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var key = chip.dataset.key;
+        var idx = otherModalities.indexOf(key);
+        if (idx > -1) otherModalities.splice(idx, 1); else otherModalities.push(key);
+        chip.classList.toggle('on');
         renderModalitySection();
         renderDelveSection();
       });
     });
   }
-  document.getElementById('addOtherModalityBtn').addEventListener('click', function () {
-    var sel = document.getElementById('otherModalitySelect');
-    var key = sel.value;
-    if (!key) return;
-    if (otherModalities.some(function (m) { return m.key === key; })) { sel.value = ''; return; }
-    otherModalities.push({ key: key, name: modalityNameFor(key) });
-    sel.value = '';
-    renderOtherModalityList();
-    renderModalitySection();
-    renderDelveSection();
-  });
+  renderOtherModalityPicker();
   document.getElementById('pickManualBtn').addEventListener('click', function () {
     document.querySelectorAll('#altGoalsList .goal-card, #manualGoalCard').forEach(function (c) { c.classList.remove('chosen'); });
     document.querySelectorAll('.goal-pick-btn').forEach(function (b) { b.classList.remove('on'); });
