@@ -418,10 +418,11 @@
 
     <div class="why-box"><b>Why we ask:</b> prenatal alcohol exposure is one of the most common, and most commonly missed, contributors to the neurodevelopmental profile this tool helps you think through. Naming it early, even when the answer is "unknown," changes how we understand behavior, tailor treatment, and connect the family to the right supports. This isn't about assigning blame. Ask the same way in every case, not just ones that "look at risk." That's what keeps it from feeling like an accusation.</p></div>
 
-    <div class="audience-note">Who are you talking to? Select any that apply. The case may call for more than one script (e.g. a caregiver <em>and</em> an involved birth mother).</div>
+    <div class="audience-note">Auto-set from Step 1's caregiver question, but select any that apply if you need more than one script (e.g. a caregiver <em>and</em> an involved birth mother).</div>
     <div class="audience-tabs" id="audienceTabs">
-      <button class="achip" data-a="bm" type="button">Birth parent</button>
-      <button class="achip on" data-a="kin" type="button">Caregiver (adoptive / kinship / foster)</button>
+      <button class="achip" data-a="bm" type="button">Birth mother</button>
+      <button class="achip" data-a="bf" type="button">Birth father</button>
+      <button class="achip on" data-a="kin" type="button">Caregiver (adoptive / kinship / foster / guardian)</button>
       <button class="achip" data-a="foster" type="button">No consistent caregiver (records &amp; observation)</button>
       <button class="achip" data-a="adult" type="button">Adult client, self-report</button>
     </div>
@@ -459,6 +460,26 @@
         <li class="q">"Thank you for sharing that with me. I know that's not always easy to talk about. Many families have had similar experiences. It doesn't mean anything is wrong, but it can be helpful for me to keep it in mind as I support your child's development."</li>
       </ol>
       <div><span class="srcnote">AAP Screening Implementation Guide</span><span class="srcnote">Home Visitors Implementation Guide</span></div>
+    </div>
+
+    <div class="script-box" id="scriptBf" style="display:none">
+      <h4>Screening with the birth father (not currently with the birth mother)</h4>
+      <div class="gapbox" style="margin-bottom:10px;"><b>Draft wording, not yet reviewed.</b> A birth father can't answer direct pregnancy questions the way a birth mother can, so this is adapted from the indirect/observational approach (what did you witness or learn) rather than the birth-mother script's first-person pregnancy questions. Flagged for wording review before this is considered settled.</div>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px;">Opener:</p>
+      <ol>
+        <li class="q">"I'd like to ask a few questions about [child]'s early history, based on what you knew or were around for during the pregnancy."</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">Short screening questions:</p>
+      <ol>
+        <li class="q">"Were you in contact with [child]'s birth mother during the pregnancy?"</li>
+        <li class="q">"What do you know about alcohol use during the pregnancy, if anything?"</li>
+        <li class="q">"How do you know that? Did you witness it directly, or is it something she or someone else told you?"</li>
+      </ol>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 4px;">If it's positive, one way to respond:</p>
+      <ol>
+        <li class="q">"Thank you for telling me. I know that's not always easy to talk about, especially secondhand. It doesn't mean anything is wrong, but it can be helpful for me to keep it in mind as I support [child]'s development."</li>
+      </ol>
+      <div><span class="srcnote">Adapted from the caregiver/observational approach — not a distinct validated source yet</span></div>
     </div>
 
     <div class="script-box" id="scriptFoster" style="display:none">
@@ -727,16 +748,17 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-  var scriptIds = { kin: 'scriptKin', bm: 'scriptBm', foster: 'scriptFoster', adult: 'scriptAdult' };
-  var defaultAudience = { kin: ['kin'], bm: ['bm'], foster: ['foster'], adult: ['adult'] };
+  var scriptIds = { kin: 'scriptKin', bm: 'scriptBm', bf: 'scriptBf', foster: 'scriptFoster', adult: 'scriptAdult' };
+  var defaultAudience = { kin: ['kin'], bm: ['bm'], bf: ['bf'], foster: ['foster'], adult: ['adult'] };
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var connectScriptText = {
     bm: 'To a birth parent: "I\'d like to connect you with FASD United\'s Family Navigator program. They also work directly with birth parents, connecting you with community and resources, without judgment, whether or not I\'m able to confirm anything today."',
+    bf: 'To a birth father: "I\'d like to connect you with FASD United\'s Family Navigator program. They work with birth parents too, connecting you with community and resources, without judgment, whether or not I\'m able to confirm anything today."',
     kin: 'To a caregiver: "I\'d like to connect you with FASD United\'s Family Navigator program. A Navigator can connect you with other families who\'ve walked this road, along with education and community, whether or not this ever becomes a formal diagnosis. You don\'t have to figure this out alone."',
     foster: 'To the current caregiver or case worker: "I\'d like to connect [child]\'s caregiver with FASD United\'s Family Navigator program so there\'s support and education in place while I keep gathering information."',
     adult: 'To an adult client: "I\'d like to connect you with FASD United\'s Family Navigator program. They connect adults navigating this for themselves with community, education, and other people who understand what you\'re dealing with. Either way, you\'ll have support."'
   };
-  var connectWho = { bm: 'Birth parent', kin: 'Caregiver', foster: 'Current caregiver / case worker', adult: 'Adult client' };
+  var connectWho = { bm: 'Birth mother', bf: 'Birth father', kin: 'Caregiver', foster: 'Current caregiver / case worker', adult: 'Adult client' };
 
   function setAudience(keys) {
     Object.keys(scriptIds).forEach(function (k) {
@@ -753,7 +775,7 @@
 
   function updateCaregiverNote(branchKey) {
     var note = document.getElementById('caregiverAssessNote');
-    note.style.display = (branchKey === 'kin' || branchKey === 'bm') ? 'flex' : 'none';
+    note.style.display = (branchKey === 'kin' || branchKey === 'bm' || branchKey === 'bf') ? 'flex' : 'none';
   }
 
   updateCaregiverNote('kin');
@@ -777,21 +799,38 @@
     });
   });
 
-  // --- Step 1: one question at a time (client basics -> caregiver situation -> people details) ---
+  // --- Step 1: one question at a time (client basics -> is there a caregiver -> what kind -> people details) ---
   var currentBranchKey = 'kin';
-  var s1State = { name: '', age: '', caregiverType: null, hasSupportAdult: null, step: 0 };
+  var s1State = { name: '', age: '', hasCaregiver: null, caregiverType: null, step: 0 };
   var s1PeopleBuilt = false;
   var personCount = 1;
 
+  var CG_TYPES = [
+    { v: 'birthmother', label: 'Birth mother', desc: 'Direct access to the birth mother in treatment', role: 'Birth mother', sub: 'birth mother' },
+    { v: 'birthfather', label: 'Birth father involved in treatment (with no involvement of birth mother)', desc: 'Direct access to the birth father; birth mother is not part of the picture', role: 'Birth father', sub: 'birth father, not currently with the birth mother' },
+    { v: 'fosteradoptive', label: 'Foster or adoptive parent', desc: 'Kinship (grandparent, other relative), or other caregiver placement', role: 'Caregiver 1', sub: 'foster / adoptive caregiver' },
+    { v: 'guardiankinship', label: 'Legal guardian or kinship care', desc: 'Legal guardianship, or kinship care not covered above', role: 'Legal guardian / kinship caregiver', sub: 'legal guardian or kinship care' },
+    { v: 'supportive', label: 'Supportive adult (not a legal caregiver)', desc: 'A partner, family member, close friend, or mentor is part of the picture', role: 'Support person', sub: 'partner, sibling, friend, mentor...' }
+  ];
+  function cgTypeMeta(v) { var m = CG_TYPES.filter(function (t) { return t.v === v; }); return m.length ? m[0] : null; }
+
   function s1IsAdult() { var a = parseInt(s1State.age, 10); return !isNaN(a) && a >= 18; }
-  function s1TotalSteps() { return 3; }
+  function s1TotalSteps() { return 4; }
 
   function s1ApplyBranch() {
     var key;
-    if (s1IsAdult()) key = 'adult';
-    else if (s1State.caregiverType === 'birth') key = 'bm';
-    else if (s1State.caregiverType === 'foster') key = 'kin';
-    else key = 'foster';
+    if (s1State.hasCaregiver === false) {
+      key = s1IsAdult() ? 'adult' : 'foster';
+    } else {
+      switch (s1State.caregiverType) {
+        case 'birthmother': key = 'bm'; break;
+        case 'birthfather': key = 'bf'; break;
+        case 'fosteradoptive': key = 'kin'; break;
+        case 'guardiankinship': key = 'kin'; break;
+        case 'supportive': key = s1IsAdult() ? 'adult' : 'foster'; break;
+        default: key = s1IsAdult() ? 'adult' : 'kin';
+      }
+    }
     currentBranchKey = key;
     setAudience(defaultAudience[key]);
     updateCaregiverNote(key);
@@ -819,18 +858,13 @@
     var people = document.getElementById('people');
     people.appendChild(buildPersonCard(s1State.name || 'Client', 'identified client', true));
 
-    if (currentBranchKey === 'bm') {
-      var bmCard = buildPersonCard('Birth parent', 'birth parent', false);
-      bmCard.id = 'cgCard';
-      people.appendChild(bmCard);
-    } else if (currentBranchKey === 'kin') {
-      var cgCard = buildPersonCard('Caregiver 1', 'adoptive / kinship caregiver', false);
-      cgCard.id = 'cgCard';
-      people.appendChild(cgCard);
-    } else if (currentBranchKey === 'adult' && s1State.hasSupportAdult === true) {
-      var spCard = buildPersonCard('Support person', 'partner, sibling, friend, mentor...', false);
-      spCard.id = 'cgCard';
-      people.appendChild(spCard);
+    if (s1State.hasCaregiver === true) {
+      var meta = cgTypeMeta(s1State.caregiverType);
+      if (meta) {
+        var cgCard = buildPersonCard(meta.role, meta.sub, false);
+        cgCard.id = 'cgCard';
+        people.appendChild(cgCard);
+      }
     }
 
     var addBtn = document.createElement('button');
@@ -854,7 +888,7 @@
     document.getElementById('s1NextBtn').textContent = (s1State.step === s1TotalSteps() - 1) ? 'Done' : 'Next →';
     document.getElementById('s1ValidationNote').style.display = 'none';
 
-    if (s1State.step >= 2) {
+    if (s1State.step >= 3) {
       qArea.style.display = 'none';
       pArea.style.display = '';
       if (!s1PeopleBuilt) { s1ApplyBranch(); buildS1PeopleArea(); s1PeopleBuilt = true; }
@@ -873,53 +907,60 @@
         s1State.age = e.target.value;
       });
     } else if (s1State.step === 1) {
-      if (s1IsAdult()) {
-        qArea.innerHTML =
-          '<h3 class="block-h" style="margin-top:0;">Is there a caregiver or supportive adult involved in this case?</h3>' +
-          '<div class="branches" id="s1Branches">' +
-          '<button class="branch' + (s1State.hasSupportAdult === true ? ' sel' : '') + '" data-v="yes" type="button"><div class="bt">Yes</div><div class="bd">A partner, family member, close friend, or mentor is part of the picture</div></button>' +
-          '<button class="branch' + (s1State.hasSupportAdult === false ? ' sel' : '') + '" data-v="no" type="button"><div class="bt">No</div><div class="bd">Client is on their own for now</div></button>' +
-          '</div>';
-        document.querySelectorAll('#s1Branches .branch').forEach(function (b) {
-          b.addEventListener('click', function () {
-            s1State.hasSupportAdult = (b.dataset.v === 'yes');
-            s1PeopleBuilt = false;
-            renderS1();
-          });
+      qArea.innerHTML =
+        '<h3 class="block-h" style="margin-top:0;">Is there a caregiver actively supporting the client?</h3>' +
+        '<p class="lead" style="margin-bottom:8px;">This decides which screening questions come next.</p>' +
+        '<div class="branches" id="s1Branches">' +
+        '<button class="branch' + (s1State.hasCaregiver === true ? ' sel' : '') + '" data-v="yes" type="button"><div class="bt">Yes</div><div class="bd">A caregiver or supportive adult is part of the picture</div></button>' +
+        '<button class="branch' + (s1State.hasCaregiver === false ? ' sel' : '') + '" data-v="no" type="button"><div class="bt">No</div><div class="bd">Client is on their own for now</div></button>' +
+        '</div>';
+      document.querySelectorAll('#s1Branches .branch').forEach(function (b) {
+        b.addEventListener('click', function () {
+          s1State.hasCaregiver = (b.dataset.v === 'yes');
+          s1PeopleBuilt = false;
+          renderS1();
         });
-      } else {
-        qArea.innerHTML =
-          '<h3 class="block-h" style="margin-top:0;">Is there a caregiver involved in treatment?</h3>' +
-          '<div class="branches" id="s1Branches">' +
-          '<button class="branch' + (s1State.caregiverType === 'birth' ? ' sel' : '') + '" data-v="birth" type="button"><div class="bt">Yes &mdash; working directly with the birth parent</div><div class="bd">Direct access to the birth parent in treatment</div></button>' +
-          '<button class="branch' + (s1State.caregiverType === 'foster' ? ' sel' : '') + '" data-v="foster" type="button"><div class="bt">Yes &mdash; a foster or adoptive parent</div><div class="bd">Kinship (grandparent, other relative), or other caregiver placement</div></button>' +
-          '<button class="branch' + (s1State.caregiverType === 'none' ? ' sel' : '') + '" data-v="none" type="button"><div class="bt">No caregiver involvement</div><div class="bd">Foster care with no consistent caregiver, or working from records/observation</div></button>' +
-          '</div>';
-        document.querySelectorAll('#s1Branches .branch').forEach(function (b) {
-          b.addEventListener('click', function () {
-            s1State.caregiverType = b.dataset.v;
-            s1PeopleBuilt = false;
-            renderS1();
-          });
+      });
+    } else if (s1State.step === 2) {
+      qArea.innerHTML =
+        '<h3 class="block-h" style="margin-top:0;">What kind of caregiver is this?</h3>' +
+        '<div class="banner mock" style="margin-bottom:10px;">Draft list, pending group review — not finalized.</div>' +
+        '<div class="branches" id="s1Branches">' +
+        CG_TYPES.map(function (t) {
+          return '<button class="branch' + (s1State.caregiverType === t.v ? ' sel' : '') + '" data-v="' + t.v + '" type="button"><div class="bt">' + t.label + '</div><div class="bd">' + t.desc + '</div></button>';
+        }).join('') +
+        '</div>';
+      document.querySelectorAll('#s1Branches .branch').forEach(function (b) {
+        b.addEventListener('click', function () {
+          s1State.caregiverType = b.dataset.v;
+          s1PeopleBuilt = false;
+          renderS1();
         });
-      }
+      });
     }
   }
 
   document.getElementById('s1PrevBtn').addEventListener('click', function () {
-    if (s1State.step > 0) { s1State.step--; renderS1(); }
+    if (s1State.step > 0) {
+      s1State.step--;
+      if (s1State.step === 2 && s1State.hasCaregiver === false) s1State.step--;
+      renderS1();
+    }
   });
   document.getElementById('s1NextBtn').addEventListener('click', function () {
     if (s1State.step === 0 && (s1State.age === '' || s1State.age == null)) {
       document.getElementById('s1ValidationNote').style.display = 'block';
       return;
     }
-    if (s1State.step === 1) {
-      var answered = s1IsAdult() ? (s1State.hasSupportAdult !== null) : (s1State.caregiverType !== null);
-      if (!answered) return;
+    if (s1State.step === 1 && s1State.hasCaregiver === null) return;
+    if (s1State.step === 2 && s1State.caregiverType === null) return;
+    if (s1State.step < s1TotalSteps() - 1) {
+      s1State.step++;
+      if (s1State.step === 2 && s1State.hasCaregiver === false) s1State.step++;
+      renderS1();
+    } else {
+      document.getElementById('audienceTabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    if (s1State.step < s1TotalSteps() - 1) { s1State.step++; renderS1(); }
-    else { document.getElementById('audienceTabs').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
   renderS1();
 
@@ -1674,7 +1715,8 @@
   }
 
   function caregiverPresent() {
-    return currentBranchKey === 'kin' || currentBranchKey === 'bm' || (currentBranchKey === 'adult' && s1State.hasSupportAdult === true);
+    if (currentBranchKey === 'kin' || currentBranchKey === 'bm' || currentBranchKey === 'bf') return true;
+    return currentBranchKey === 'adult' && s1State.hasCaregiver === true && s1State.caregiverType === 'supportive';
   }
 
   function renderModalitySection() {
