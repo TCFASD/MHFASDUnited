@@ -153,6 +153,7 @@
     <p class="lead">Pick each approach in play (multi-select), then check the specific interventions you are actually using within it. Only those are carried through the fit and the handout, so the picture matches what you really do.</p>
     <div id="txChips"></div>
     <div class="note">A treatment is not all-or-nothing. One intervention can fit the brain while the next does not. This tool checks the fit intervention by intervention.</div>
+    <div class="note"><strong>Before picking a specific modality:</strong> screen it for FASD fit &mdash; does it rely on concrete/simplified language, build in repetition and external memory supports, offer sensory accommodations, and allow pacing adjusted to developmental (not chronological) age? Bottom-up, low-verbal modalities (art therapy, play therapy, sensorimotor/somatic work) are often the strongest first-line individual fit, since they bypass the verbal/abstract-reasoning demands FASD commonly impairs. Whatever is chosen, involve the caregiver/support system as a required part of treatment, not an optional add-on &mdash; the highest-evidence, best-fit modalities for FASD are all high-caregiver-involvement, since a clinician cannot change the other 167 hours of the week alone. If medication is part of the plan, match the target symptom cluster (hyperarousal, emotional regulation, cognitive rigidity, cognitive impairment) to the medication class with the prescriber, and track an objective behavior log before/after any trial, since response in FASD is often atypical.</div>
     <div class="nav"><button class="btn btn-ghost" onclick="go(0)" type="button">&larr; Back</button><button class="btn btn-primary" onclick="go(2)" type="button">Next &rarr;</button></div>
   </div>
 
@@ -218,16 +219,19 @@ const ACC={
   'Avoid idioms, sarcasm, and figurative language; say exactly what is meant','Ask "show me" instead of open-ended "why"',
   'State instructions positively (what to do), not negatively (what not to do)',"Don't mistake fluent speech for full comprehension; verbal skill and receptive understanding can diverge",
   "Offer info in the client's stated best format (spoken, written, visual)",'Break multi-part instructions into single steps, confirming each before the next',
-  'Verify comprehension with a demonstration, not just a verbal repeat-back'],
+  'Verify comprehension with a demonstration, not just a verbal repeat-back',
+  'Use the six active-listening techniques: attentive listening, encouraging phrases, restating/paraphrasing, the 5 Ws, reflecting feelings, and summarizing'],
  ef:['Break it to the smallest first step','"First/then" and a single clear starting cue','Visual schedule, timers, and reminders (external structure)','Body-doubling: do the first step alongside them',
   'Open and close every session with the same ritual','Offer max two concrete choices instead of an open-ended question',
   "Treat a stalled task as a sequencing problem, not motivation; ask what's the very next physical step",'Match expectations to developmental, not chronological, age for this specific skill',
   'Provide a finishing cue (timer, phrase, visual) rather than expecting the client to judge when a task ends','Keep group/session structure small and predictable; predictability substitutes for self-structuring load',
-  'If a plan is not carried out, check whether it had too many steps before assuming low motivation'],
+  'If a plan is not carried out, check whether it had too many steps before assuming low motivation',
+  'Build session structure around "can\'t, not won\'t": a skill the client clearly knows but doesn\'t apply is a real-time inhibitory-control gap, not evidence they weren\'t trying'],
  abr:['Make it concrete and visual; show, do not just tell','Use immediate, concrete cause-and-effect','"If X, I do Y" cards instead of abstract reasoning','Avoid distant or hypothetical consequences',
   'Treat confabulation as a memory/comprehension symptom, not a lie; respond without confrontation',"Avoid questions you already know the answer to (a 'lie trap'); state the observed fact instead",
-  'Assume a lesson learned in one setting will not transfer automatically; re-teach in each new context','Ask "what happened, step by step?" instead of "why did you do that?"',
-  'Use real, tangible objects or role-play instead of talking through a decision hypothetically'],
+  'Assume a lesson learned in one setting will not transfer automatically; re-teach it explicitly in each new context','Ask "what happened, step by step?" instead of "why did you do that?"',
+  'Use real, tangible objects or role-play instead of talking through a decision hypothetically',
+  'Avoid behavior charts and token/reward systems as a primary strategy; they rely on cause-and-effect reasoning that may be impaired &mdash; use environmental/accommodation-based plans instead'],
  sens:['Reduce noise, light, and clutter','Offer headphones, sunglasses, or a quiet retreat','Build in movement and sensory breaks','Give advance warning of loud or busy events',
   'Offer a sensory diet: alerting activity if under-responsive, heavy work to organize/focus, calming activity if over-responsive',
   'Proprioceptive "heavy work" (pushing, carrying, squeezing) as a default regulation tool when unsure what helps',
@@ -236,13 +240,17 @@ const ACC={
   'Recognize inability to sit still as a neurological movement need, not disinterest or defiance'],
  intero:['Offer food, water, and bathroom on a schedule, not on cues','Use visuals/scales to label body states','Protect sleep and a wind-down routine','Watch HALT (hungry, angry, lonely, tired) and intervene early',
   'Do not rely on self-report for hunger, fatigue, or pain; check proactively','Scheduled bathroom checks rather than waiting to be told',
-  'Rule out an unmet physical need before assuming a behavior is purely emotional or willful','A simple visual body map/scale so a feeling can be pointed to, not described'],
+  'Rule out an unmet physical need before assuming a behavior is purely emotional or willful','A simple visual body map/scale so a feeling can be pointed to, not described',
+  'Teach diaphragmatic breathing concretely (e.g., a stuffed animal on the belly to visually track the rise/fall) rather than relying on verbal instruction alone'],
  areg:['Co-regulate first: stay calm, fewer words','Reduce demands during escalation; talk later','A calm-down space and a break/help card','Teach and practice the skill only when calm','Deep pressure or rhythmic movement to settle',
   'Minimize talking during active escalation rather than continuing to explain or reason',"Don't mention consequences mid-escalation; it is often heard as a threat and escalates further",
   'Every 5-10 min during a prolonged escalation, calmly ask "what do you need from me?"',
   'Full recovery after dysregulation can take a minimum of 24 hours with a trauma history present (vs. ~2 hours without); plan the day accordingly',
   '"Sizes of feelings" scale to separate the size of the reaction from the size of the trigger',
-  'Treat escalation as demand exceeding capacity; reduce the demand before trying to talk the client down','Rehearse a coping skill only when calm, never mid-dysregulation'],
+  'Treat escalation as demand exceeding capacity; reduce the demand before trying to talk the client down','Rehearse a coping skill only when calm, never mid-dysregulation',
+  'Use the 5-step emotion-coaching sequence: notice the emotion, treat it as a teaching moment, listen and validate, help label the feeling, then set limits/problem-solve, in that order',
+  'Treat time-outs as a calming/regrouping tool (like a sports timeout), not a punishment requiring insight the client may not have; say explicitly they are not in trouble',
+  "Don't treat one good session as the new baseline; fluctuating capacity from fatigue, sensory state, sleep, and executive function is a hallmark of FASD, not a motivation problem"],
  phys:['Protect sleep; scheduled protein snacks for steady blood sugar','Build movement into the day','Treat hunger and fatigue as hidden triggers',
   "Ask about the caregiver's own sleep, meals, and stress load; a depleted caregiver co-regulates less well",'Check for an unmet physical need before concluding a behavior is purely behavioral'],
  social:['Concrete social scripts; role-play and rehearse','Small, structured settings with clear rules','Match expectations to developmental, not chronological, level','Pre-arrange a graceful exit/break',
@@ -251,7 +259,8 @@ const ACC={
   'Look beyond same-age peers: younger kids, animals, or interest-based groups as lower-friction connection','Normalize and name loneliness directly rather than treating it as a behavior problem'],
  cap:['Keep the ask realistic for a hard week, not a perfect one','Fewer, simpler steps','Add support: coaching, respite, peer support','Share the load across caregivers; in-room coaching + cue cards',
   'A single weekly check-in call instead of a multi-part homework packet, if bandwidth is limited','One laminated page of the top 1-2 strategies instead of a full session\'s worth of notes',
-  'Normalize caregiver dysregulation too; name it without shame and build in a reset moment']
+  'Normalize caregiver dysregulation too; name it without shame and build in a reset moment',
+  'When testing is inconclusive (real challenges present, exposure not confirmed), still document and treat using FASD-informed principles rather than waiting for a label to act; give caregivers a script like "my child has brain-based challenges that affect how they think, feel, and behave"']
 };
 
 /* ===== TREATMENTS ===== */
@@ -271,7 +280,7 @@ const TX={
  cbt:{name:'CBT',comps:[
   {phase:'Skills',nm:'Psychoeducation (thought–feeling–behavior model)',client:['abr','lang'],cg:[],adapt:'Pictures/diagrams, real examples, repeat across sessions.'},
   {phase:'Skills',nm:'Identifying & monitoring automatic thoughts',client:['abr','wm','intero'],cg:[],adapt:'Externalize: thought-bubble cartoons; caregiver helps notice; thought menus.'},
-  {phase:'Skills',nm:'Cognitive restructuring',client:['abr','ef'],cg:[],adapt:'Hardest part. Coping-thought cards and behavioral experiments; consider child-adapted CBT.'},
+  {phase:'Skills',nm:'Cognitive restructuring',client:['abr','ef'],cg:[],adapt:'Hardest part. Coping-thought cards and behavioral experiments; consider child-adapted CBT. If engagement seems poor, first ask whether the brain can do this task right now, not whether the client is trying hard enough &mdash; select and simplify to a concrete, body-based coping skill before attempting full verbal restructuring.'},
   {phase:'Skills',nm:'Behavioral activation',client:['ef'],cg:[],adapt:'Strong fit; visual schedule, small steps, built-in rewards, caregiver prompting.'},
   {phase:'Skills',nm:'Exposure / facing fears (graded)',client:['areg'],cg:[],adapt:'Visual fear ladder, smaller steps, co-regulation, sensory supports.'},
   {phase:'Skills',nm:'Relaxation / arousal reduction',client:['intero'],cg:[],adapt:'Concrete, multisensory; practice when calm; keep short.'},
@@ -281,20 +290,20 @@ const TX={
   {phase:'Stabilization',nm:'Parenting skills',client:[],cg:['ef','areg'],adapt:'Strong fit; place the work on caregiver/environment; structure and accommodation.'},
   {phase:'Stabilization',nm:'Relaxation',client:['intero'],cg:[],adapt:'Brief, multisensory; practice while calm; caregiver co-regulates.'},
   {phase:'Stabilization',nm:'Affective expression & modulation',client:['intero','lang'],cg:[],adapt:'Feelings charts/scales, body maps; model and over-practice naming.'},
-  {phase:'Stabilization',nm:'Cognitive coping',client:['abr'],cg:[],adapt:'Keep concrete; coping statements/cards; lighten the restructuring load.'},
+  {phase:'Stabilization',nm:'Cognitive coping',client:['abr'],cg:[],adapt:'Keep concrete; coping statements/cards; lighten the restructuring load. If the client seems disengaged rather than resistant, ask whether their brain can do this task right now.'},
   {phase:'Processing',nm:'Trauma narrative & processing',client:['wm','lang','areg'],cg:[],adapt:'Drawing, comics, dolls, timelines; chunk small; extend pacing; stay regulated.'},
   {phase:'Integration',nm:'Conjoint child–parent sessions',client:['areg'],cg:['areg'],adapt:'Strong as co-regulation; prepare/rehearse both; keep short; caregiver regulated first.'},
   {phase:'Integration',nm:'Enhancing safety & future development',client:['abr','wm'],cg:[],adapt:'Concrete rehearsal, role-play, visual safety steps, caregiver reinforcement.'}]},
  dbt:{name:'DBT',comps:[
   {phase:'Skills modules',nm:'Mindfulness',client:['intero','abr'],cg:[],adapt:'Very short bursts anchored to the senses; drop jargon; movement-based.'},
   {phase:'Skills modules',nm:'Distress tolerance (TIPP, crisis survival)',client:[],cg:[],adapt:'Best-fit DBT skill; bottom-up and fast. Pre-load tools; rehearse when calm; visual crisis cards.'},
-  {phase:'Skills modules',nm:'Emotion regulation',client:['abr','intero'],cg:[],adapt:'Emphasize the concrete pieces (opposite action, PLEASE); feelings scales/body maps.'},
+  {phase:'Skills modules',nm:'Emotion regulation',client:['abr','intero'],cg:[],adapt:'Emphasize the concrete pieces (opposite action, PLEASE); feelings scales/body maps. Select and simplify individual concrete/body-based skills rather than delivering the full verbal/metacognitive module; treat inconsistent uptake session to session as a capacity issue, not motivation.'},
   {phase:'Skills modules',nm:'Interpersonal effectiveness (DEAR MAN, etc.)',client:['wm','social','abr'],cg:[],adapt:'Acronym-heavy. Reduce to 1–2 steps, scripts, role-play, visual cue cards.'},
   {phase:'Structure',nm:'Diary card / self-monitoring',client:['wm','ef'],cg:['cap'],adapt:'Simplify to icons/colors/app; caregiver-assisted; fewer items.'}]},
  emdr:{name:'EMDR',comps:[
   {phase:'Phases',nm:'1. History & treatment planning',client:['lang','wm'],cg:[],adapt:'Use caregiver/collateral history, visuals/timelines; no pressure for a verbal account.'},
   {phase:'Phases',nm:'2. Preparation & resourcing',client:['intero'],cg:[],adapt:'Strong fit; extend this phase; real sensory anchors; caregiver-supported calm place.'},
-  {phase:'Phases',nm:'3. Assessment (cognitions, SUD/VOC)',client:['abr','intero'],cg:[],adapt:'Cognition menus with pictures; faces/thermometer scales; lead with body sensation.'},
+  {phase:'Phases',nm:'3. Assessment (cognitions, SUD/VOC)',client:['abr','intero'],cg:[],adapt:'Cognition menus with pictures; faces/thermometer scales; lead with body sensation. If the client is not engaging with the cognitive interweave, ask whether their brain can do this right now rather than assuming resistance.'},
   {phase:'Phases',nm:'4. Desensitization (bilateral stimulation)',client:['areg','wm'],cg:[],adapt:'Shorter sets; tactile/auditory BLS; slow pace; frequent grounding; smaller targets.'},
   {phase:'Phases',nm:'5–6. Installation & body scan',client:['abr','intero'],cg:[],adapt:'Concrete image-linked positive statements; guide a body map; model.'},
   {phase:'Phases',nm:'7. Closure',client:['areg'],cg:[],adapt:'Strong fit, never skip; always re-stabilize; allow extra time; caregiver carries calm out.'}]},
@@ -357,6 +366,7 @@ const TX={
  pact:{name:'PACT (Parents and Children Together, FASD-specific)',comps:[
   {phase:'Groups',nm:'Self-regulation & executive-function group',client:['areg','ef','social'],cg:[],adapt:'FASD-matched; keep groups small/predictable; concrete/multisensory; caregiver co-treatment.'}]},
  aba:{name:'ABA (Applied Behavior Analysis)',comps:[
+  {phase:'Before Referral',nm:'Vetting the provider/approach',client:[],cg:[],adapt:'Ask providers about their understanding of FASD as an organic brain-based disorder (not purely behavioral/willful), their willingness to adapt reinforcement schedules and pacing for cognitive/memory deficits, and their approach to distinguishing "won\'t" from "can\'t." Caution families that standard ABA delivered without this lens can worsen frustration.'},
   {phase:'Assessment',nm:'Functional Behavior Assessment (FBA)',client:[],cg:[],adapt:'Strong when function is framed as unmet need/communication; honor stimming/sensory as legitimate.'},
   {phase:'Teaching',nm:'Discrete Trial Training (DTT)',client:['ef','wm'],cg:[],adapt:'Massed compliance trials are high-load. Shorten/intersperse with movement; embed in play; assent/breaks; prefer NET/PRT.'},
   {phase:'Teaching',nm:'Naturalistic teaching (NET) / PRT',client:['ef'],cg:[],adapt:'Strong relative to DTT; follow the child\'s lead and interests; natural reinforcers; play-based.'},
