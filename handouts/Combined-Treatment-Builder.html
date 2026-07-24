@@ -103,7 +103,8 @@
   .banner strong { font-weight: 700; }
 
   .roadmap { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
-  .rstep { flex: 1 1 96px; text-align: center; border: 1px solid var(--border); background: var(--surface); border-radius: 7px; padding: 8px 6px; font-family: var(--font-display); font-size: 10.5px; color: var(--ink-dim); }
+  .rstep { flex: 1 1 96px; text-align: center; border: 1px solid var(--border); background: var(--surface); border-radius: 7px; padding: 8px 6px; font-family: var(--font-display); font-size: 10.5px; color: var(--ink-dim); cursor: pointer; transition: .12s; }
+  .rstep:hover { border-color: var(--blue); color: var(--ink); }
   .rstep.now { background: var(--navy); color: #fff; border-color: var(--navy); font-weight: 600; }
   .rstep .n { display: block; font-size: 9px; opacity: .75; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
 
@@ -111,6 +112,19 @@
   .step-k { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--blue); }
   .step h2 { font-family: var(--font-display); font-size: 18px; color: var(--navy); margin: 3px 0 4px; text-wrap: balance; }
   .step .lead { font-size: 13px; color: var(--ink-dim); margin-bottom: 14px; max-width: 62ch; }
+
+  .step-head { cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .step-head:hover h2 { color: var(--blue); }
+  .step-chev { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border); color: var(--ink-dim); font-size: 12px; display: flex; align-items: center; justify-content: center; transition: transform .15s; margin-top: 2px; }
+  .step.collapsed .step-chev { transform: rotate(-90deg); }
+  .step-summary { display: none; font-size: 12.5px; color: var(--ink-faint); margin: 2px 0 0; max-width: 62ch; }
+  .step.collapsed .step-summary { display: block; }
+  .step.collapsed .step-body { display: none; }
+  .step.collapsed { padding-bottom: 16px; }
+  @media print {
+    .step-body { display: block !important; }
+    .step-chev, .step-summary { display: none !important; }
+  }
 
   .anno { display: flex; gap: 9px; align-items: flex-start; background: var(--blue-bg); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 10px 13px; margin: 12px 0; font-size: 12px; color: var(--ink); }
   .anno .tag { flex-shrink: 0; font-weight: 700; color: var(--green-2); white-space: nowrap; }
@@ -126,8 +140,9 @@
   .pcard { border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 13px; font-size: 12.5px; background: var(--bg); }
   .pcard .role { font-weight: 600; color: var(--navy); } .pcard .sub { color: var(--ink-faint); font-size: 11px; }
   .addbtn { border: 1px dashed var(--blue-border); background: var(--blue-bg); color: var(--navy-2); border-radius: 8px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; font-family: var(--font-display); cursor: pointer; }
-  .agefield { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--ink); }
-  .agefield input { width: 70px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; background: var(--surface); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .agefield { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .agefield input { width: 90px; border: 1.5px solid var(--blue-border); border-radius: 6px; padding: 7px 10px; font-size: 14px; font-weight: 400; background: var(--bg); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .agefield input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-bg); }
 
   .supportive-prompt { background: var(--green-bg); border: 1px solid var(--green-border); border-left: 4px solid var(--green); border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 12px; color: var(--green-2); display: none; }
   .supportive-prompt.show { display: block; }
@@ -384,22 +399,29 @@
     <div class="pk-display" id="framingDisplay"></div>
   </div>
 
-  <div class="roadmap">
-    <div class="rstep now"><span class="n">1</span>People involved</div>
-    <div class="rstep now"><span class="n">2</span>Screening</div>
-    <div class="rstep now"><span class="n">3</span>Presenting problems</div>
-    <div class="rstep now"><span class="n">4</span>Brain function</div>
-    <div class="rstep"><span class="n">5</span>Modality</div>
-    <div class="rstep"><span class="n">6</span>Fit &amp; goal realism</div>
-    <div class="rstep"><span class="n">7</span>Delve into treatment</div>
-    <div class="rstep"><span class="n">8</span>Outputs</div>
+  <div class="roadmap" id="roadmap">
+    <div class="rstep" data-target="step1"><span class="n">1</span>People involved</div>
+    <div class="rstep" data-target="step2Screening"><span class="n">2</span>Screening</div>
+    <div class="rstep" data-target="step3"><span class="n">3</span>Presenting problems</div>
+    <div class="rstep" data-target="step4BrainFunction"><span class="n">4</span>Brain function</div>
+    <div class="rstep" data-target="step56"><span class="n">5</span>Modality</div>
+    <div class="rstep" data-target="step56"><span class="n">6</span>Fit &amp; goal realism</div>
+    <div class="rstep" data-target="step7"><span class="n">7</span>Delve into treatment</div>
+    <div class="rstep" data-target="step8"><span class="n">8</span>Outputs</div>
   </div>
 
   <!-- STEP 1 -->
-  <div class="step">
-    <div class="step-k">Step 1</div>
-    <h2 id="step1Heading">People involved in treatment</h2>
+  <div class="step" id="step1">
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 1</div>
+        <h2 id="step1Heading">People involved in treatment</h2>
+        <p class="step-summary">Who's in this case, and their role in treatment.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
 
+    <div class="step-body">
     <div class="picker-box">
       <div class="pk-label">Pick live: Step 1 heading</div>
       <div class="pk-chips" id="headingPicker">
@@ -422,12 +444,21 @@
     <div class="hint-note" id="s1ValidationNote" style="display:none;color:var(--danger-ink);font-size:12px;margin-top:6px;">Enter an age to continue &mdash; it decides which question comes next.</div>
 
     <div class="anno"><span class="tag">Why it matters</span><span>Who's involved is the fork point for the whole tool, not just a label. It changes the exact wording of the screening script in Step 2, and who gets a brain-function profile in Step 4.</span></div>
+    </div>
   </div>
 
   <!-- STEP 2 -->
   <div class="step" id="step2Screening">
-    <div class="step-k">Step 2</div>
-    <h2>PAE / FASD screening</h2>
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 2</div>
+        <h2>PAE / FASD screening</h2>
+        <p class="step-summary">Screening script and questions, matched to who's involved.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <p class="lead">Full source material lives in the <code>pae-fasd-screening</code> skill.</p>
 
     <div class="why-box"><b>Why we ask:</b> prenatal alcohol exposure is one of the most common, and most commonly missed, contributors to the neurodevelopmental profile this tool helps you think through. Naming it early, even when the answer is "unknown," changes how we understand behavior, tailor treatment, and connect the family to the right supports. This isn't about assigning blame. Ask the same way in every case, not just ones that "look at risk." That's what keeps it from feeling like an accusation.</p></div>
@@ -553,23 +584,41 @@
       <div id="connectScripts"></div>
       <div style="margin-top:8px;">Link: <a href="https://fasdunited.org/family-navigator/" target="_blank" rel="noopener">fasdunited.org/family-navigator</a></div>
     </div>
+    </div>
   </div>
 
   <!-- STEP 3 -->
-  <div class="step">
-    <div class="step-k">Step 3</div>
-    <h2>Presenting problems</h2>
+  <div class="step" id="step3">
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 3</div>
+        <h2>Presenting problems</h2>
+        <p class="step-summary">Why the client is entering treatment, and what everyone hopes to get from it.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <p class="lead">Why is the client entering treatment, and what are they hoping to get out of it? Everyone in the room answers, not just the client.</p>
     <div class="qa-everyone">
       <div class="qa-card"><div class="who">Client</div><textarea placeholder="What brought you in? What are you hoping for?"></textarea></div>
       <div class="qa-card"><div class="who">Caregiver</div><textarea placeholder="What brought [child] in? What are you hoping for?"></textarea></div>
     </div>
+    </div>
   </div>
 
   <!-- STEP 4 -->
   <div class="step" id="step4BrainFunction">
-    <div class="step-k">Step 4</div>
-    <h2>Brain function</h2>
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 4</div>
+        <h2>Brain function</h2>
+        <p class="step-summary">Brain-function ratings for the client, and the caregiver if present.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <div class="why-box">
       <b>Before rating anything, take a moment to look at what already exists.</b> Ask the individual or family whether they have any past evaluations, an IEP, or a neuropsych, OT, speech-language, or school evaluation on hand. If testing exists, use it to inform the ratings below. If it doesn't, you can still fill this out from direct observation.
       <div style="margin-top:8px;"><span class="srcnote">Assessment.html: common assessments and what they measure, who administers each, and where results are usually found</span></div>
@@ -645,12 +694,21 @@
     </div>
 
     <div class="anno"><span class="tag">Child cases</span><span>When there's a caregiver in the picture, the Caregiver 1 tab collects how they take in and use information, not a repeat of the client's brain-function pass.</span></div>
+    </div>
   </div>
 
   <!-- STEPS 5-6: MODALITY, FIT CHART, ADAPTED GOALS, ROLES -->
-  <div class="step">
-    <div class="step-k">Steps 5–6</div>
-    <h2>Treatment modality, fit, and roles</h2>
+  <div class="step" id="step56">
+    <div class="step-head">
+      <div>
+        <div class="step-k">Steps 5–6</div>
+        <h2>Treatment modality, fit, and roles</h2>
+        <p class="step-summary">Pick a modality, compare its brain demands to the profile, set adapted goals and roles.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <p class="lead">One causal chain, in this order: the modality's brain demands are compared against the Step 4 profile, that comparison decides the roles (who covers what), and only then do the adapted goals get written, so the goal wording can reflect the role split instead of guessing at it first.</p>
     <div class="anno"><span class="tag">Research and practice</span><span>A few of these modalities have research done specifically with FASD. Most don't yet, because that kind of research takes years to build. This step is about thinking through what fits this person's brain, using real clinical experience alongside whatever research exists.</span></div>
 
@@ -698,12 +756,21 @@
         <button class="goal-pick-btn" id="pickManualBtn" type="button">Use this one</button>
       </div>
     </div>
+    </div>
   </div>
 
   <!-- STEP 7: DELVE INTO TREATMENT -->
-  <div class="step">
-    <div class="step-k">Step 7</div>
-    <h2>Delve into treatment</h2>
+  <div class="step" id="step7">
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 7</div>
+        <h2>Delve into treatment</h2>
+        <p class="step-summary">The modality broken into its real components, with adaptations for each.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <p class="lead">The modality broken into its real components, not treated as one lump. For each component: what it asks of the brain, the accommodation, and a plain sentence describing what each person is actually doing differently in the room.</p>
 
     <div class="banner mock"><strong>These are samples, not fact.</strong> Every accommodation shown here and below is a starting point for clinical judgment, not a verified prescription for this specific person. For a much larger, searchable set of ideas organized by brain function (not just the few components built into this mockup), see the <a href="../handouts/Accommodations-Idea-Bank.html" target="_blank" rel="noopener">Accommodations Idea Bank</a>, which carries the same disclaimer.</div>
@@ -723,12 +790,21 @@
     <h3 class="block-h">Add another component or adaptation</h3>
     <textarea class="manual-goal-input" id="customComponentInput" placeholder="Describe another part of treatment and the adaptation you are making..."></textarea>
     <button class="addbtn" type="button" id="addComponentBtn" style="margin-top:8px;">+ Add to the plan</button>
+    </div>
   </div>
 
   <!-- STEP 7 DOWNLOADABLE ONE-PAGE SUMMARY -->
-  <div class="step delve-print-only">
-    <div class="step-k">Step 7 &middot; downloadable</div>
-    <h2>Personalized one-page summary</h2>
+  <div class="step delve-print-only" id="step7dl">
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 7 &middot; downloadable</div>
+        <h2>Personalized one-page summary</h2>
+        <p class="step-summary">A print-ready one-pager generated live from this case.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <p class="lead">Generated live from this case, not written from scratch: the brain-based profile, what this modality asks of the brain, the goal, the treatment broken into its parts, and guiding questions with no pre-written answers. Meant to print or save and take with you, so it does not require coming back to the website.</p>
 
     <div class="delve-toolbar" style="display:flex;gap:8px;margin-bottom:10px;">
@@ -737,12 +813,21 @@
     </div>
 
     <div class="onepager-box" id="delveOnepager"></div>
+    </div>
   </div>
 
   <!-- STEP 8: OUTPUTS -->
-  <div class="step out-print-only">
-    <div class="step-k">Step 8</div>
-    <h2>Outputs</h2>
+  <div class="step out-print-only" id="step8">
+    <div class="step-head">
+      <div>
+        <div class="step-k">Step 8</div>
+        <h2>Outputs</h2>
+        <p class="step-summary">Clinician plan, EHR paste-in, caregiver handout, and provider handout.</p>
+      </div>
+      <div class="step-chev">&#9660;</div>
+    </div>
+
+    <div class="step-body">
     <p class="lead">Built live from everything entered above, in three versions like the existing Treatment Adaptation Builder: one for the clinician's own note or EHR, one in caregiver-friendly language, and one brief version to share with the rest of the team. Print or save as a PDF, or copy whichever version is showing.</p>
 
     <div class="out-toolbar">
@@ -761,6 +846,7 @@
     <div class="out-panel" id="outputPanel"></div>
 
     <div class="out-linkbox">Need more accommodation ideas than what's built into Step 7? See the <a href="../handouts/Accommodations-Idea-Bank.html" target="_blank" rel="noopener">Accommodations Idea Bank</a>, a much larger, searchable set organized by brain function.</div>
+    </div>
   </div>
 
   <div class="foot">Combined Treatment Builder · concept mockup · FASD United Mental Health Work Group</div>
@@ -2726,6 +2812,54 @@
 
   renderOutputs();
   renderDelveOnepager();
+
+  // --- Accordion: step collapse/expand + rail nav wiring (added 2026-07-24) ---
+  var STEP_SEQUENCE = ['step1', 'step2Screening', 'step3', 'step4BrainFunction', 'step56', 'step7', 'step7dl', 'step8'];
+
+  function setStepOpen(id, open) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('collapsed', !open);
+  }
+
+  function toggleStep(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    setStepOpen(id, el.classList.contains('collapsed'));
+  }
+
+  function updateRoadmapNow(id) {
+    document.querySelectorAll('#roadmap .rstep').forEach(function (chip) {
+      chip.classList.toggle('now', chip.dataset.target === id);
+    });
+  }
+
+  function goToStep(id) {
+    STEP_SEQUENCE.forEach(function (s) { setStepOpen(s, s === id); });
+    updateRoadmapNow(id);
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Collapse every step but Step 1 on load.
+  STEP_SEQUENCE.forEach(function (s) { setStepOpen(s, s === 'step1'); });
+  updateRoadmapNow('step1');
+
+  // Clicking a step's own header toggles it independently -- does not close others,
+  // so a clinician can keep an earlier step open for reference while working a later one.
+  document.querySelectorAll('.step-head').forEach(function (head) {
+    head.addEventListener('click', function () {
+      var stepEl = head.closest('.step');
+      if (!stepEl || !stepEl.id) return;
+      toggleStep(stepEl.id);
+      if (!stepEl.classList.contains('collapsed')) updateRoadmapNow(stepEl.id);
+    });
+  });
+
+  // Clicking a rail chip jumps to that step: opens it, collapses the rest, scrolls to it.
+  document.querySelectorAll('#roadmap .rstep').forEach(function (chip) {
+    chip.addEventListener('click', function () { goToStep(chip.dataset.target); });
+  });
 </script>
 </body>
 </html>
