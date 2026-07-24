@@ -225,6 +225,20 @@
   .strengths-input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12.5px; background: var(--surface); color: var(--ink); font-family: inherit; }
   .rate-summary { font-size: 12px; color: var(--ink-faint); margin-top: 8px; }
 
+  .cg-howto { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green-2); border-radius: 8px; padding: 9px 13px; font-size: 12px; margin-bottom: 16px; }
+  .cg-q-section { margin: 18px 0; }
+  .cg-q-section:first-of-type { margin-top: 0; }
+  .cg-sec-label { font-family: var(--font-display); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--green-2); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--green-border); }
+  .cg-q { margin-bottom: 16px; }
+  .cg-q:last-child { margin-bottom: 0; }
+  .cg-q-text { font-size: 13px; color: var(--ink); margin-bottom: 7px; line-height: 1.45; }
+  .cg-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cg-opt { border: 1.5px solid var(--border); background: var(--surface); border-radius: 7px; padding: 6px 11px; font-size: 12px; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .cg-opt input { accent-color: var(--green); }
+  .cg-opt:has(input:checked) { border-color: var(--green); background: var(--green-bg); color: var(--green-2); font-weight: 600; }
+  .cg-textarea { width: 100%; min-height: 44px; border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; font-size: 12.5px; font-family: inherit; resize: vertical; background: var(--surface); color: var(--ink); }
+  .cg-optional { font-size: 11px; color: var(--ink-faint); font-weight: 400; margin-left: 4px; }
+
   .block-h { font-family: var(--font-display); font-size: 14.5px; color: var(--navy); margin: 18px 0 6px; }
   .modality-select { width: 100%; max-width: 480px; border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; font-size: 13px; background: var(--surface); color: var(--ink); font-family: inherit; }
   .other-modality-input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; background: var(--surface); color: var(--ink); font-family: inherit; margin-top: 6px; }
@@ -411,7 +425,7 @@
   </div>
 
   <!-- STEP 2 -->
-  <div class="step">
+  <div class="step" id="step2Screening">
     <div class="step-k">Step 2</div>
     <h2>PAE / FASD screening</h2>
     <p class="lead">Full source material lives in the <code>pae-fasd-screening</code> skill.</p>
@@ -553,7 +567,7 @@
   </div>
 
   <!-- STEP 4 -->
-  <div class="step">
+  <div class="step" id="step4BrainFunction">
     <div class="step-k">Step 4</div>
     <h2>Brain function</h2>
     <div class="why-box">
@@ -562,8 +576,8 @@
     </div>
 
     <div class="anno" id="caregiverAssessNote">
-      <span class="tag">Why assess the caregiver too</span>
-      <span>When a caregiver is part of treatment, their brain function shapes what the plan can actually ask of them, not just what the client needs. Even a quick observational read, not a formal test, tells you whether a plan is realistic. A caregiver who is stretched thin, has their own executive function challenges, or works from a different sensory or regulation baseline may not be able to consistently deliver what a plan asks, no matter how motivated they are. Naming that early keeps the plan from resting on more capacity than the caregiver actually has, and points to where the caregiver may need their own support to carry their part.</span>
+      <span class="tag">Why the caregiver gets a different set of questions</span>
+      <span>The client's brain-function profile below shapes what the plan can realistically ask of them. For the caregiver, this tool asks a different set of questions instead of running the same domain ratings: how they take in information best, how much time they need to process something new, and how comfortable they are with the pace of a session. That's what actually shapes whether a plan can be delivered consistently at home, and it keeps the caregiver's own experience out of clinical-sounding severity language.</span>
     </div>
 
     <div class="banner mock" style="margin-top:14px;"><strong>Both scales shown for comparison, Option A built out below so you can test it live:</strong> your original wording was non-existent/mild/moderate/severe. Option B (Strength/fit language) is shown for reference only, not yet built into a working table.</div>
@@ -582,7 +596,7 @@
     </div>
 
     <h3 style="font-family:var(--font-display);font-size:14.5px;color:var(--navy);margin:18px 0 6px;">Try it: rate brain function with Option A</h3>
-    <p class="lead" style="margin-bottom:8px;">One domain at a time, so nothing gets buried in a wall of rows. Client first, then Caregiver 1 if there's a caregiver in the picture. Mark something Moderate or Severe and a "where does this show up?" chip row appears immediately, inline, right under that rating &mdash; no click to reveal.</p>
+    <p class="lead" style="margin-bottom:8px;">One domain at a time, so nothing gets buried in a wall of rows. Mark something Moderate or Severe and a "where does this show up?" chip row appears immediately, inline, right under that rating &mdash; no click to reveal. The Caregiver 1 tab shows a different set of questions, not this same domain wizard &mdash; see the note above.</p>
 
     <div class="persontabs" id="personTabs">
       <button class="ptab on" data-p="client" type="button">Client</button>
@@ -593,27 +607,31 @@
       <table class="ratetable" id="rateTableClient"></table>
     </div>
     <div class="ppane" data-p="cg1">
-      <table class="ratetable" id="rateTableCg1"></table>
+      <table class="ratetable" id="rateTableCg1" style="display:none;"></table>
+      <div class="cg-howto">This can be filled out together during the session, or given to the caregiver to fill out at home and bring back.</div>
+      <div id="cgQuestions"></div>
     </div>
 
-    <div class="wizard-progress" id="wizardProgress"></div>
-    <div class="wizard-nav">
-      <button class="out-btn" type="button" id="domPrevBtn">&larr; Back</button>
-      <button class="out-btn primary" type="button" id="domNextBtn">Next &rarr;</button>
-    </div>
+    <div id="clientOnlyBlocks">
+      <div class="wizard-progress" id="wizardProgress"></div>
+      <div class="wizard-nav">
+        <button class="out-btn" type="button" id="domPrevBtn">&larr; Back</button>
+        <button class="out-btn primary" type="button" id="domNextBtn">Next &rarr;</button>
+      </div>
 
-    <div class="rate-summary" id="rateSummary"></div>
+      <div class="rate-summary" id="rateSummary"></div>
 
-    <h3 class="block-h">Brain profile at a glance</h3>
-    <p class="lead" style="margin-bottom:8px;">Every rated domain, strengths and challenges together, as a tile grid instead of a table &mdash; color and a dot meter show where it lands at a glance.</p>
-    <div class="tile-grid" id="profileTiles"></div>
+      <h3 class="block-h">Brain profile at a glance</h3>
+      <p class="lead" style="margin-bottom:8px;">Every rated domain, strengths and challenges together, as a tile grid instead of a table &mdash; color and a dot meter show where it lands at a glance.</p>
+      <div class="tile-grid" id="profileTiles"></div>
 
-    <h3 class="block-h">Challenges by where they show up</h3>
-    <p class="lead" style="margin-bottom:8px;">Domains rated Moderate or Severe, grouped by location &mdash; Home, School, Work, Community &mdash; with a "Not tied to a specific setting" bucket for anything left untagged.</p>
-    <div class="onepager-box" id="profileViz" style="margin-top:0;"></div>
-    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <button class="out-btn primary" type="button" id="downloadPdfBtn">Download PDF</button>
-      <span style="font-size:11.5px;color:var(--ink-faint);" id="pdfHint">A designed PDF with the tile grid and location summary together, for whichever person tab is selected above.</span>
+      <h3 class="block-h">Challenges by where they show up</h3>
+      <p class="lead" style="margin-bottom:8px;">Domains rated Moderate or Severe, grouped by location &mdash; Home, School, Work, Community &mdash; with a "Not tied to a specific setting" bucket for anything left untagged.</p>
+      <div class="onepager-box" id="profileViz" style="margin-top:0;"></div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="out-btn primary" type="button" id="downloadPdfBtn">Download PDF</button>
+        <span style="font-size:11.5px;color:var(--ink-faint);" id="pdfHint">A designed PDF with the tile grid and location summary together, for the client.</span>
+      </div>
     </div>
 
     <div class="stage-capture">
@@ -626,7 +644,7 @@
       <div class="agehint-toggle">Show clinician age-band estimate: off by default, toggle in the real tool.</div>
     </div>
 
-    <div class="anno"><span class="tag">Child cases</span><span>When there's a caregiver in the picture, this same brain-function pass is repeated for the caregiver, not just the client.</span></div>
+    <div class="anno"><span class="tag">Child cases</span><span>When there's a caregiver in the picture, the Caregiver 1 tab collects how they take in and use information, not a repeat of the client's brain-function pass.</span></div>
   </div>
 
   <!-- STEPS 5-6: MODALITY, FIT CHART, ADAPTED GOALS, ROLES -->
@@ -634,6 +652,7 @@
     <div class="step-k">Steps 5–6</div>
     <h2>Treatment modality, fit, and roles</h2>
     <p class="lead">One causal chain, in this order: the modality's brain demands are compared against the Step 4 profile, that comparison decides the roles (who covers what), and only then do the adapted goals get written, so the goal wording can reflect the role split instead of guessing at it first.</p>
+    <div class="anno"><span class="tag">Research and practice</span><span>A few of these modalities have research done specifically with FASD. Most don't yet, because that kind of research takes years to build. This step is about thinking through what fits this person's brain, using real clinical experience alongside whatever research exists.</span></div>
 
     <h3 class="block-h">What is the primary treatment modality you are using?</h3>
     <p class="lead" style="margin-bottom:8px;">Grouped by type so 36 options don't read as one long list. Pick one.</p>
@@ -1283,14 +1302,72 @@
   renderWizard();
   renderProfileViz();
 
+  // --- Step 4, Caregiver 1 tab: comfort/processing questions instead of a domain wizard ---
+  var CG_QUESTIONS = [
+    { section: 'Comfort & confidence', items: [
+      { q: 'How confident do you feel taking in new information about their brain and behavior, and using it day to day?', opts: ['Extremely', 'Quite a bit', 'Somewhat', 'A little bit', 'Not at all'] },
+      { q: 'How confident do you feel right now taking what we talk about here and using it at home?', opts: ['Extremely', 'Quite a bit', 'Somewhat', 'A little bit', 'Not at all'] }
+    ]},
+    { section: 'Reading & written materials', items: [
+      { q: 'Would you rather read information yourself, have someone go over it with you, or a mix of both?', opts: ['Read it myself', 'Have it explained to me', 'Both'] },
+      { q: 'Do written instructions usually make sense to you, or do you find yourself re-reading things a lot?', opts: ['Usually makes sense', 'Sometimes re-read', 'Often re-read'] },
+      { q: 'If we send home written materials, is there a length that works better for you?', opts: ['Short & simple', 'More detail is fine'] }
+    ]},
+    { section: 'Pace & processing time', items: [
+      { q: "When we're going over new information together, is our current pace okay, or would it help to slow down / take breaks?", opts: ['Pace is fine', 'Slower would help', "I'd like breaks"] },
+      { q: 'Do you like to think something over before responding, or is it easier to talk it through in the moment?', opts: ['Think it over first', 'Talk it through live', 'Depends'] },
+      { q: 'If you need a minute to think during a conversation, do you feel comfortable asking for that, or does it feel awkward?', opts: ['Comfortable', 'A little awkward', 'Very awkward'] }
+    ]},
+    { section: 'Concrete vs. general', items: [
+      { q: 'Do real-life examples help more than general explanations, or do both work for you?', opts: ['Examples help more', 'Both work', 'General is fine'] },
+      { q: 'Would it help to see this written down with real-life examples, rather than just talked about?', opts: ['Yes, written examples help', 'Talking it through is enough'] }
+    ]},
+    { section: "What's going on right now", items: [
+      { q: "Is there anything going on right now (schedule, finances, other stress) that's making it harder than usual to take things in?", type: 'text', optional: true },
+      { q: 'Do you find it easier to stay calm and think clearly when they are upset, or does that tend to pull you into your own stress response?', opts: ['Usually stay clear', 'Sometimes pulled in', 'Often pulled in'] }
+    ]},
+    { section: 'Anything else', items: [
+      { q: "Is there anything that's made it hard to take in information in past appointments (pace, wording, reading, something else)?", type: 'text', optional: true }
+    ]}
+  ];
+
+  function buildCgQuestions() {
+    var box = document.getElementById('cgQuestions');
+    if (!box) return;
+    var html = CG_QUESTIONS.map(function (sec, si) {
+      var itemsHtml = sec.items.map(function (item, ii) {
+        var name = 'cgq_' + si + '_' + ii;
+        var optional = item.optional ? '<span class="cg-optional">(optional)</span>' : '';
+        var body = item.type === 'text'
+          ? '<textarea class="cg-textarea" name="' + name + '" rows="2"></textarea>'
+          : '<div class="cg-opts">' + item.opts.map(function (o) {
+              return '<label class="cg-opt"><input type="radio" name="' + name + '"><span>' + o + '</span></label>';
+            }).join('') + '</div>';
+        return '<div class="cg-q"><div class="cg-q-text">' + item.q + ' ' + optional + '</div>' + body + '</div>';
+      }).join('');
+      return '<div class="cg-q-section"><div class="cg-sec-label">' + sec.section + '</div>' + itemsHtml + '</div>';
+    }).join('');
+    box.innerHTML = html;
+  }
+  buildCgQuestions();
+
+  function setStep4PersonView(p) {
+    var clientOnly = document.getElementById('clientOnlyBlocks');
+    if (clientOnly) clientOnly.style.display = (p === 'client') ? '' : 'none';
+    if (p === 'client') {
+      updateRateSummary();
+      renderWizard();
+      renderProfileViz();
+    }
+  }
+  setStep4PersonView('client');
+
   document.getElementById('personTabs').querySelectorAll('.ptab').forEach(function (tab) {
     tab.addEventListener('click', function () {
       var p = tab.dataset.p;
       document.querySelectorAll('#personTabs .ptab').forEach(function (t) { t.classList.toggle('on', t === tab); });
       document.querySelectorAll('.ppane').forEach(function (pane) { pane.classList.toggle('on', pane.dataset.p === p); });
-      updateRateSummary();
-      renderWizard();
-      renderProfileViz();
+      setStep4PersonView(p);
     });
   });
 
@@ -2410,12 +2487,13 @@
     return out;
   }
 
-  function getBrainProfileHtml(plain) {
+  function getBrainProfileHtml(plain, includeCaregiver) {
+    if (includeCaregiver === undefined) includeCaregiver = true;
     var clientDomains = getDomainSummary('rateTableClient', plain);
     var cgDomains = getDomainSummary('rateTableCg1', plain);
     var cName = plain ? clientLabel() : clientLabel() + ' (client)';
     var html = '<p><em>' + cName + '</em></p>' + (clientDomains.length ? ('<ul>' + clientDomains.map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>') : '<p class="out-empty">Not yet rated in Step 4.</p>');
-    if (caregiverPresent()) {
+    if (includeCaregiver && caregiverPresent()) {
       var cards = document.querySelectorAll('#people .pcard');
       var cgName = cards.length > 1 ? cards[1].querySelector('.role-edit').value.trim() : 'Caregiver';
       html += '<p><em>' + cgName + '</em></p>' + (cgDomains.length ? ('<ul>' + cgDomains.map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>') : '<p class="out-empty">Not yet rated in Step 4.</p>');
@@ -2515,7 +2593,7 @@
     var mod = MODALITY_DATA[key];
     return '<p>A plain-language summary to keep and use at home, so support fits how ' + nm + '\'s brain works best.</p>' +
       '<h3>What we are working on</h3>' + (mod ? ('<p>' + mod.name + (otherModalities.length ? ', alongside ' + otherModalityNames().join(', ') : '') + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
-      '<h3>How ' + nm + '\'s brain (and yours, if you are the caregiver) is doing right now</h3>' + getBrainProfileHtml(true) +
+      '<h3>How ' + nm + '\'s brain is doing right now</h3>' + getBrainProfileHtml(true, false) +
       '<h3>What we are changing, and why</h3>' + getRolesHtml(true) +
       '<h3>What this looks like day to day</h3>' + getComponentsHtml(true) +
       '<p style="margin-top:14px">We made this together, and it can change as we learn what works. If something does not fit your family, tell us and we will adjust it.</p>';
@@ -2527,7 +2605,7 @@
     var mod = MODALITY_DATA[key];
     return '<p>A brief, brain-based summary for the other professionals who support ' + nm + ' (teachers, case managers, support workers). Share with consent, so support stays consistent across settings.</p>' +
       '<h3>What treatment involves</h3>' + (mod ? ('<p>' + mod.name + (otherModalities.length ? ', alongside ' + otherModalityNames().join(', ') : '') + '</p>') : '<p class="out-empty">Pick a treatment modality in Step 5 to see it here.</p>') +
-      '<h3>What it asks of ' + nm + '\'s brain</h3>' + getBrainProfileHtml(false) +
+      '<h3>What it asks of ' + nm + '\'s brain</h3>' + getBrainProfileHtml(false, false) +
       '<h3>What helps, and what to keep consistent</h3>' + getComponentsHtml(false) +
       '<p style="margin-top:12px">The more home, school, and clinic use the same supports, the better they work. Please reach out to coordinate.</p>';
   }
@@ -2552,11 +2630,6 @@
     var clientDomains = getDomainSummary('rateTableClient', false);
     L.push('  Client:');
     (clientDomains.length ? clientDomains : ['[not yet rated]']).forEach(function (d) { L.push('    - ' + d); });
-    if (caregiverPresent()) {
-      var cgDomains = getDomainSummary('rateTableCg1', false);
-      L.push('  Caregiver:');
-      (cgDomains.length ? cgDomains : ['[not yet rated]']).forEach(function (d) { L.push('    - ' + d); });
-    }
     L.push('');
 
     var key = document.getElementById('modalitySelect').value;
